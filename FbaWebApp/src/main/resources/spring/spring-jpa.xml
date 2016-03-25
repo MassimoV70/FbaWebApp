@@ -1,0 +1,41 @@
+ 
+    <beans xmlns="http://www.springframework.org/schema/beans"   
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"   
+        xmlns:tx="http://www.springframework.org/schema/tx"
+        xmlns:context="http://www.springframework.org/schema/context"   
+        xsi:schemaLocation="http://www.springframework.org/schema/beans   
+        http://www.springframework.org/schema/beans/spring-beans-4.0.xsd   
+        http://www.springframework.org/schema/tx  
+        http://www.springframework.org/schema/tx/spring-tx-4.0.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context-4.0.xsd">  
+          
+         <tx:annotation-driven transaction-manager="jpaTxnManagerBean" proxy-target-class="true"/>  
+          
+        <context:component-scan base-package="it.fba.webapp" />
+        
+               
+          <bean id="hbAdapterBean" class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter">  
+            <property name="showSql" value="true"></property>  
+            <property name="generateDdl" value="true"></property>  
+            <property name="databasePlatform" value="org.hibernate.dialect.MySQL5Dialect"></property> 
+           
+         </bean>  
+          
+        <bean id="emfBean" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">  
+            <property name="dataSource" ref="dataSource"></property>  
+            <property name="jpaVendorAdapter" ref="hbAdapterBean"></property> 
+            <property name="persistenceUnitName" value="fbaPersistenceUnit" /> 
+            <property name="persistenceXmlLocation" value="classpath:spring/persistence.xml" />
+         </bean>  
+           
+        
+          <bean id="jpaTxnManagerBean" class="org.springframework.orm.jpa.JpaTransactionManager">  
+            <property name="entityManagerFactory" ref="emfBean"></property>  
+        </bean>  
+        
+        <bean id="dataSource" class="org.springframework.jndi.JndiObjectFactoryBean">
+        	<property name="jndiName" value="java:/mysqlDataSource"/>
+   		</bean>
+              
+    </beans>  
