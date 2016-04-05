@@ -1,13 +1,21 @@
 package it.fba.webapp.fileInputOutput;
 
 import java.io.ByteArrayInputStream;
+import java.io.FileInputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
 
 import org.apache.poi.hssf.usermodel.HSSFRow;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xslf.usermodel.XSLFSheet;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import it.fba.webapp.beans.FileBean;
@@ -16,33 +24,66 @@ import it.fba.webapp.beans.PianoDIformazioneBean;
 public class ImportServiceExcel implements ImportService{
 
 	@Override
-	public ArrayList<PianoDIformazioneBean> importFile(FileBean file)  {
+	public  ArrayList<HashMap<String, String>> importFile(FileBean file) throws Exception {
 		// TODO Auto-generated method stub
-		 ArrayList<PianoDIformazioneBean> listaPiani = new ArrayList<>();
+		 ArrayList<HashMap<String, String>> listaPiani = new ArrayList<>();
 		try{
 		ByteArrayInputStream byteInput = new ByteArrayInputStream(file.getFileData().getBytes());
-		Workbook workbook;
+		
 		 if (file.getFileData().getOriginalFilename().endsWith("xls")){
-			 workbook= new HSSFWorkbook(byteInput);
+			  HSSFWorkbook workbook= new HSSFWorkbook(byteInput);
+			 HSSFSheet sheet = workbook.getSheetAt(0);
+			 Iterator<Row> rowIterator = sheet.iterator();
+			 while(rowIterator.hasNext()){
+				 Row row = rowIterator.next();
+				 Iterator<Cell> cellIterator = row.cellIterator();
+				 
+				  HashMap<String , String> map= new LinkedHashMap<>();
+				   int i = 0;
+				 while(cellIterator.hasNext()){
+					 i++;
+					 Cell cell = cellIterator.next();
+					   map.put(Integer.toString(i), cell.getStringCellValue());
+					
+					
+					 
+				 }
+				 listaPiani.add(map) ;
+			 }
+		
 		 }
 		 else if (file.getFileData().getOriginalFilename().endsWith("xlsx")) {
-			 workbook = new XSSFWorkbook(byteInput);
+			 XSSFWorkbook workbook = new XSSFWorkbook(byteInput);
+			 XSSFSheet sheet = workbook.getSheetAt(0);
+			 Iterator<Row> rowIterator = sheet.iterator();
+			 while(rowIterator.hasNext()){
+				 Row row = rowIterator.next();
+				 Iterator<Cell> cellIterator = row.cellIterator();
+				 
+				  HashMap<String , String> map= new LinkedHashMap<>();
+				   int i = 0;
+				 while(cellIterator.hasNext()){
+					 i++;
+					 Cell cell = cellIterator.next();
+					   map.put(Integer.toString(i), cell.getStringCellValue());
+					
+					
+					 
+				 }
+				 listaPiani.add(map) ;
+			 }
 		 }else{
 			 throw new IllegalArgumentException("Received file does not have a standard excel extension.");
 		 }
 		 
 		
-		 for (Row row : workbook.createSheet()){
-			 PianoDIformazioneBean piano = new PianoDIformazioneBean();
-			 piano.setPianoDiFormazione(row.getCell(1).getStringCellValue());
-			 piano.setModulo1(row.getCell(2).getStringCellValue());
-			 piano.setModulo2(row.getCell(3).getStringCellValue());
-			 piano.setAttuatorePIVA(row.getCell(4).getStringCellValue());
-			 listaPiani.add(piano) ;
-		 }
+		 
+			
+		 
 		
 		}catch(Exception e){
 			e.printStackTrace();
+			throw e;
 		}
 		return listaPiani;
 	}

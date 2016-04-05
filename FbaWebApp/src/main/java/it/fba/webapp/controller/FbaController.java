@@ -2,12 +2,18 @@ package it.fba.webapp.controller;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Properties;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
+import org.apache.poi.ss.usermodel.Cell;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationContext;
@@ -29,12 +35,15 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.commons.CommonsMultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import it.fba.webapp.beans.FileBean;
 import it.fba.webapp.beans.PianoDIformazioneBean;
 import it.fba.webapp.beans.UsersBean;
+import it.fba.webapp.dao.PianiFormazioneDao;
 import it.fba.webapp.dao.UsersDao;
 import it.fba.webapp.exception.CustomGenericException;
 import it.fba.webapp.fileInputOutput.ImportServiceExcel;
@@ -50,11 +59,14 @@ public class FbaController {
 	
 	@Autowired
 	FormSecurityValidator validator;
+	
+	
 
 	@RequestMapping(value = { "/welcome**" }, method = RequestMethod.GET)
 	public ModelAndView defaultPage() {
-
+		UsersBean user = new UsersBean();
 		ModelAndView model = new ModelAndView();
+		model.addObject("user", user);
 		model.addObject("title", "Autenticazione Intesa San Paolo FBA");
 		model.addObject("message", "Home");
 		model.setViewName("hello");
@@ -80,7 +92,7 @@ public class FbaController {
 		ModelAndView model = new ModelAndView();
 
 		if (error != null) {
-			model.addObject("error", "Invalid username and password!");
+			model.addObject("error", myProperties.getProperty("pagina.amministratore"));
 		}
 
 		if (logout != null) {
@@ -118,7 +130,7 @@ public class FbaController {
 		UsersBean user = new UsersBean();
 		user.setDataInizioStr(Utils.dataOggi());
 		model.addObject("title", "Nuovo Utente");
-		model.addObject("message", "pagina ad uso esclusivo dell'amministratore");
+		model.addObject("message", myProperties.getProperty("pagina.amministratore"));
 	    model.addObject("disabled", false);
         model.addObject("userForm", user);
 		model.setViewName("addUserForm");
@@ -130,7 +142,7 @@ public class FbaController {
 		@RequestMapping(value = "/adminAddUser", method = RequestMethod.POST)
 		public ModelAndView adminAddUser(@Valid @ModelAttribute("userForm") UsersBean userForm, BindingResult bindingResult, ModelAndView model) {
 			
-			boolean future = true;
+			ApplicationContext context=null;
 			try{
 				
 				 userForm.setDataInizioStr(Utils.dataOggi());
@@ -141,7 +153,7 @@ public class FbaController {
 
 				 validator.userFormValidator(userForm, bindingResult);
 				 if(!bindingResult.hasErrors()){
-							ApplicationContext context = new ClassPathXmlApplicationContext("spring\\spring-jpa.xml","spring\\spring-utils.xml");
+							 context = new ClassPathXmlApplicationContext("spring\\spring-jpa.xml","spring\\spring-utils.xml");
 							UsersDao usersService = (UsersDao) context.getBean("UsersDaoImpl");
 							    UsersBean user =usersService.findUserbyUsername(userForm.getUsername());
 							    if (user!=null){
@@ -154,13 +166,17 @@ public class FbaController {
 									model.addObject("message", "utente inserito correttamente");
 									model.addObject("disabled", true);
 							    }
-								((ConfigurableApplicationContext)context).close();
+								
 							
 						
 				  }
 			}catch(Exception e){
 				e.printStackTrace();
 				throw new CustomGenericException(new Date(), myProperties.getProperty("errore.generale"));
+			}finally{
+				if(context!=null){
+					((ConfigurableApplicationContext)context).close();
+				}
 			}
 			model.addObject("userForm", userForm);
 			model.setViewName("addUserForm");
@@ -188,7 +204,7 @@ public class FbaController {
 			}
 			
 			model.addObject("title", "Gestione Utenti");
-			model.addObject("message", "pagina ad uso esclusivo dell'amministratore");   
+			model.addObject("message", myProperties.getProperty("pagina.amministratore"));   
 			model.addObject("gestioneUserForm", utente);
 			model.addObject("usersList", usersList);
 			model.setViewName("usersTable");
@@ -230,7 +246,7 @@ public class FbaController {
 				
 				Map<String, String> listaStati = Utils.getListaStati(myProperties);
 				modelWiev.addObject("title", "Modifica Utente");
-				modelWiev.addObject("message", "pagina ad uso esclusivo dell'amministratore");
+				modelWiev.addObject("message", myProperties.getProperty("pagina.amministratore"));
 				modelWiev.addObject("listaStati", listaStati);
 				modelWiev.addObject("disabled", false);
 				modelWiev.addObject("userFormModify",utente);
@@ -263,7 +279,7 @@ public class FbaController {
 					}
 					Map<String, String> listaStati = Utils.getListaStati(myProperties);
 					modelWiev.addObject("title", "Modifica Utente");
-					modelWiev.addObject("message", "pagina ad uso esclusivo dell'amministratore");
+					modelWiev.addObject("message", myProperties.getProperty("pagina.amministratore"));
 					modelWiev.addObject("listaStati", listaStati);
 					modelWiev.addObject("disabled", true);
 					modelWiev.addObject("userFormModify",userFormModify);
@@ -277,6 +293,8 @@ public class FbaController {
 				public ModelAndView formUploadPiani() {
 					ModelAndView modelWiev = new ModelAndView();
 					FileBean fileBean = new FileBean();
+					modelWiev.addObject("title", "Upload Piani Di Formazione");
+					modelWiev.addObject("message", "Pagina per il caricamento dei piani di formazione");
 					modelWiev.addObject("fileBean", fileBean);
 					modelWiev.setViewName("pianiFormazioneUpload");
 					return modelWiev;
@@ -284,21 +302,234 @@ public class FbaController {
 				
 				// metodo che elabora il file excel piani di formazione
 				@RequestMapping(value ={ "/adminElaboraUploadPiani","/userElaboraformPiani"}, method = RequestMethod.POST)
-				public ModelAndView elaboraUploadPiani(ModelAndView modelWiev, @ModelAttribute FileBean file ) {
+				public ModelAndView elaboraUploadPiani(HttpServletRequest request,  @ModelAttribute("fileBean") FileBean fileBean) {
+					ModelAndView modelWiev = new ModelAndView();
+					ArrayList<HashMap<String, String>> listaExcel = new ArrayList<>();
 					ArrayList<PianoDIformazioneBean> listaPiani = new ArrayList<>();
+					String righeSbagliate = "";
+					ApplicationContext context=null;
 					try {
+						//FileBean filebean = (FileBean)fileBean;
+						//FileBean fileBean = new FileBean();
+						//fileBean.setFileData(fileData);
 						ImportServiceExcel importService = new ImportServiceExcel();
-						listaPiani = importService.importFile(file);
+						listaExcel = importService.importFile(fileBean);
+						HashMap<String, String> map = new LinkedHashMap<>();
+						Iterator<HashMap<String, String>> hashIterator = listaExcel.listIterator();
+						int i=0;
+						
+						while( hashIterator.hasNext()){
+							i++;
+							map = hashIterator.next();
+							PianoDIformazioneBean pianoFormazione = new PianoDIformazioneBean();
+							pianoFormazione.setUsername(fileBean.getUsername());
+							pianoFormazione.setPianoDiFormazione(map.get("1"));
+							pianoFormazione.setModulo1(map.get("2"));
+							pianoFormazione.setModulo2(map.get("3"));
+							if (map.get("4")!=null){
+								pianoFormazione.setAttuatorePIVA(map.get("4"));
+								if(pianoFormazione.getModulo1().equalsIgnoreCase(pianoFormazione.getModulo2())){
+									righeSbagliate = righeSbagliate + " "+Integer.toString(i); 
+								}
+							}else{
+								righeSbagliate = righeSbagliate + " "+Integer.toString(i); 
+							}
+							
+							if (map.get("5")!=null){
+								righeSbagliate = righeSbagliate + "colonna in piu"+Integer.toString(i);
+							}
+							pianoFormazione.setEnabled("0");
+							listaPiani.add(pianoFormazione);
+						}
+						
+						 context = new ClassPathXmlApplicationContext("spring\\spring-jpa.xml","spring\\spring-utils.xml");
+						 PianiFormazioneDao pianiFormazioneDao = (PianiFormazioneDao) context.getBean("PianiFormazioneDaoImpl");
+						 pianiFormazioneDao.caricaPianiFormazione(listaPiani);
+						 
+						 if (!righeSbagliate.isEmpty()){
+								
+								modelWiev.addObject("error", myProperties.getProperty("errore.piano.formazione")+righeSbagliate);
+								modelWiev.addObject("listaPiani", null);
+								modelWiev.setViewName("pianiDiFormazioneTabella");
+								
+						}else{
+								modelWiev.addObject("listaPiani", listaPiani);
+								modelWiev.setViewName("pianiDiFormazioneTabella");
+						}
 						
 					} catch (Exception e) {
 						// TODO: handle exception
-						e.printStackTrace();
+												e.printStackTrace();
+						modelWiev.addObject("error", myProperties.getProperty("errore.file.excel"));
+						modelWiev.setViewName("pianiFormazioneUpload");
+						
+					}finally{
+						if(context!=null){
+							((ConfigurableApplicationContext)context).close();
+						}
+						
+						
 					}
 					
-					modelWiev.addObject("listaPiani", listaPiani);
-					modelWiev.setViewName("pianiFormazioneUpload");
+					
+					
+					
 					return modelWiev;
 				}
+				
+				@RequestMapping(value ={ "/adminMostraPiani","/userMostraPiani"}, method = RequestMethod.POST)
+				public ModelAndView mostraPiani(HttpServletRequest request,  @ModelAttribute("user") UsersBean user) {
+					ModelAndView modelWiev = new ModelAndView();
+					ArrayList<PianoDIformazioneBean> listaPiani = new ArrayList<>();
+					ApplicationContext context=null;
+					try {
+						 context = new ClassPathXmlApplicationContext("spring\\spring-jpa.xml","spring\\spring-utils.xml");
+						 PianiFormazioneDao pianiFormazioneDao = (PianiFormazioneDao) context.getBean("PianiFormazioneDaoImpl");
+						 listaPiani = pianiFormazioneDao.getAllPiani(user.getUsername());
+					
+					} catch (Exception e) {
+						// TODO: handle exception
+						e.printStackTrace();
+						throw new CustomGenericException(new Date(), myProperties.getProperty("errore.generale"));
+					}finally{
+						if(context!=null){
+							((ConfigurableApplicationContext)context).close();
+						}
+					}	
+					
+						PianoDIformazioneBean piano = new PianoDIformazioneBean();
+						modelWiev.addObject("title", "Tabella Piani  Di Formazione");
+						modelWiev.addObject("message", myProperties.getProperty("piani.formazione.elenco"));
+						modelWiev.addObject("listaPiani", listaPiani);
+						modelWiev.addObject("pianoFormazoneForm",piano);
+						modelWiev.setViewName("pianiDiFormazioneTabella");
+					
+						return modelWiev;
+					}
+				
+				// metodo modifica dati utentie
+				@RequestMapping(value ={"/adminModifyPianoForm","/userModifyPianoForm"} , method = RequestMethod.POST)
+				public ModelAndView modifyPianoForm(ModelMap model, @ModelAttribute PianoDIformazioneBean pianoFormazione) {
+		             
+					ModelAndView modelWiev = new ModelAndView();
+					ApplicationContext context=null;
+					PianoDIformazioneBean pianoDIformazioneBean = new PianoDIformazioneBean();
+					
+					try{
+						context = new ClassPathXmlApplicationContext("spring\\spring-jpa.xml","spring\\spring-utils.xml");
+						PianiFormazioneDao pianiFormazioneDao = (PianiFormazioneDao) context.getBean("PianiFormazioneDaoImpl");
+						
+						pianoDIformazioneBean= pianiFormazioneDao.findPianiFormazione(pianoFormazione);  
+						
+					((ConfigurableApplicationContext)context).close();
+					}catch(Exception e){
+						e.printStackTrace();
+						throw new CustomGenericException(new Date(), myProperties.getProperty("errore.generale"));
+					}finally{
+						if(context!=null){
+							((ConfigurableApplicationContext)context).close();
+						}
+					}	
+					
+					modelWiev.addObject("title", "Modifica Piano Di Formazione");
+					modelWiev.addObject("message", myProperties.getProperty("piani.formazione.modifica"));
+					modelWiev.addObject("pianoFormazioneForm", pianoDIformazioneBean);
+					modelWiev.setViewName("modificaPiano");
+				 return modelWiev;
+
+				}
+				
+				// metodo modifica piano di formazione
+				@RequestMapping(value = {"/adminModifyPiano","/userModifyPiano"} , method = RequestMethod.POST)
+				public ModelAndView modifyPiano(ModelMap model, @ModelAttribute("pianoDIformazioneBean") PianoDIformazioneBean pianoDiFormazione, BindingResult bindingResult) {
+		             
+					ModelAndView modelWiev = new ModelAndView();
+					validator.pianoFormazioneValidator(pianoDiFormazione, bindingResult);
+				ApplicationContext context=null;
+					try{
+						if(!bindingResult.hasErrors()){
+							context = new ClassPathXmlApplicationContext("spring\\spring-jpa.xml","spring\\spring-utils.xml");
+							PianiFormazioneDao pianiFormazioneDao = (PianiFormazioneDao) context.getBean("PianiFormazioneDaoImpl");
+							pianiFormazioneDao.updatePianoDiFormazione(pianoDiFormazione);
+						}   
+					((ConfigurableApplicationContext)context).close();
+					}catch(Exception e){
+						e.printStackTrace();
+						throw new CustomGenericException(new Date(), myProperties.getProperty("errore.generale"));
+					}finally{
+						if(context!=null){
+							((ConfigurableApplicationContext)context).close();
+						}
+					}	
+					modelWiev.addObject("title", "Modifica Piano Di Formazione");
+					modelWiev.addObject("message", myProperties.getProperty("piani.formazione.modifica"));
+					modelWiev.addObject("pianoFormazioneForm", pianoDiFormazione);
+					modelWiev.setViewName("modificaPiano");
+				 return modelWiev;
+
+				}
+				
+				@RequestMapping(value ={ "/adminCancellaPiano","/userCancellaPiano"}, method = RequestMethod.POST)
+				public ModelAndView cancellaPiano(HttpServletRequest request,  @ModelAttribute("pianoDIformazioneBean") PianoDIformazioneBean pianoDIformazioneBean) {
+					ModelAndView modelWiev = new ModelAndView();
+					ArrayList<PianoDIformazioneBean> listaPiani = new ArrayList<>();
+					ApplicationContext context=null;
+					try {
+						 context = new ClassPathXmlApplicationContext("spring\\spring-jpa.xml","spring\\spring-utils.xml");
+						 PianiFormazioneDao pianiFormazioneDao = (PianiFormazioneDao) context.getBean("PianiFormazioneDaoImpl");
+						 pianiFormazioneDao.deletePianoDiFormazione(pianoDIformazioneBean);
+						 pianiFormazioneDao.caricaPianiFormazione(listaPiani);
+					
+					} catch (Exception e) {
+						// TODO: handle exception
+						e.printStackTrace();
+						throw new CustomGenericException(new Date(), myProperties.getProperty("errore.generale"));
+					}finally{
+						if(context!=null){
+							((ConfigurableApplicationContext)context).close();
+						}
+						
+					}	
+						modelWiev.addObject("title", "Tabella Piani  Di Formazione");
+						modelWiev.addObject("message", myProperties.getProperty("piani.formazione.elenco"));
+						modelWiev.addObject("listaPiani", listaPiani);
+						modelWiev.setViewName("pianiDiFormazioneTabella");
+					
+						return modelWiev;
+					}
+				
+				@RequestMapping(value ={ "/adminCancellaTuttiPiani","/userCancellaTuttiPiani"}, method = RequestMethod.POST)
+				public ModelAndView cancellaTuttiPiani(HttpServletRequest request, @ModelAttribute("pianoDIformazioneBean") PianoDIformazioneBean pianoFormazione) {
+					ModelAndView modelWiev = new ModelAndView();
+					ArrayList<PianoDIformazioneBean> listaPiani = new ArrayList<>();
+					ApplicationContext context=null;
+					try {
+						 context = new ClassPathXmlApplicationContext("spring\\spring-jpa.xml","spring\\spring-utils.xml");
+						 PianiFormazioneDao pianiFormazioneDao = (PianiFormazioneDao) context.getBean("PianiFormazioneDaoImpl");
+						 
+						 pianiFormazioneDao.deleteAllPianiDIFormazione(pianoFormazione.getUsername());
+						 pianiFormazioneDao.caricaPianiFormazione(listaPiani);
+					
+					} catch (Exception e) {
+						// TODO: handle exception
+						e.printStackTrace();
+						throw new CustomGenericException(new Date(), myProperties.getProperty("errore.generale"));
+					}finally{
+						if(context!=null){
+							((ConfigurableApplicationContext)context).close();
+						}
+						
+					}	
+						modelWiev.addObject("title", "Tabella Piani  Di Formazione");
+						modelWiev.addObject("message", myProperties.getProperty("piani.formazione.elenco"));
+						modelWiev.addObject("listaPiani", listaPiani);
+						modelWiev.setViewName("pianiDiFormazioneTabella");
+					
+						return modelWiev;
+					}
+				
+				
+
 			
 			
 

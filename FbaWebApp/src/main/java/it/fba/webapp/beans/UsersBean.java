@@ -27,9 +27,6 @@ import org.springframework.format.annotation.DateTimeFormat;
 @Table(name="users")
 public class UsersBean {
 	
-	@Transient
-	@Resource(name="myProperties")
-    private Properties myProperties;
 	
 	@Size(min=2, max=30) 
 	@Column(name="nome")

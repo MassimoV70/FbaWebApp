@@ -2,7 +2,8 @@
 
 <persistence xmlns="http://java.sun.com/xml/ns/persistence"
 version="1.0">
-<persistence-unit name="fbaPersistenceUnit" transaction-type="RESOURCE_LOCAL" >
-<class>it.fba.webapp.beans.UsersBean</class>
-</persistence-unit>
+	<persistence-unit name="fbaPersistenceUnit" transaction-type="RESOURCE_LOCAL" >
+		<class>it.fba.webapp.beans.UsersBean</class>
+		<class>it.fba.webapp.beans.PianoDIformazioneBean</class>
+	</persistence-unit>
 </persistence>

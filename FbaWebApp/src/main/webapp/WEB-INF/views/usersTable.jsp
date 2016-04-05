@@ -23,15 +23,15 @@
 					<td>${listValue.username}</td>
 					<td>${listValue.password}</td>
 					<td><c:choose>
-						    <c:when test="${listValue.enabled==1}"><img src= "resources/images/ok.png" alt="abilitato"/></c:when>
-							<c:otherwise> <img src= "resources/images/notOK.png" alt="disabilitato"/></c:otherwise>
+						    <c:when test="${listValue.enabled==1}"><img src= "resources/images/ok.png" alt="abilitato" title="abilitato"/></c:when>
+							<c:otherwise> <img src= "resources/images/notOK.png" alt="disabilitato" title="disabilitato"/></c:otherwise>
 						</c:choose> </td>
 					<td>${listValue.dataInizioStr}</td>
 					<td>${listValue.dataFineStr}</td>
 					<td>
-						<input type="image"  onclick="gestisciUtente('${listValue.username}','abilita');" value="Indietro" src="resources/images/enable.png" alt="abilit&grave">
-						<input type="image"  onclick="gestisciUtente('${listValue.username}','modifica');" value="Indietro" src= "resources/images/settings.png" alt="modifica">
-						<input type="image"  onclick="gestisciUtente('${listValue.username}','disabilita');" value="Indietro" src= "resources/images/disable.png"  alt="disabilit&grave">
+						<input type="image"  onclick="gestisciUtente('${listValue.username}','abilita');" value="Indietro" src="resources/images/enable.png" alt="abilit&grave" title="abilita">
+						<input type="image"  onclick="gestisciUtente('${listValue.username}','modifica');" value="Indietro" src= "resources/images/settings.png" alt="modifica" title="modifica">
+						<input type="image"  onclick="gestisciUtente('${listValue.username}','disabilita');" value="Indietro" src= "resources/images/disable.png"  alt="disabilit&grave" title="disabilita">
 				
 					</td>
 				   </tr>

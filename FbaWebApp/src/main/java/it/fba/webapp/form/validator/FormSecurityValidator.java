@@ -4,6 +4,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
+import it.fba.webapp.beans.PianoDIformazioneBean;
 import it.fba.webapp.beans.UsersBean;
 import it.fba.webapp.utils.Utils;
 
@@ -34,6 +35,18 @@ public class FormSecurityValidator implements Validator{
 		future = Utils.dataFuture(form.getDataInizio(), form.getDataFine());
 		 if (!future){
 			 errors.rejectValue("dataFineStr", "errors", "Data.futura");
+		 }
+		
+       
+	}
+	
+	public static  void pianoFormazioneValidator(Object pianoFormazione, Errors  errors) {
+		// TODO Auto-generated method stub
+		PianoDIformazioneBean form = (PianoDIformazioneBean)pianoFormazione;
+		
+		 if (form.getModulo1().equalsIgnoreCase(form.getModulo2())){
+			 errors.rejectValue("modulo1", "errors", "Valori.diversi");
+			 errors.rejectValue("modulo2", "errors", "Valori.diversi");
 		 }
 		
        

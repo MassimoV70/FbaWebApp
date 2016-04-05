@@ -7,6 +7,7 @@
 			
 			
 			<input type="button"  onclick="location.href='/FbaWebApp/adminAddUserForm'" value="Aggiungi Utente" >
+			
 			<input type="button"  onclick="location.href='/FbaWebApp/admingetAllUser'" value="Gestisci Utenti" >
 			
 		</c:if>

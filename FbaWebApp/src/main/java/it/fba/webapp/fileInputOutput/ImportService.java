@@ -1,12 +1,13 @@
 package it.fba.webapp.fileInputOutput;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import it.fba.webapp.beans.FileBean;
-import it.fba.webapp.beans.PianoDIformazioneBean;
+
 
 public interface ImportService {
 	
-	public ArrayList<PianoDIformazioneBean> importFile(FileBean file);
+	public ArrayList<HashMap<String, String>> importFile(FileBean file) throws Exception;
 
 }
