@@ -24,6 +24,31 @@ p{
 	font-style: italic;
 }
 
+a {
+    text-decoration: none;
+    color: #0000FF;
+}
+a:link {
+    text-decoration: none;
+    color: #0000FF;
+}
+
+a:visited {
+    text-decoration: none;
+    color: #0000FF;
+}
+
+a:hover {
+    text-decoration: underline;
+    cursor:pointer;
+    color: #0000FF;
+}
+
+a:active {
+    text-decoration: underline;
+    color: #0000FF;
+}
+
 .error {
 	padding: 15px;
 	margin-bottom: 20px;
@@ -136,6 +161,8 @@ input[type=button]:hover {
 	margin-left: 15%
     
 }
+
+
 
 #bottoniDiv {
    text-align: center;

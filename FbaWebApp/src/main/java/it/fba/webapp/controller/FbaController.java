@@ -377,11 +377,12 @@ public class FbaController {
 					return modelWiev;
 				}
 				
-				@RequestMapping(value ={ "/adminMostraPiani","/userMostraPiani"}, method = RequestMethod.POST)
+				@RequestMapping(value ={ "/adminMostraPiani","/userMostraPiani"}, method = RequestMethod.GET)
 				public ModelAndView mostraPiani(HttpServletRequest request,  @ModelAttribute("user") UsersBean user) {
 					ModelAndView modelWiev = new ModelAndView();
 					ArrayList<PianoDIformazioneBean> listaPiani = new ArrayList<>();
 					ApplicationContext context=null;
+					user.setUsername(request.getUserPrincipal().getName());
 					try {
 						 context = new ClassPathXmlApplicationContext("spring\\spring-jpa.xml","spring\\spring-utils.xml");
 						 PianiFormazioneDao pianiFormazioneDao = (PianiFormazioneDao) context.getBean("PianiFormazioneDaoImpl");
@@ -409,7 +410,7 @@ public class FbaController {
 				
 				// metodo modifica dati utentie
 				@RequestMapping(value ={"/adminModifyPianoForm","/userModifyPianoForm"} , method = RequestMethod.POST)
-				public ModelAndView modifyPianoForm(ModelMap model, @ModelAttribute PianoDIformazioneBean pianoFormazione) {
+				public ModelAndView modifyPianoForm(ModelMap model, @ModelAttribute("pianoFormazoneFormModify") PianoDIformazioneBean pianoFormazione) {
 		             
 					ModelAndView modelWiev = new ModelAndView();
 					ApplicationContext context=null;
@@ -434,14 +435,14 @@ public class FbaController {
 					modelWiev.addObject("title", "Modifica Piano Di Formazione");
 					modelWiev.addObject("message", myProperties.getProperty("piani.formazione.modifica"));
 					modelWiev.addObject("pianoFormazioneForm", pianoDIformazioneBean);
-					modelWiev.setViewName("modificaPiano");
+					modelWiev.setViewName("modificaPianoFormazione");
 				 return modelWiev;
 
 				}
 				
 				// metodo modifica piano di formazione
 				@RequestMapping(value = {"/adminModifyPiano","/userModifyPiano"} , method = RequestMethod.POST)
-				public ModelAndView modifyPiano(ModelMap model, @ModelAttribute("pianoDIformazioneBean") PianoDIformazioneBean pianoDiFormazione, BindingResult bindingResult) {
+				public ModelAndView modifyPiano(ModelMap model, @ModelAttribute("pianoFormazoneFormModify") PianoDIformazioneBean pianoDiFormazione, BindingResult bindingResult) {
 		             
 					ModelAndView modelWiev = new ModelAndView();
 					validator.pianoFormazioneValidator(pianoDiFormazione, bindingResult);
@@ -464,7 +465,8 @@ public class FbaController {
 					modelWiev.addObject("title", "Modifica Piano Di Formazione");
 					modelWiev.addObject("message", myProperties.getProperty("piani.formazione.modifica"));
 					modelWiev.addObject("pianoFormazioneForm", pianoDiFormazione);
-					modelWiev.setViewName("modificaPiano");
+					modelWiev.addObject("disabled", true);
+					modelWiev.setViewName("modificaPianoFormazione");
 				 return modelWiev;
 
 				}

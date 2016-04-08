@@ -18,8 +18,8 @@
 				<c:forEach var="listValue" items="${listaPiani}">
 				  <tr>
 					<td>${listValue.pianoDiFormazione}</td>
-					<td><a>${listValue.modulo1}</a></td>
-					<td><a>${listValue.modulo2}</a></td>
+					<td><a onclick="elaboraPiano('${listValue.id}','${listValue.modulo1}','modulo')" title="vai al modulo">${listValue.modulo1}</a></td>
+					<td><a onclick="elaboraPiano('${listValue.id}','${listValue.modulo2}','modulo')" title="vai al modulo">${listValue.modulo2}</a></td>
 					<td>${listValue.attuatorePIVA}</td>
 					<td>${listValue.nomeAllegato1}</td>
 					<td>${listValue.nomeAllegato2}</td>
@@ -32,9 +32,9 @@
 						</c:choose> 
 					</td>					
 					<td>
-						<input type="image"  onclick="rendicontazionePiano('${listValue.id}','rendiconta');" value="Indietro" src= "resources/images/rendicontazione.png" alt="Giustificativi spesa" title="Giustificativi spesa">
-						<input type="image"  onclick="modificaPiano('${listValue.id}','modifica');" value="Indietro" src= "resources/images/settings.png" alt="Modificia piano" title="Modificia piano">
-						<input type="image"  onclick="cancellaPiano('${listValue.id}','cencella');" value="Indietro" src= "resources/images/elimina.png"  alt="Elimina piano" title="Elimina piano">
+						<input type="image"  onclick="elaboraPiano('${listValue.id}','','rendiconta');" value="Indietro" src= "resources/images/rendicontazione.png" alt="Giustificativi spesa" title="Giustificativi spesa">
+						<input type="image"  onclick="elaboraPiano('${listValue.id}','','modifica');" value="Indietro" src= "resources/images/settings.png" alt="Modificia piano" title="Modificia piano">
+						<input type="image"  onclick="elaboraPiano('${listValue.id}','','cencella');" value="Indietro" src= "resources/images/elimina.png"  alt="Elimina piano" title="Elimina piano">
 				
 					</td>
 				   </tr>
@@ -67,31 +67,61 @@
 		<c:url var="urlCancella" value="/userCancellaPiano"></c:url>
 		<c:url var="urlRendiconta" value="/userRendicontaPiano"></c:url>
 	</sec:authorize>
-	<form:form action="${url}" method="post" modelAttribute="pianoFormazoneForm" id="modificaPianoForm" >
-		<form:hidden path="id"  id="idUserNamer" />
+	<form:form action="" method="POST" modelAttribute="pianoFormazoneForm" id="modificaPianoForm" >
+		<form:hidden path="id"  id="idPiano" />
+		<form:hidden path="modulo1"  id="idModulo" />
 		<form:hidden path="username" value="${pageContext.request.userPrincipal.name}"/>
 	</form:form>
-	<form:form action="${urlCancella}" method="post" modelAttribute="pianoFormazoneForm" id="cancellaPianoForm" >
-		<form:hidden path="id"  id="idUserNamer" />
-		<form:hidden path="username" value="${pageContext.request.userPrincipal.name}"/>
-	</form:form>
-	<form:form action="${urlRendiconta}" method="post" modelAttribute="pianoFormazoneForm" id="rendicontaPianoForm" >
-		<form:hidden path="id"  id="idUserNamer" />
-		<form:hidden path="username" value="${pageContext.request.userPrincipal.name}"/>
-	</form:form>
+	<sec:authorize access="hasRole('ROLE_ADMIN')">
+	
 	<script type="text/javascript">
-		function gestisciUtente(id, operazione){
+	
+		function elaboraPiano(id,modulo, operazione){
 		
-			$('#idUserNamer').val(username);
-			$('#idAzione').val(operazione);
-			if (operazione=='modifica'){
-		   	 $("#modificaPianoForm").submit();
+			$('#idPiano').val(id);
+			$('#idModulo').val(modulo);
+			
+			if (operazione=='modulo'){
+				$("#modificaPianoForm").attr('action','/FbaWebApp/adminModifyPianoForm');
+		   	 	$("#modificaPianoForm").submit();
 			}else if(operazione=='modifica'){
-				 $("#cancellaPianoForm").submit();
+				$("#modificaPianoForm").attr('action','/FbaWebApp/adminModifyPianoForm');
+		   	 	$("#modificaPianoForm").submit();
+			}else if(operazione=='modifica'){
+				$("#modificaPianoForm").attr('action','/FbaWebApp/adminModifyPianoForm');
+				$("#modificaPianoForm").submit(); 
 			}else{
-				$("#rendicontaPianoForm").submit();
+				$("#modificaPianoForm").attr('action','/FbaWebApp/adminModifyPianoForm');
+				$("#modificaPianoForm").submit();
 			}
 		}
 		</script>
+	</sec:authorize>
+	<sec:authorize access="hasRole('ROLE_USER')">
+	
+	<script type="text/javascript">
+	
+	function elaboraPiano(id,modulo, operazione){
+		
+		$('#idPiano').val(id);
+		$('#idModulo').val(modulo);
+		
+		if (operazione=='modulo'){
+			$("#modificaPianoForm").attr('action','/FbaWebApp/adminModifyPianoForm');
+	   	 	$("#modificaPianoForm").submit();
+		}else if(operazione=='modifica'){
+			$("#modificaPianoForm").attr('action','/FbaWebApp/adminModifyPianoForm');
+	   	 	$("#modificaPianoForm").submit();
+		}else if(operazione=='modifica'){
+			$("#modificaPianoForm").attr('action','/FbaWebApp/adminModifyPianoForm');
+			$("#modificaPianoForm").submit(); 
+		}else{
+			$("#modificaPianoForm").attr('action','/FbaWebApp/adminModifyPianoForm');
+			$("#modificaPianoForm").submit();
+		}
+	}
+						
+		</script>
+	</sec:authorize>
 </body>
 </html>
