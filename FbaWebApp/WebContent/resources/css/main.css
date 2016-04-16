@@ -9,19 +9,23 @@
 
 h1{
 	color: #000033;
+	 font-family: "Times New Roman", Times, serif;
 }
 
 h2{
 	color: #000033;
+	 font-family: "Times New Roman", Times, serif;
 }
 
 h3{
 	color: #000033;
+	 font-family: "Times New Roman", Times, serif;
 }
 
 p{
 	color: #000033;
 	font-style: italic;
+	font-family: "Times New Roman", Times, serif;
 }
 
 a {
@@ -57,6 +61,7 @@ a:active {
 	color: #a94442;
 	background-color: #f2dede;
 	border-color: #ebccd1;
+	 font-family: "Times New Roman", Times, serif;
 }
 
 .msg {
@@ -67,6 +72,7 @@ a:active {
 	color: #31708f;
 	background-color: #d9edf7;
 	border-color: #bce8f1;
+	 font-family: "Times New Roman", Times, serif;
 }
 
 #login-box {
@@ -83,7 +89,7 @@ label{
     width: auto;
     margin-right: 30px;
    	float: left;
-   	
+   	font-family: "Times New Roman", Times, serif;
    
 }
 
@@ -138,7 +144,7 @@ input[type=password]{
 }
 
 input[type=button] {
-    background-color: #c0c0c0; 
+    background-color: #808080; 
     border: none;
     color: white;
     padding: 15px 32px;

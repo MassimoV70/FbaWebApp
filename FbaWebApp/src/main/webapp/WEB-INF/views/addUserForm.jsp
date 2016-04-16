@@ -52,8 +52,9 @@
 		<br>
 		<div id="funzioniDiv">
 			<input type="button"  onclick="location.href='/FbaWebApp/admin'" value="Indietro" >
-			<input type="button"  onclick="cancellaForm();" value="Cancella" >
+			
 			<c:if test="${disabled ==  false}">
+			  <input type="button"  onclick="cancellaForm();" value="Cancella" >
 			  <input type="button"  onclick="location.href='/FbaWebApp/welcome'" value="Annulla" >
 			</c:if>
 		</div>

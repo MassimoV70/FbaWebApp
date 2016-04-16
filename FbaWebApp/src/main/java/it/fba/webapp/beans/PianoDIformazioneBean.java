@@ -1,12 +1,16 @@
 package it.fba.webapp.beans;
 
+import java.util.Date;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
 @Entity
@@ -19,35 +23,142 @@ public class PianoDIformazioneBean {
 	@Column(name="id")
 	int id;
 	
-	@Transient
-	String idStr;
 	
+	// nome piano
 	@Size(min=2, max=50)
-	@Column(name="nomePiano")
+	@Column(name="nomepiano")
 	String pianoDiFormazione;
 	
+	// tipologia corso
+	@Size(min=2, max=100)
+	@Column(name="tipocorsopiano")
+	String tipoCorsoPiano;
+	
+	// tematica formativa
+	@Size(min=2, max=100)
+	@Column(name="tematicaformativa")
+	String tematicaFormativa;
+	
+	// inizio attivita formativa
+
+	@Column(name="datainizioAtt")
+	Date dataInizioAtt;
+	
+	// inizio attivita formativa front end
+	@NotNull
+	@Transient
+	String dataInizioAttStr;
+	
+	// fine attivita formativa
+	
+	@Column(name="dataFineAtt")
+	Date dataFineAtt;
+	
+	// fine attivita formativa front end
+	@NotNull
+	@Transient
+	String dataFineAttStr;
+	
+	// competitivita impresa innovazione
+	@Column(name="numpartecipanti")
+	String numPartecipanti;
+	
+	// competitivita impresa innovazione
+	@Column(name="compimprinn")
+	String compImprInn;
+	
+	// competitivita settoriale
+	@Column(name="compsett")
+	String compSett;
+	
+	// delocalizzazione internazionalizzazione
+	@Column(name="delocinter")
+	String delocInter;
+	
+	// formazione obbligatoria ex leg
+	@Column(name="formobblexleg")
+	String formObblExLeg;
+	
+	// formazione in ingresso
+	@Column(name="forminingr")
+	String formInIngresso;
+	
+	// mantenimento occupazione
+	@Column(name="mantenimoccup")
+	String mantenimOccup;
+	
+	// manutenzione aggiornamento delle competenze
+	@Column(name="manutaggcomp")
+	String manutAggComp;
+	
+	// mobilita esterna outplacement ricollocazione
+	@Column(name="mobestoutric")
+	String mobEstOutRic;
+	
+	// sviluppo locale
+	@Column(name="sviluppoloc")
+	String sviluppoLoc;
+	
+	// titolo modulo 2
 	@Size(min=2, max=50)
 	@Column(name="modulo1")
 	String modulo1;
 	
+	//modalita formativa modulo 2
+	@NotNull
+	@Column(name="fadmod1")
+	String fadMod1;
+
+	// titolo modulo2
 	@Size(min=0, max=50)
 	@Column(name="modulo2")
 	String modulo2;
 	
+	//modalita formativa modulo 2
+	@NotNull
+	@Column(name="fadmod2")
+	String fadMod2;
+	
+	public String getDataInizioAttStr() {
+		return dataInizioAttStr;
+	}
+	public void setDataInizioAttStr(String dataInizioAttStr) {
+		this.dataInizioAttStr = dataInizioAttStr;
+	}
+	public String getDataFineAttStr() {
+		return dataFineAttStr;
+	}
+	public void setDataFineAttStr(String dataFineAttStr) {
+		this.dataFineAttStr = dataFineAttStr;
+	}
+	// partita iva attuatore
+	@NotNull
 	@Size(min=2, max=50)
 	@Column(name="pivaAttuatore")
 	String attuatorePIVA;
-		
+	
+	// stato piano
+	@NotNull
 	@Column(name="enabled")
 	String enabled;
+	
+	// allegato 1 attuatore
 	@Column(name="nomeAllegato1")
 	String nomeAllegato1;
+	
+	// allegato 2 attuatore
 	@Column(name="nomeAllegato2")
 	String nomeAllegato2;
+	
+	// allegato 3 attuatore
 	@Column(name="nomeAllegato3")
 	String nomeAllegato3;
+	
+	// allegato 4 attuatore
 	@Column(name="nomeAllegato4")
 	String nomeAllegato4;
+	
+	// username
 	@Column(name="username")
 	String username;
 	
@@ -108,12 +219,7 @@ public class PianoDIformazioneBean {
 	public void setId(int id) {
 		this.id = id;
 	}
-	public String getIdStr() {
-		return idStr;
-	}
-	public void setIdStr(String idStr) {
-		this.idStr = idStr;
-	}
+	
 	public String getNomeAllegato1() {
 		return nomeAllegato1;
 	}
@@ -161,6 +267,103 @@ public class PianoDIformazioneBean {
 	}
 	public void setAllegato4(CommonsMultipartFile allegato4) {
 		this.allegato4 = allegato4;
+	}
+	public String getTipoCorsoPiano() {
+		return tipoCorsoPiano;
+	}
+	public void setTipoCorsoPiano(String tipoCorsoPiano) {
+		this.tipoCorsoPiano = tipoCorsoPiano;
+	}
+	public String getTematicaFormativa() {
+		return tematicaFormativa;
+	}
+	public void setTematicaFormativa(String tematicaFormativa) {
+		this.tematicaFormativa = tematicaFormativa;
+	}
+	
+	public String getNumPartecipanti() {
+		return numPartecipanti;
+	}
+	public void setNumPartecipanti(String numPartecipanti) {
+		this.numPartecipanti = numPartecipanti;
+	}
+	public String getCompImprInn() {
+		return compImprInn;
+	}
+	public void setCompImprInn(String compImprInn) {
+		this.compImprInn = compImprInn;
+	}
+	public String getCompSett() {
+		return compSett;
+	}
+	public void setCompSett(String compSett) {
+		this.compSett = compSett;
+	}
+	public String getDelocInter() {
+		return delocInter;
+	}
+	public void setDelocInter(String delocInter) {
+		this.delocInter = delocInter;
+	}
+	public String getFormObblExLeg() {
+		return formObblExLeg;
+	}
+	public void setFormObblExLeg(String formObblExLeg) {
+		this.formObblExLeg = formObblExLeg;
+	}
+	public String getFormInIngresso() {
+		return formInIngresso;
+	}
+	public void setFormInIngresso(String formInIngresso) {
+		this.formInIngresso = formInIngresso;
+	}
+	public String getMantenimOccup() {
+		return mantenimOccup;
+	}
+	public void setMantenimOccup(String mantenimOccup) {
+		this.mantenimOccup = mantenimOccup;
+	}
+	public String getManutAggComp() {
+		return manutAggComp;
+	}
+	public void setManutAggComp(String manutAggComp) {
+		this.manutAggComp = manutAggComp;
+	}
+	public String getMobEstOutRic() {
+		return mobEstOutRic;
+	}
+	public void setMobEstOutRic(String mobEstOutRic) {
+		this.mobEstOutRic = mobEstOutRic;
+	}
+	public String getSviluppoLoc() {
+		return sviluppoLoc;
+	}
+	public void setSviluppoLoc(String sviluppoLoc) {
+		this.sviluppoLoc = sviluppoLoc;
+	}
+	public String getFadMod1() {
+		return fadMod1;
+	}
+	public void setFadMod1(String fadMod1) {
+		this.fadMod1 = fadMod1;
+	}
+	public String getFadMod2() {
+		return fadMod2;
+	}
+	public void setFadMod2(String fadMod2) {
+		this.fadMod2 = fadMod2;
+	}
+	public Date getDataInizioAtt() {
+		return dataInizioAtt;
+	}
+	public void setDataInizioAtt(Date dataInizioAtt) {
+		this.dataInizioAtt = dataInizioAtt;
+	}
+	public Date getDataFineAtt() {
+		return dataFineAtt;
+	}
+	public void setDataFineAtt(Date dataFineAtt) {
+		this.dataFineAtt = dataFineAtt;
 	}
 	
 	

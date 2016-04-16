@@ -11,6 +11,8 @@ import javax.annotation.Resource;
 
 import org.springframework.validation.Errors;
 
+import it.fba.webapp.beans.CalendarioBean;
+import it.fba.webapp.beans.PianoDIformazioneBean;
 import it.fba.webapp.beans.UsersBean;
 
 
@@ -99,6 +101,39 @@ public class Utils {
 		return true;
 		
        
+	}
+	
+	public static ArrayList<PianoDIformazioneBean> pianoFormazioneFormSetting (ArrayList<PianoDIformazioneBean> listaPiani){
+		try{
+			if (listaPiani!=null&&!listaPiani.isEmpty()){
+				for(PianoDIformazioneBean piano :listaPiani ){
+					piano.setDataInizioAttStr(Utils.formattaData(piano.getDataInizioAtt()));
+					piano.setDataInizioAttStr(Utils.formattaData(piano.getDataFineAtt()));
+					
+					
+				}
+			}
+		}catch(Exception e){
+			e.printStackTrace();
+			return null;
+		}
+		return listaPiani;
+	}
+	
+	public static ArrayList<CalendarioBean> calendarioModuloFormSetting (ArrayList<CalendarioBean> listaCalendario){
+		try{
+			if (listaCalendario!=null&&!listaCalendario.isEmpty()){
+				for(CalendarioBean giorno :listaCalendario ){
+					giorno.setDataStr(Utils.formattaData(giorno.getData()));
+					
+					
+				}
+			}
+		}catch(Exception e){
+			e.printStackTrace();
+			return null;
+		}
+		return listaCalendario;
 	}
 
 }

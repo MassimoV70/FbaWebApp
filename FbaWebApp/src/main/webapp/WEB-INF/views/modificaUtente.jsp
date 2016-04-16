@@ -20,8 +20,9 @@
 					<br>
 					<label for="username">Username:</label>
 					<br>
-					<form:input path="username" disabled="${disabled}" id="inputUser" cssClass="inputUser"/>
+					<form:input path="username" disabled="true" id="inputUser" cssClass="inputUser"/>
 					<form:errors path="username" cssClass="error" />
+					<form:hidden path="username"  id="idModulo" />
 					<br>
 					<label for="password">Password:</label>
 					<br>
@@ -60,7 +61,7 @@
 		<div id="bottoniDiv">
 				
 				<input type="button"  onclick="location.href='/FbaWebApp/admingetAllUser'" value="Indietro" >
-				<!-- <input type="button"  onclick="cancellaForm();" value="Cancella" > -->
+				
 				<c:if test="${disabled ==  false}">
 				  <input type="button"  onclick="location.href='/FbaWebApp/welcome'" value="Annulla" >
 				</c:if>

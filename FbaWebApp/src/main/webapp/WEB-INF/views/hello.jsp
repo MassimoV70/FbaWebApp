@@ -16,7 +16,7 @@
 		</script>
 		 
         <P>Vai alla sezionone piani di formazione caricati</P>
-        <input type="button"  onclick="location.href='/FbaWebApp/userMostraPiani'" value="Vissualiza piani di formazione" >
+        <input type="button"  onclick="location.href='/FbaWebApp/userMostraPiani'" value="Visualizza piani di formazione" >
         <br>
 
 		<P>Vai alla sezione caricamento piani di formazione </P>
@@ -38,13 +38,13 @@
 		</script>
 
 		
-		<P>Vai alle funzioalità di amministratore</P>
+		<P>Vai alle funzionalità di amministratore</P>
 		
         <input type="button"  onclick="location.href='/FbaWebApp/admin'" value="Funzionalità Amministratore" >
           <br>
         
         <P>Vai alla sezionone piani di formazione caricati</P>
-        <input type="button"  onclick="location.href='/FbaWebApp/adminMostraPiani'" value="Vissualiza piani di formazione" >
+        <input type="button"  onclick="location.href='/FbaWebApp/adminMostraPiani'" value="Visualizza piani di formazione" >
         <br>
         <P>Vai alla sezione caricamento piani di formazione</P>
         <input type="button"  onclick="location.href='/FbaWebApp/adminformUploadPiani'" value="Carica Piani Di Formazione" >

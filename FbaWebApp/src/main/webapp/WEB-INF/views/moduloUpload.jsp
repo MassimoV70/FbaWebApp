@@ -11,11 +11,14 @@
 	 	<c:url var="urlLavoratori" value="./adminElaboraUploadModuloLavoratori?" />
 	 </sec:authorize>
     
- 	<form:form modelAttribute="fileBean"  action="${url}${_csrf.parameterName}=${_csrf.token}" method="post" enctype="multipart/form-data">
+ 	<form:form modelAttribute="calendarioModuloBean"  action="${url}${_csrf.parameterName}=${_csrf.token}" method="post" enctype="multipart/form-data">
  	     <div id="inputDiv">	
- 	        
+ 	        <h3> ${calendario}</h3>
  	         <form:hidden path="nomeModulo"/>
- 	         <form:hidden path="idProgetto"/>
+ 	         <form:hidden path="idPiano"/>
+ 	          <P>Vai alla sezione calendario caricato</P>
+        		<input type="button"  onclick=" mostraCalendario();" value="Visualizza calendario associato" >
+        		<br>
 	 	     <label for="fileData">Seleziona il file xls o xlsx da caricare:</label>
 			 <br>
 			 <br>
@@ -28,12 +31,16 @@
  	    
  	     
  	</form:form >
- 	
- 	<form:form modelAttribute="fileBean"  action="${urlLavoratori}${_csrf.parameterName}=${_csrf.token}" method="post" enctype="multipart/form-data">
+</div>
+<div id="formDiv"> 	
+ 	<form:form modelAttribute="lavoratoriBean"  action="${urlLavoratori}${_csrf.parameterName}=${_csrf.token}" method="post" enctype="multipart/form-data" id="calendarioForm" >
  	     <div id="inputDiv">	
- 	        
+ 	        <h3> ${lavoratori}</h3>
  	         <form:hidden path="nomeModulo"/>
- 	         <form:hidden path="idProgetto"/>
+ 	         <form:hidden path="idPiano"/>
+ 	          <P>Vai alla sezione lavoratori caricati</P>
+        		<input type="button"  onclick="location.href='/FbaWebApp/userMostraPiani'" value="Visualizza lavoratori associati" >
+        	 <br>
 	 	     <label for="fileData">Seleziona il file xls o xlsx da caricare:</label>
 			 <br>
 			 <br>
@@ -48,12 +55,36 @@
  	</form:form >
 </div>
     
-<div id="bottoniDiv">
-	
-			<input type="button"  onclick="location.href='/FbaWebApp/welcome'" value="Indietro" >
+<sec:authorize access="hasRole('ROLE_ADMIN')">
+	<div id="bottoniDiv">
+		
+				<input type="button"  onclick="location.href='/FbaWebApp/adminMostraPiani'" value="Indietro" >
+					
+	</div>
+	<script type="text/javascript">
+		
+			function mostraCalendario(){
+					$("#calendarioForm").attr('action','/FbaWebApp/adminMostraCalendario');
+			   	 	$("#calendarioForm").submit();
 				
-</div>
-    
+			}
+	</script>
+</sec:authorize>
+<sec:authorize access="hasRole('ROLE_USER')">
+	<div id="bottoniDiv">
+		
+				<input type="button"  onclick="location.href='/FbaWebApp/userMostraPiani'" value="Indietro" >
+					
+	</div>
+	<script type="text/javascript">
+		
+			function mostraCalendario(){
+					$("#calendarioForm").attr('action','/FbaWebApp/userMostraCalendario');
+			   	 	$("#calendarioForm").submit();
+				
+			}
+	</script>
+</sec:authorize>        
     
  
  

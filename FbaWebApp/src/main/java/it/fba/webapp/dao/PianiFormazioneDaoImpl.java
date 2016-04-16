@@ -43,7 +43,7 @@ public class PianiFormazioneDaoImpl implements PianiFormazioneDao{
 	public void updatePianoDiFormazione(PianoDIformazioneBean pianoDiFormazioneBean) throws SQLException {
 		// TODO Auto-generated method stub
 		Query query = entityManager.createQuery(queryUpdatePiano);
-		@SuppressWarnings("unchecked")
+		
 		
 	   int i= query.setParameter("nomePianoStr", pianoDiFormazioneBean.getPianoDiFormazione()).setParameter("modulo1", pianoDiFormazioneBean.getModulo1())
 	         .setParameter("modulo2", pianoDiFormazioneBean.getModulo2()).setParameter("pivaAtt", pianoDiFormazioneBean.getAttuatorePIVA())

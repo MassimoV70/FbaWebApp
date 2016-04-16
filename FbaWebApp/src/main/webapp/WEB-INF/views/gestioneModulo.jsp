@@ -15,13 +15,13 @@
 			}
 		</script>
 		 
-       <P>Vai alla sezionone calendario caricato</P>
+       <P>Vai alla sezione calendario caricato</P>
         <input type="button"  onclick="location.href='/FbaWebApp/adminMostraPiani'" value="Visualizza Calendario Modulo" >
         <br>
         <P>Vai alla sezione di caricamento del calendario</P>
         <input type="button"  onclick="location.href='/FbaWebApp/adminformUploadPiani'" value="Carica Calendario Modulo" >
         <br>
-         <P>Vai alla sezionone lavoratori associati</P>
+         <P>Vai alla sezione lavoratori associati</P>
         <input type="button"  onclick="location.href='/FbaWebApp/adminMostraPiani'" value="Vissualiza lavoratori" >
         <br>
         <P>Vai alla sezione di caricamento lavoratori associati</P>

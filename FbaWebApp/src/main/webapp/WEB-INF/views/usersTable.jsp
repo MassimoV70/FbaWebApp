@@ -29,9 +29,9 @@
 					<td>${listValue.dataInizioStr}</td>
 					<td>${listValue.dataFineStr}</td>
 					<td>
-						<input type="image"  onclick="gestisciUtente('${listValue.username}','abilita');" value="Indietro" src="resources/images/enable.png" alt="abilit&grave" title="abilita">
+						<input type="image"  onclick="gestisciUtente('${listValue.username}','abilita');" value="Abilita" src="resources/images/enable.png" alt="abilit&grave" title="abilita">
 						<input type="image"  onclick="gestisciUtente('${listValue.username}','modifica');" value="Indietro" src= "resources/images/settings.png" alt="modifica" title="modifica">
-						<input type="image"  onclick="gestisciUtente('${listValue.username}','disabilita');" value="Indietro" src= "resources/images/disable.png"  alt="disabilit&grave" title="disabilita">
+						<input type="image"  onclick="gestisciUtente('${listValue.username}','disabilita');" value="disabilita" src= "resources/images/disable.png"  alt="disabilit&grave" title="disabilita">
 				
 					</td>
 				   </tr>
@@ -47,8 +47,8 @@
 		<input type="button"  onclick="location.href='/FbaWebApp/admin'" value="Indietro" >
 		<input type="button"  onclick="location.href='/FbaWebApp/login'" value="Annulla" >
 	</div>
-	<c:url var="url" value="adminGestisciUtente"></c:url>
-	<form:form action="${url}" method="post" modelAttribute="gestioneUserForm" id="gestioneUserForm" commandName="gestioneUserForm">
+	<c:url var="url" value="/adminGestisciUtente"></c:url>
+	<form:form action="${url}" method="GET" modelAttribute="gestioneUserForm" id="gestioneUserForm" >
 	 <form:hidden path="username"  id="idUserNamer" />
 	 <form:hidden path="azione"  id="idAzione" />
 	
@@ -56,7 +56,7 @@
 	</form:form>
 	<script type="text/javascript">
 		function gestisciUtente(username, operazione){
-		
+			
 			$('#idUserNamer').val(username);
 			$('#idAzione').val(operazione);
 		    $("#gestioneUserForm").submit();
