@@ -11,6 +11,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.format.annotation.NumberFormat;
 import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
 @Entity
@@ -40,26 +41,31 @@ public class PianoDIformazioneBean {
 	String tematicaFormativa;
 	
 	// inizio attivita formativa
-
+	@DateTimeFormat(pattern="dd/mm/yyyy")
 	@Column(name="datainizioAtt")
 	Date dataInizioAtt;
 	
 	// inizio attivita formativa front end
 	@NotNull
 	@Transient
+	@DateTimeFormat(pattern="dd/mm/yyyy")
 	String dataInizioAttStr;
 	
 	// fine attivita formativa
 	
+	@DateTimeFormat(pattern="dd/mm/yyyy")
 	@Column(name="dataFineAtt")
 	Date dataFineAtt;
 	
 	// fine attivita formativa front end
 	@NotNull
 	@Transient
+	@DateTimeFormat(pattern="dd/mm/yyyy")
 	String dataFineAttStr;
 	
-	// competitivita impresa innovazione
+	// numero partecipanti
+	@NotNull
+	@NumberFormat
 	@Column(name="numpartecipanti")
 	String numPartecipanti;
 	
@@ -104,7 +110,7 @@ public class PianoDIformazioneBean {
 	@Column(name="modulo1")
 	String modulo1;
 	
-	//modalita formativa modulo 2
+	//modalita formativa modulo 1
 	@NotNull
 	@Column(name="fadmod1")
 	String fadMod1;

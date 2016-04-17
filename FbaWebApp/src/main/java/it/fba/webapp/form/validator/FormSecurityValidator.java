@@ -1,5 +1,8 @@
 package it.fba.webapp.form.validator;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
@@ -12,7 +15,9 @@ import it.fba.webapp.utils.Utils;
 public class FormSecurityValidator implements Validator{
 	
 	
-
+	private static final String TIME24HOURS_PATTERN = 
+            "([01]?[0-9]|2[0-3]):[0-5][0-9]";
+	private Pattern pattern;
 	
 
 	
@@ -52,7 +57,16 @@ public class FormSecurityValidator implements Validator{
        
 	}
 	
-	
+	public boolean isTime (String ora)throws Exception{
+		boolean bau = false;
+		try{
+			bau = Pattern.matches(TIME24HOURS_PATTERN, ora);
+		}catch(Exception e){
+			e.printStackTrace();
+			throw e;
+		}
+		return bau;
+	}
 
 	@Override
 	public boolean supports(Class<?> arg0) {

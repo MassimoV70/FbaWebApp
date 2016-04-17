@@ -24,6 +24,8 @@ public class Utils {
 	
     final static SimpleDateFormat formatter= new SimpleDateFormat("dd/MM/yyyy");
 	final static SimpleDateFormat formatterDB= new SimpleDateFormat("dd/MM/yyyy");
+	private static final String TIME24HOURS_PATTERN = 
+            "([01]?[0-9]|2[0-3]):[0-5][0-9]";
 	
 	public static String dataOggi() {
 		Date dataOggi=null;
@@ -108,7 +110,7 @@ public class Utils {
 			if (listaPiani!=null&&!listaPiani.isEmpty()){
 				for(PianoDIformazioneBean piano :listaPiani ){
 					piano.setDataInizioAttStr(Utils.formattaData(piano.getDataInizioAtt()));
-					piano.setDataInizioAttStr(Utils.formattaData(piano.getDataFineAtt()));
+					piano.setDataFineAttStr(Utils.formattaData(piano.getDataFineAtt()));
 					
 					
 				}
@@ -135,5 +137,41 @@ public class Utils {
 		}
 		return listaCalendario;
 	}
+	
+   public static Map<String, String> getListaSiNo(Properties myProperty) {
+		
+		Map<String, String> listaSelezione = new LinkedHashMap<String, String>();
+		listaSelezione.put(myProperty.getProperty("selezione.si"), "Si");
+		listaSelezione.put(myProperty.getProperty("selezione.no"), "No");
+		return listaSelezione;
+		
+	}
+   
+   public static Map<String, String> getListaFadSiNo(Properties myProperty) {
+		
+		Map<String, String> listaSelezioneFad = new LinkedHashMap<String, String>();
+		listaSelezioneFad.put(myProperty.getProperty("fad.si"), "FAD");
+		listaSelezioneFad.put(myProperty.getProperty("fad.no"), "AULA");
+		return listaSelezioneFad;
+		
+	}
+   
+   public static PianoDIformazioneBean singoloPianoFormazioneFormSetting (PianoDIformazioneBean piano){
+		try{
+			if (piano.getDataInizioAtt()!=null){
+				piano.setDataInizioAttStr(Utils.formattaData(piano.getDataInizioAtt()));
+			}
+			if (piano.getDataFineAtt()!=null){
+				piano.setDataFineAttStr(Utils.formattaData(piano.getDataFineAtt()));
+			}
+			
+		}catch(Exception e){
+			e.printStackTrace();
+			return null;
+		}
+		return piano;
+	}
+   
+   
 
 }

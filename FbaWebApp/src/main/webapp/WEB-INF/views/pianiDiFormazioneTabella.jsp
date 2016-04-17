@@ -7,27 +7,27 @@
 					<td>Piano Di Formazione</td>
 					<td>Tipologia corso</td>
 					<td>Tematica formativa</td>
-					<td>Inizio attivita</td>
-					<td>Fine attivita</td>
-					<td>Numero partecipanti</td>
-					<td>Comp. impresa\innovazione</td>
-					<td>Comp. settoriale</td>
-					<td>Deloc.\Intern.</td>
+					<td>Inizio att.</td>
+					<td>Fine att.</td>
+					<td>Num. part.</td>
+					<td>Comp. imp. inn.</td>
+					<td>Comp. sett.</td>
+					<td>Del. Int.</td>
 					<td>Form. obbl.</td>
 					<td>Form. ingr.</td>
 					<td>Mant. occup.</td>
 					<td>Manut. agg. comp.</td>
-					<td>Mob. est.\outpl.\ricoll.\</td>
-					<td>Sviluppo loc.</td>
+					<td>Mob. est. out. ric.</td>
+					<td>Svil. loc.</td>
 					<td>Modulo 1</td>
-					<td>Mod. form. modulo1</td>
+					<td>Mod. form. mod1</td>
 					<td>Modulo 2</td>
-					<td>Mod. form. modulo2</td>
-					<td>Attuatore P.IVA</td>
-					<td>Allegato1</td>
-					<td>Allegato2</td>
-					<td>Allegato3</td>
-					<td>Allegato4</td>
+					<td>Mod. form. mod2</td>
+					<td>Att. P.IVA</td>
+					<td>Allegato 1</td>
+					<td>Allegato 2</td>
+					<td>Allegato 3</td>
+					<td>Allegato 4</td>
 					<td>Stato</td>
 					<td>Azioni</td>
 				</tr>

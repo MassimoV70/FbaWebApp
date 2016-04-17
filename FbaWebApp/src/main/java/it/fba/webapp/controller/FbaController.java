@@ -396,7 +396,8 @@ public class FbaController {
 						context = new ClassPathXmlApplicationContext("spring\\spring-jpa.xml","spring\\spring-utils.xml");
 						PianiFormazioneDao pianiFormazioneDao = (PianiFormazioneDao) context.getBean("PianiFormazioneDaoImpl");
 						
-						pianoDIformazioneBean= pianiFormazioneDao.findPianiFormazione(pianoFormazione);  
+						pianoDIformazioneBean= pianiFormazioneDao.findPianiFormazione(pianoFormazione);
+						pianoDIformazioneBean = Utils.singoloPianoFormazioneFormSetting(pianoDIformazioneBean);
 						
 					((ConfigurableApplicationContext)context).close();
 					}catch(Exception e){
@@ -407,7 +408,10 @@ public class FbaController {
 							((ConfigurableApplicationContext)context).close();
 						}
 					}	
-					
+					Map<String, String> listaSelezione = Utils.getListaSiNo(myProperties);
+					Map<String, String> listaSelezioneFad = Utils.getListaFadSiNo(myProperties);
+					modelWiev.addObject("listaSelezione", listaSelezione);
+					modelWiev.addObject("listaSelezioneFad", listaSelezioneFad);
 					modelWiev.addObject("title", "Modifica Piano Di Formazione");
 					modelWiev.addObject("message", myProperties.getProperty("piani.formazione.modifica"));
 					modelWiev.addObject("pianoFormazioneForm", pianoDIformazioneBean);
@@ -425,6 +429,8 @@ public class FbaController {
 				ApplicationContext context=null;
 					try{
 						if(!bindingResult.hasErrors()){
+							pianoDiFormazione.setDataInizioAtt(Utils.dataDBFormatter(pianoDiFormazione.getDataInizioAttStr()));
+							pianoDiFormazione.setDataFineAtt(Utils.dataDBFormatter(pianoDiFormazione.getDataFineAttStr()));
 							context = new ClassPathXmlApplicationContext("spring\\spring-jpa.xml","spring\\spring-utils.xml");
 							PianiFormazioneDao pianiFormazioneDao = (PianiFormazioneDao) context.getBean("PianiFormazioneDaoImpl");
 							pianiFormazioneDao.updatePianoDiFormazione(pianoDiFormazione);
