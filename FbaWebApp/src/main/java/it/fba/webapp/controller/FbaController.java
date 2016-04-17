@@ -443,7 +443,11 @@ public class FbaController {
 						if(context!=null){
 							((ConfigurableApplicationContext)context).close();
 						}
-					}	
+					}
+					Map<String, String> listaSelezione = Utils.getListaSiNo(myProperties);
+					Map<String, String> listaSelezioneFad = Utils.getListaFadSiNo(myProperties);
+					modelWiev.addObject("listaSelezione", listaSelezione);
+					modelWiev.addObject("listaSelezioneFad", listaSelezioneFad);
 					modelWiev.addObject("title", "Modifica Piano Di Formazione");
 					modelWiev.addObject("message", myProperties.getProperty("piani.formazione.modifica"));
 					modelWiev.addObject("pianoFormazioneForm", pianoDiFormazione);
