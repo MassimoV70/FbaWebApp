@@ -7,6 +7,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
+import it.fba.webapp.beans.CalendarioBean;
+import it.fba.webapp.beans.LavoratoriBean;
 import it.fba.webapp.beans.PianoDIformazioneBean;
 import it.fba.webapp.beans.UsersBean;
 import it.fba.webapp.utils.Utils;
@@ -57,7 +59,7 @@ public class FormSecurityValidator implements Validator{
        
 	}
 	
-	public boolean isTime (String ora)throws Exception{
+	public static boolean isTime (String ora)throws Exception{
 		boolean bau = false;
 		try{
 			bau = Pattern.matches(TIME24HOURS_PATTERN, ora);
@@ -66,6 +68,82 @@ public class FormSecurityValidator implements Validator{
 			throw e;
 		}
 		return bau;
+	}
+	
+	public static  void calendarioValidator(Object calendarioBean, Errors  errors) throws Exception {
+		// TODO Auto-generated method stub
+		CalendarioBean calendario = (CalendarioBean)calendarioBean;
+		try{
+			if (calendario.getInizioMattina().equalsIgnoreCase("assente")&
+				!calendario.getFineMattina().equalsIgnoreCase("assente")||
+				!calendario.getInizioMattina().equalsIgnoreCase("assente")&
+				 calendario.getFineMattina().equalsIgnoreCase("assente")){
+				
+						 errors.rejectValue("inizioMattina", "errors", "Not.interval"); 
+						 errors.rejectValue("fineMattina", "errors", "Not.interval"); 
+					 
+			}else{
+				 if (!calendario.getInizioMattina().equalsIgnoreCase("assente")){
+					 if (!isTime(calendario.getInizioMattina())){
+						 errors.rejectValue("inizioMattina", "errors", "Not.time"); 
+					 }
+					 
+				 }
+				 if (!calendario.getFineMattina().equalsIgnoreCase("assente")){
+					 if (!isTime(calendario.getFineMattina())){
+						 errors.rejectValue("fineMattina", "errors", "Not.time"); 
+					 }
+					 
+				 }
+			}
+			
+			if (calendario.getInizioPomeriggio().equalsIgnoreCase("assente")&
+					!calendario.getFinePomeriggio().equalsIgnoreCase("assente")||
+					calendario.getInizioPomeriggio().equalsIgnoreCase("assente")&
+					!calendario.getFinePomeriggio().equalsIgnoreCase("assente")){
+					
+							 errors.rejectValue("inizioMattina", "errors", "Not.interval"); 
+							 errors.rejectValue("finePomeriggio", "errors", "not.interval"); 
+						 
+			}else{
+			
+					 if (!calendario.getInizioPomeriggio().equalsIgnoreCase("assente")){
+						 if (!isTime(calendario.getInizioPomeriggio())){
+							 errors.rejectValue("inizioPomeriggio", "errors", "Not.time"); 
+						 }
+						 
+					 }
+					 if (!calendario.getFinePomeriggio().equalsIgnoreCase("assente")){
+						 if (!isTime(calendario.getFinePomeriggio())){
+							 errors.rejectValue("finePomeriggio", "errors", "not.time"); 
+						 }
+						 
+					 }
+			}
+		}catch(Exception e){
+			e.printStackTrace();
+			throw e;
+		}
+       
+	}
+	
+	public static  void lavoratoriValidator(Object lavoratoriBean, Errors  errors) throws Exception {
+		
+		LavoratoriBean lavoratore = (LavoratoriBean ) lavoratoriBean;
+		try {
+            if(lavoratore.getMatricola()!=null&!lavoratore.getMatricola().isEmpty()){
+            	errors.rejectValue("matricola", "errors", "Notnull"); 
+			}
+			if(lavoratore.getOrePresenza()!=null&!lavoratore.getOrePresenza().isEmpty()){
+				errors.rejectValue("orePresenza", "errors", "Notnull"); 
+			}
+			
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+			throw e;
+		}
+		
 	}
 
 	@Override

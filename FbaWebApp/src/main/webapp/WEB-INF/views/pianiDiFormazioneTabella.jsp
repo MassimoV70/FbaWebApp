@@ -93,9 +93,9 @@
 								<c:otherwise> <img src= "resources/images/notOK.png" alt="disabilitato" title="disabilitato"/></c:otherwise>
 						</c:choose>
 					</td> 
-					<td><a onclick="elaboraPiano('${listValue.id}','${listValue.modulo1}','modulo')" title="vai al modulo">${listValue.modulo1}</a></td>
+					<td><a onclick="elaboraPiano('${listValue.id}','${listValue.modulo1}','${listValue.fadMod1}','modulo')" title="vai al modulo">${listValue.modulo1}</a></td>
 					<td>${listValue.fadMod1}</td>
-					<td><a onclick="elaboraPiano('${listValue.id}','${listValue.modulo2}','modulo')" title="vai al modulo">${listValue.modulo2}</a></td>
+					<td><a onclick="elaboraPiano('${listValue.id}','${listValue.modulo2}','${listValue.fadMod2}','modulo')" title="vai al modulo">${listValue.modulo2}</a></td>
 					<td>${listValue.fadMod2}</td>
 					<td>${listValue.attuatorePIVA}</td>
 					<td>${listValue.nomeAllegato1}</td>
@@ -109,10 +109,10 @@
 						</c:choose> 
 					</td>					
 					<td>
-						<input type="image"  onclick="elaboraPiano('${listValue.id}','','allega');" value="Allega" src= "resources/images/pdf.png" alt="Allegati attuatore" title="Allegati attuatore">
-						<input type="image"  onclick="elaboraPiano('${listValue.id}','','rendiconta');" value="Rendiconta" src= "resources/images/rendicontazione.png" alt="Giustificativi spesa" title="Giustificativi spesa">
-						<input type="image"  onclick="elaboraPiano('${listValue.id}','','modifica');" value="Modifica" src= "resources/images/settings.png" alt="Modificia piano" title="Modificia piano">
-						<input type="image"  onclick="elaboraPiano('${listValue.id}','','cencella');" value="Cancella" src= "resources/images/elimina.png"  alt="Elimina piano" title="Elimina piano">
+						<input type="image"  onclick="elaboraPiano('${listValue.id}','','','allega');" value="Allega" src= "resources/images/pdf.png" alt="Allegati attuatore" title="Allegati attuatore">
+						<input type="image"  onclick="elaboraPiano('${listValue.id}','','','rendiconta');" value="Rendiconta" src= "resources/images/rendicontazione.png" alt="Giustificativi spesa" title="Giustificativi spesa">
+						<input type="image"  onclick="elaboraPiano('${listValue.id}','','','modifica');" value="Modifica" src= "resources/images/settings.png" alt="Modificia piano" title="Modificia piano">
+						<input type="image"  onclick="elaboraPiano('${listValue.id}','','','cencella');" value="Cancella" src= "resources/images/elimina.png"  alt="Elimina piano" title="Elimina piano">
 				
 					</td>
 				   </tr>
@@ -148,16 +148,18 @@
 	<form:form action="" method="POST" modelAttribute="pianoFormazioneForm" id="modificaPianoForm" >
 		<form:hidden path="id"  id="idPiano" />
 		<form:hidden path="modulo1"  id="idModulo" />
+		<form:hidden path="fadMod1"  id="idTipoModulo" />
 		<form:hidden path="username" value="${pageContext.request.userPrincipal.name}"/>
 	</form:form>
 	<sec:authorize access="hasRole('ROLE_ADMIN')">
 	
 	<script type="text/javascript">
 	
-		function elaboraPiano(id,modulo, operazione){
+		function elaboraPiano(id,modulo,tipoModulo, operazione){
 		
 			$('#idPiano').val(id);
 			$('#idModulo').val(modulo);
+			$('#idTipoModulo').val(modulo);
 			
 			if (operazione=='modulo'){
 				$("#modificaPianoForm").attr('action','/FbaWebApp/adminGestioneModulo');

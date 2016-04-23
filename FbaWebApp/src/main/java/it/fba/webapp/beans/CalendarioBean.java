@@ -7,7 +7,10 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
 @Entity
@@ -18,19 +21,24 @@ import org.springframework.web.multipart.commons.CommonsMultipartFile;
 public class CalendarioBean {
 	
 	@Id
+	@NotNull
 	@Column(name="id")
 	int id;
-	
+	@NotNull
 	@Column(name="idPiano")
 	int idPiano;
 	
+	@Size(min=2, max=100)
 	@Column(name="nomemodulo")
 	String nomeModulo;
+	
 	
 	@Column(name="data")
 	Date data;
 	
 	@Transient
+	@NotNull
+	@DateTimeFormat(pattern="dd/mm/yyyy")
 	String dataStr;
 	
 	@Column(name="iniziomattina")
@@ -45,6 +53,7 @@ public class CalendarioBean {
 	@Column(name="finepomeriggio")
 	String finePomeriggio;
 	
+	@NotNull
 	@Column(name="stato")
 	String stato;
 	

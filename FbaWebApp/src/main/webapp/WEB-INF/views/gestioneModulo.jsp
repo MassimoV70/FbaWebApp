@@ -1,4 +1,4 @@
-<%@ include file="header.jsp" %>
+<%-- <%@ include file="header.jsp" %>
 
 <div id="formDiv">
     <sec:authorize access="hasRole('ROLE_USER')">
@@ -57,4 +57,4 @@
 	</sec:authorize>
 </div>
 </body>
-</html>
+</html> --%>

@@ -5,7 +5,9 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 
+import it.fba.webapp.beans.CalendarioBean;
 import it.fba.webapp.beans.FileBean;
+import it.fba.webapp.beans.LavoratoriBean;
 import it.fba.webapp.beans.PianoDIformazioneBean;
 import it.fba.webapp.fileInputOutput.ImportServiceExcel;
 import it.fba.webapp.utils.Utils;
@@ -77,6 +79,83 @@ public class ExcelValidator {
 			valore = "FAD";
 		}
 		return valore;
+	}
+	
+	public static ArrayList<CalendarioBean> listaCalendarioValidator (ArrayList<HashMap<String, String>> listaExcel, CalendarioBean calendarioBean)throws Exception {
+		ArrayList<CalendarioBean> listaCalendario = new ArrayList<>();
+		try{
+		
+		HashMap<String, String> map = new LinkedHashMap<>();
+		Iterator<HashMap<String, String>> hashIterator = listaExcel.listIterator();
+		int i=0;
+		while( hashIterator.hasNext()){
+			i++;
+			map = hashIterator.next();
+			CalendarioBean calendario = new CalendarioBean();
+			calendario.setIdPiano(calendarioBean.getIdPiano());
+			calendario.setStato("1");
+			calendario.setNomeModulo(calendarioBean.getNomeModulo());
+			calendario.setDataStr(map.get("1"));
+			calendario.setData(Utils.dataDBFormatter(calendario.getDataStr()));
+			calendario.setInizioMattina(map.get("2"));
+			calendario.setFineMattina(map.get("3"));
+			calendario.setInizioPomeriggio(map.get("4"));
+			if (map.get("5")!=null){
+					calendario.setFinePomeriggio(map.get("5"));
+			}else{
+				calendario.setStato("0");
+			}
+			if (map.get("6")!=null){
+				calendario.setStato("0");
+			}
+				//validazione bean per vedere se i dati inseriti nel file sono corretti.
+				
+		
+			listaCalendario.add(calendario);
+			
+		}
+	}catch(Exception e){
+		e.printStackTrace();
+		throw e;
+	}
+		return listaCalendario;
+	}
+	
+	public static ArrayList<LavoratoriBean> listaLavoratoriValidator (ArrayList<HashMap<String, String>> listaExcel, LavoratoriBean lavoratoriBean)throws Exception {
+		ArrayList<LavoratoriBean> listaLavoratori = new ArrayList<>();
+		try{
+		
+		HashMap<String, String> map = new LinkedHashMap<>();
+		Iterator<HashMap<String, String>> hashIterator = listaExcel.listIterator();
+		int i=0;
+		while( hashIterator.hasNext()){
+			i++;
+			map = hashIterator.next();
+			LavoratoriBean lavoratore = new LavoratoriBean();
+			lavoratore.setIdPiano(lavoratoriBean.getIdPiano());
+			lavoratore.setStato("1");
+			lavoratore.setNomeModulo(lavoratoriBean.getNomeModulo());
+			lavoratore.setMatricola(map.get("1"));
+			lavoratore.setOrePresenza(map.get("2"));
+			if (map.get("3")!=null){
+				lavoratore.setEsitoTest(map.get("3"));
+			}else{
+				lavoratore.setStato("0");
+			}
+			if (map.get("4")!=null){
+				lavoratore.setStato("0");
+			}
+				//validazione bean per vedere se i dati inseriti nel file sono corretti.
+				
+		
+			listaLavoratori.add(lavoratore);
+			
+		}
+	}catch(Exception e){
+		e.printStackTrace();
+		throw e;
+	}
+		return listaLavoratori;
 	}
 
 }

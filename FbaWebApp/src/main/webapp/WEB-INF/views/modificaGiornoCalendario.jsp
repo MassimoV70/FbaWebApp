@@ -5,10 +5,15 @@
 	
 	<div id="formDiv">
 		
-			<c:url var="url" value="/adminModificaGiorno" />
+			<sec:authorize access="hasRole('ROLE_ADMIN')">
+				<c:url var="url" value="/adminModificaGiorno" />
+			</sec:authorize>
+			<sec:authorize access="hasRole('ROLE_USER')">
+				<c:url var="url" value="/userModificaGiorno" />
+			</sec:authorize>
 		
 		
-			<form:form action="${url}" method="post" modelAttribute="calendarioBeanForm" id="idCalendarioBeanForm" >
+			<form:form action="${url}" method="post" modelAttribute="calendarioBeanForm" id="idCalendarioBeanForm" commandName="calendarioBeanForm">
 			 	<div id="inputDiv">	
 			 		<form:hidden path="id"  id="id" />
 			 		<form:hidden path="idPiano"  id="idPiano"/>
