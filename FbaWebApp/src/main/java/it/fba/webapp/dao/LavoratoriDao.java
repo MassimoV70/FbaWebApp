@@ -19,5 +19,7 @@ public interface LavoratoriDao {
 	void deleteAllLavoratori (LavoratoriBean lavoratoriBean)throws SQLException;
 	
 	ArrayList<LavoratoriBean> getAllLavoratori(LavoratoriBean lavoratoriBean) throws SQLException;
+	
+	void deleteLavoratoriPiano (LavoratoriBean lavoratoriBean)throws SQLException;
 
 }

@@ -25,6 +25,7 @@ public class LavoratoriDaoImpl implements LavoratoriDao{
 						  + "set l.matricola= :matricolaStr, l.orePresenza= :orePresenzaStr, l.esitoTest= :esitoTestStr, l.stato= :statoStr "
 						  + "where l.id= :idStr"; 
 	private final String queryDeleteLavoratori = "Delete from LavoratoriBean l where l.nomeModulo= :nomeModuloStr and l.idPiano= :idPianoStr";
+	private final String queryDeleteLavoratoriPiano = "Delete from LavoratoriBean l where  l.idPiano= :idPianoStr";
 
 	@Override
 	public LavoratoriBean findLavoratore(LavoratoriBean lavoratoriBean) throws SQLException {
@@ -77,6 +78,15 @@ public class LavoratoriDaoImpl implements LavoratoriDao{
 		
 		ArrayList<LavoratoriBean> resultList = (ArrayList<LavoratoriBean>)query.setParameter("idPianoStr", lavoratoriBean.getIdPiano()).setParameter("nomemoduloStr", lavoratoriBean.getNomeModulo()).getResultList();
 		return resultList;
+	}
+
+	@Override
+	public void deleteLavoratoriPiano(LavoratoriBean lavoratoriBean) throws SQLException {
+		// TODO Auto-generated method stub
+		Query query = entityManager.createQuery(queryDeleteLavoratoriPiano);
+		int i= query.setParameter("idPianoStr", lavoratoriBean.getIdPiano()).executeUpdate();
+		
+		
 	}
 	
 	

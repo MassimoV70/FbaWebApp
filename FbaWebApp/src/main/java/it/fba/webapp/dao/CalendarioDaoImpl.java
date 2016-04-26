@@ -28,6 +28,7 @@ public class CalendarioDaoImpl implements CalendarioDao {
 						  + "c.inizioPomeriggio= :inizioPomeriggioStr, c.finePomeriggio= :finePomeriggioStr, c.stato= :statoStr "
 						  + "where c.id= :idStr"; 
 	private final String queryDeleteCalendario = "Delete from CalendarioBean where c.nomeModulo= :nomeModuloStr and c.idPiano= :idPianoStr";
+	private final String queryDeleteCalendariPiano = "Delete from CalendarioBean c where  c.idPiano= :idPianoStr";
 	
 	@Override
 	public CalendarioBean findGiornoCalendario(CalendarioBean calendarioBean) throws SQLException {
@@ -86,6 +87,16 @@ public class CalendarioDaoImpl implements CalendarioDao {
 		
 		ArrayList<CalendarioBean> resultList = (ArrayList<CalendarioBean>)query.setParameter("idPianoStr", calendarioBean.getIdPiano()).setParameter("nomemoduloStr", calendarioBean.getNomeModulo()).getResultList();
 		return resultList;
+	}
+
+	@Override
+	public void deleteCalednariPiano(CalendarioBean calendarioBean) throws SQLException {
+		// TODO Auto-generated method stub
+		Query query = entityManager.createQuery(queryDeleteCalendariPiano);
+		
+		// TODO Auto-generated method stub
+		int i= query.setParameter("idPianoStr", calendarioBean.getIdPiano()).executeUpdate();
+		
 	}
 	
 	

@@ -32,6 +32,7 @@ public class PianiFormazioneDaoImpl implements PianiFormazioneDao{
 										  + "p.manutAggComp= :manutAggCompStr, p.mobEstOutRic= :mobEstOutRicStr, p.sviluppoLoc= :sviluppoLocStr,"
 										  + "p.modulo1= :modulo1, p.fadMod1= :fadMod1Str, p.modulo2= :modulo2, p.fadMod2= :fadMod2Str, p.attuatorePIVA= :pivaAtt "
 										  + "where id= :idStr and username= :usernameStr";
+	private final String queryDeletePiano = "Delete from PianoDIformazioneBean p  where id= :idStr";
 
 	@Override
 	public void caricaPianiFormazione(ArrayList<PianoDIformazioneBean> listaPiani) throws SQLException {
@@ -67,8 +68,10 @@ public class PianiFormazioneDaoImpl implements PianiFormazioneDao{
 	@Override
 	public void deletePianoDiFormazione(PianoDIformazioneBean pianoDiFormazione) throws SQLException {
 		// TODO Auto-generated method stub
-		entityManager.find(PianoDIformazioneBean.class, pianoDiFormazione.getId());
-		entityManager.remove(pianoDiFormazione);
+		Query query = entityManager.createQuery(queryDeletePiano);
+		int i= query.setParameter("idStr", pianoDiFormazione.getId()).executeUpdate();
+//		entityManager.find(PianoDIformazioneBean.class, pianoDiFormazione.getId());
+//		entityManager.remove(pianoDiFormazione);
 	}
 
 	

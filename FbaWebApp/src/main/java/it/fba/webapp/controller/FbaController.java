@@ -3,19 +3,15 @@ package it.fba.webapp.controller;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Properties;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
-import org.apache.poi.ss.usermodel.Cell;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -24,21 +20,13 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.ObjectError;
-import org.springframework.validation.Validator;
-import org.springframework.web.bind.WebDataBinder;
-import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.multipart.commons.CommonsMultipartFile;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import it.fba.webapp.beans.CalendarioBean;
 import it.fba.webapp.beans.FileBean;
@@ -58,7 +46,9 @@ import it.fba.webapp.utils.Utils;
 
 @Controller
 public class FbaController {
-
+	
+	private static final Logger logger = Logger.getLogger(FbaController.class);
+	
 	@Resource(name="myProperties")
 	private Properties myProperties;
 	
@@ -71,6 +61,7 @@ public class FbaController {
 	public ModelAndView defaultPage() {
 		UsersBean user = new UsersBean();
 		ModelAndView model = new ModelAndView();
+		logger.debug("Add Your Application specific Log Messages here");
 		model.addObject("user", user);
 		model.addObject("title", "Autenticazione Intesa San Paolo FBA");
 		model.addObject("message", "Home");
@@ -177,6 +168,7 @@ public class FbaController {
 				  }
 			}catch(Exception e){
 				e.printStackTrace();
+				logger.error(e.getMessage());
 				throw new CustomGenericException(new Date(), myProperties.getProperty("errore.generale"));
 			}finally{
 				if(context!=null){
@@ -205,6 +197,7 @@ public class FbaController {
 					((ConfigurableApplicationContext)context).close();
 			}catch(Exception e){
 				e.printStackTrace();
+				logger.error(e.getMessage());
 				throw new CustomGenericException(new Date(), myProperties.getProperty("errore.generale"));
 			}
 			
@@ -243,6 +236,7 @@ public class FbaController {
 					((ConfigurableApplicationContext)context).close();
 				}catch(Exception e){
 					e.printStackTrace();
+					logger.error(e.getMessage());
 					throw new CustomGenericException(new Date(), myProperties.getProperty("errore.generale"));
 				}
 				if(!gestioneUserForm.getAzione().equalsIgnoreCase(myProperties.getProperty("modifica.utente"))){
@@ -284,6 +278,7 @@ public class FbaController {
 						}
 					}catch(Exception e){
 						e.printStackTrace();
+						logger.error(e.getMessage());
 						throw new CustomGenericException(new Date(), myProperties.getProperty("errore.generale"));
 					}
 					Map<String, String> listaStati = Utils.getListaStati(myProperties);
@@ -336,10 +331,11 @@ public class FbaController {
 						
 					} catch (Exception e) {
 						// TODO: handle exception
-												e.printStackTrace();
-						modelWiev.addObject("error", myProperties.getProperty("errore.file.excel"));
+						e.printStackTrace();
+						logger.error(e.getMessage());
+						modelWiev.addObject("errorMessage", myProperties.getProperty("errore.file.excel"));
 						modelWiev.setViewName("pianiFormazioneUpload");
-						
+						return modelWiev;
 					}finally{
 						if(context!=null){
 							((ConfigurableApplicationContext)context).close();
@@ -368,6 +364,7 @@ public class FbaController {
 					} catch (Exception e) {
 						// TODO: handle exception
 						e.printStackTrace();
+						logger.error(e.getMessage());
 						throw new CustomGenericException(new Date(), myProperties.getProperty("errore.generale"));
 					}finally{
 						if(context!=null){
@@ -403,6 +400,7 @@ public class FbaController {
 					((ConfigurableApplicationContext)context).close();
 					}catch(Exception e){
 						e.printStackTrace();
+						logger.error(e.getMessage());
 						throw new CustomGenericException(new Date(), myProperties.getProperty("errore.generale"));
 					}finally{
 						if(context!=null){
@@ -439,6 +437,7 @@ public class FbaController {
 					((ConfigurableApplicationContext)context).close();
 					}catch(Exception e){
 						e.printStackTrace();
+						logger.error(e.getMessage());
 						throw new CustomGenericException(new Date(), myProperties.getProperty("errore.generale"));
 					}finally{
 						if(context!=null){
@@ -464,14 +463,26 @@ public class FbaController {
 					ArrayList<PianoDIformazioneBean> listaPiani = new ArrayList<>();
 					ApplicationContext context=null;
 					try {
+						 CalendarioBean calendario = new CalendarioBean();
+						 LavoratoriBean lavoratori = new LavoratoriBean();
+						 calendario.setIdPiano(pianoDIformazioneBean.getId());
+						 lavoratori.setIdPiano(pianoDIformazioneBean.getId());
 						 context = new ClassPathXmlApplicationContext("spring\\spring-jpa.xml","spring\\spring-utils.xml");
 						 PianiFormazioneDao pianiFormazioneDao = (PianiFormazioneDao) context.getBean("PianiFormazioneDaoImpl");
+						 CalendarioDao calendarioDao = (CalendarioDao) context.getBean("CalendarioDaoImpl");
+						 LavoratoriDao lavoratoriDao = (LavoratoriDao) context.getBean("LavoratoriDaoImpl");
+						 calendarioDao.deleteCalednariPiano(calendario);
+						 lavoratoriDao.deleteLavoratoriPiano(lavoratori);
 						 pianiFormazioneDao.deletePianoDiFormazione(pianoDIformazioneBean);
-						 pianiFormazioneDao.caricaPianiFormazione(listaPiani);
+						 UsersBean user = new UsersBean();
+						 user.setUsername(request.getUserPrincipal().getName());
+						 listaPiani = pianiFormazioneDao.getAllPiani(user.getUsername());
+						 listaPiani = Utils.pianoFormazioneFormSetting(listaPiani);
 					
 					} catch (Exception e) {
 						// TODO: handle exception
 						e.printStackTrace();
+						logger.error(e.getMessage());
 						throw new CustomGenericException(new Date(), myProperties.getProperty("errore.generale"));
 					}finally{
 						if(context!=null){
@@ -479,9 +490,11 @@ public class FbaController {
 						}
 						
 					}	
+					 PianoDIformazioneBean pianoFormazioneForm = new PianoDIformazioneBean();
 						modelWiev.addObject("title", "Tabella Piani  Di Formazione");
 						modelWiev.addObject("message", myProperties.getProperty("piani.formazione.elenco"));
 						modelWiev.addObject("listaPiani", listaPiani);
+						modelWiev.addObject("pianoFormazioneForm", pianoFormazioneForm);
 						modelWiev.setViewName("pianiDiFormazioneTabella");
 					
 						return modelWiev;
@@ -502,6 +515,7 @@ public class FbaController {
 					} catch (Exception e) {
 						// TODO: handle exception
 						e.printStackTrace();
+						logger.error(e.getMessage());
 						throw new CustomGenericException(new Date(), myProperties.getProperty("errore.generale"));
 					}finally{
 						if(context!=null){
@@ -540,6 +554,7 @@ public class FbaController {
 						 }
 						}catch(Exception e){
 							e.printStackTrace();
+							logger.error(e.getMessage());
 							throw new CustomGenericException(new Date(), myProperties.getProperty("errore.generale"));
 						}
 						finally{
@@ -588,7 +603,8 @@ public class FbaController {
 						 
 					} catch (Exception e) {
 						// TODO: handle exception
-												e.printStackTrace();
+						e.printStackTrace();
+						logger.error(e.getMessage());
 						modelWiev.addObject("errorMessage", myProperties.getProperty("errore.file.excel"));
 						modelWiev.setViewName("moduloUpload");
 						return modelWiev;
@@ -627,6 +643,7 @@ public class FbaController {
 					} catch (Exception e) {
 						// TODO: handle exception
 						e.printStackTrace();
+						logger.error(e.getMessage());
 						throw new CustomGenericException(new Date(), myProperties.getProperty("errore.generale"));
 					}finally{
 						if(context!=null){
@@ -670,6 +687,7 @@ public class FbaController {
 					((ConfigurableApplicationContext)context).close();
 					}catch(Exception e){
 						e.printStackTrace();
+						logger.error(e.getMessage());
 						throw new CustomGenericException(new Date(), myProperties.getProperty("errore.generale"));
 					}finally{
 						if(context!=null){
@@ -705,6 +723,7 @@ public class FbaController {
 					
 					}catch(Exception e){
 						e.printStackTrace();
+						logger.error(e.getMessage());
 						throw new CustomGenericException(new Date(), myProperties.getProperty("errore.generale"));
 					}finally{
 						if(context!=null){
@@ -739,6 +758,7 @@ public class FbaController {
 					((ConfigurableApplicationContext)context).close();
 					}catch(Exception e){
 						e.printStackTrace();
+						logger.error(e.getMessage());
 						throw new CustomGenericException(new Date(), myProperties.getProperty("errore.generale"));
 					}finally{
 						if(context!=null){
@@ -785,7 +805,8 @@ public class FbaController {
 						 
 					} catch (Exception e) {
 						// TODO: handle exception
-												e.printStackTrace();
+						e.printStackTrace();
+						logger.error(e.getMessage());
 						modelWiev.addObject("errorMessage", myProperties.getProperty("errore.file.excel"));
 						modelWiev.setViewName("moduloUpload");
 						return modelWiev;
@@ -828,6 +849,7 @@ public class FbaController {
 					} catch (Exception e) {
 						// TODO: handle exception
 						e.printStackTrace();
+						logger.error(e.getMessage());
 						throw new CustomGenericException(new Date(), myProperties.getProperty("errore.generale"));
 					}finally{
 						if(context!=null){
@@ -869,6 +891,7 @@ public class FbaController {
 					((ConfigurableApplicationContext)context).close();
 					}catch(Exception e){
 						e.printStackTrace();
+						logger.error(e.getMessage());
 						throw new CustomGenericException(new Date(), myProperties.getProperty("errore.generale"));
 					}finally{
 						if(context!=null){
@@ -904,6 +927,7 @@ public class FbaController {
 					((ConfigurableApplicationContext)context).close();
 					}catch(Exception e){
 						e.printStackTrace();
+						logger.error(e.getMessage());
 						throw new CustomGenericException(new Date(), myProperties.getProperty("errore.generale"));
 					}finally{
 						if(context!=null){
@@ -939,6 +963,7 @@ public class FbaController {
 					((ConfigurableApplicationContext)context).close();
 					}catch(Exception e){
 						e.printStackTrace();
+						logger.error(e.getMessage());
 						throw new CustomGenericException(new Date(), myProperties.getProperty("errore.generale"));
 					}finally{
 						if(context!=null){

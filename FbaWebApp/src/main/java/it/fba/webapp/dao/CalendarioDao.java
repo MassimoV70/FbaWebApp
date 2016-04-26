@@ -19,5 +19,7 @@ public interface CalendarioDao {
 	void deleteAllCalednari (CalendarioBean calendarioBean)throws SQLException;
 	
 	ArrayList<CalendarioBean> getAllCalednario(CalendarioBean calendarioBean) throws SQLException;
+	
+	void deleteCalednariPiano (CalendarioBean calendarioBean)throws SQLException;
 
 }

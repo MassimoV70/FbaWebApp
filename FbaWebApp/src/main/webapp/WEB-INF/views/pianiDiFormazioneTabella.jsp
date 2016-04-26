@@ -1,5 +1,5 @@
 <%@ include file="header.jsp" %>
-<div class="CSSTableGenerator" >
+<div class="CSSTableGenerator"   >
 	<table>
 		<c:if test="${not empty listaPiani}">
 	
@@ -112,7 +112,7 @@
 						<input type="image"  onclick="elaboraPiano('${listValue.id}','','','allega');" value="Allega" src= "resources/images/pdf.png" alt="Allegati attuatore" title="Allegati attuatore">
 						<input type="image"  onclick="elaboraPiano('${listValue.id}','','','rendiconta');" value="Rendiconta" src= "resources/images/rendicontazione.png" alt="Giustificativi spesa" title="Giustificativi spesa">
 						<input type="image"  onclick="elaboraPiano('${listValue.id}','','','modifica');" value="Modifica" src= "resources/images/settings.png" alt="Modificia piano" title="Modificia piano">
-						<input type="image"  onclick="elaboraPiano('${listValue.id}','','','cencella');" value="Cancella" src= "resources/images/elimina.png"  alt="Elimina piano" title="Elimina piano">
+						<input type="image"  onclick="elaboraPiano('${listValue.id}','','','cancella');" value="Cancella" src= "resources/images/elimina.png"  alt="Elimina piano" title="Elimina piano">
 				
 					</td>
 				   </tr>
@@ -121,6 +121,7 @@
 			   
 			</c:if>
 	</table> 
+	
 	</div>
 	<div id="bottoniDiv">
 	            <br>
@@ -151,6 +152,27 @@
 		<form:hidden path="fadMod1"  id="idTipoModulo" />
 		<form:hidden path="username" value="${pageContext.request.userPrincipal.name}"/>
 	</form:form>
+	
+	<script type="text/javascript">
+	 /*  $(function() {
+		    $( "#dialog-confirm" ).dialog({
+		      resizable: false,
+		      height:140,
+		      modal: true,
+		      buttons: {
+		        "Elimina piano": function() {
+		          $( this ).dialog( "close" );
+		        },
+		        Cancel: function() {
+		          $( this ).dialog( "close" );
+		        }
+		      }
+		    });
+		  }); */
+	</script>
+	
+	
+	
 	<sec:authorize access="hasRole('ROLE_ADMIN')">
 	
 	<script type="text/javascript">
@@ -167,8 +189,8 @@
 			}else if(operazione=='modifica'){
 				$("#modificaPianoForm").attr('action','/FbaWebApp/adminModifyPianoForm');
 		   	 	$("#modificaPianoForm").submit();
-			}else if(operazione=='modifica'){
-				$("#modificaPianoForm").attr('action','/FbaWebApp/adminModifyPianoForm');
+			}else if(operazione=='cancella'){
+				$("#modificaPianoForm").attr('action','/FbaWebApp/adminCancellaPiano');
 				$("#modificaPianoForm").submit(); 
 			}else{
 				$("#modificaPianoForm").attr('action','/FbaWebApp/adminModifyPianoForm');
@@ -192,16 +214,19 @@
 		}else if(operazione=='modifica'){
 			$("#modificaPianoForm").attr('action','/FbaWebApp/userModifyPianoForm');
 	   	 	$("#modificaPianoForm").submit();
-		}else if(operazione=='modifica'){
-			$("#modificaPianoForm").attr('action','/FbaWebApp/adminModifyPianoForm');
+		}else if(operazione=='cancella'){
+			$("#modificaPianoForm").attr('action','/FbaWebApp/userCancellaPiano');
 			$("#modificaPianoForm").submit(); 
 		}else{
-			$("#modificaPianoForm").attr('action','/FbaWebApp/adminModifyPianoForm');
+			$("#modificaPianoForm").attr('action','/FbaWebApp/userModifyPianoForm');
 			$("#modificaPianoForm").submit();
 		}
 	}
 						
 		</script>
 	</sec:authorize>
+	<!-- <div id="dialog-confirm" title="Empty the recycle bin?">
+ 		 <p><span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 20px 0;"></span>Il piano, i calendari e i lavoratori collegati verranno eliminati definitivamente. Sei sicuro?</p>
+	</div> -->
 </body>
 </html>
