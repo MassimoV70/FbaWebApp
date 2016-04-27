@@ -1,5 +1,6 @@
 package it.fba.webapp.form.validator;
 
+import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -47,13 +48,13 @@ public class FormSecurityValidator implements Validator{
        
 	}
 	
-	public static  void pianoFormazioneValidator(Object pianoFormazione, Errors  errors) {
+	public static  void pianoFormazioneValidator(Object pianoFormazione, Errors  errors, Properties myProperties) {
 		// TODO Auto-generated method stub
 		PianoDIformazioneBean form = (PianoDIformazioneBean)pianoFormazione;
 		
 		 if (form.getModulo1().equalsIgnoreCase(form.getModulo2())){
-			 errors.rejectValue("modulo1", "errors", "Valori.diversi");
-			 errors.rejectValue("modulo2", "errors", "Valori.diversi");
+			 errors.rejectValue("modulo1", "errors",myProperties.getProperty("Valori.diversi"));
+			 errors.rejectValue("modulo2", "errors", myProperties.getProperty("Valori.diversi"));
 		 }
 		
        
@@ -70,7 +71,7 @@ public class FormSecurityValidator implements Validator{
 		return bau;
 	}
 	
-	public static  void calendarioValidator(Object calendarioBean, Errors  errors) throws Exception {
+	public static  void calendarioValidator(Object calendarioBean, Errors  errors, Properties myProperties) throws Exception {
 		// TODO Auto-generated method stub
 		CalendarioBean calendario = (CalendarioBean)calendarioBean;
 		try{
@@ -79,19 +80,19 @@ public class FormSecurityValidator implements Validator{
 				!calendario.getInizioMattina().equalsIgnoreCase("assente")&
 				 calendario.getFineMattina().equalsIgnoreCase("assente")){
 				
-						 errors.rejectValue("inizioMattina", "errors", "Not.interval"); 
-						 errors.rejectValue("fineMattina", "errors", "Not.interval"); 
+						 errors.rejectValue("inizioMattina", "errors", myProperties.getProperty("Not.interval")); 
+						 errors.rejectValue("fineMattina", "errors",  myProperties.getProperty("Not.interval")); 
 					 
 			}else{
 				 if (!calendario.getInizioMattina().equalsIgnoreCase("assente")){
 					 if (!isTime(calendario.getInizioMattina())){
-						 errors.rejectValue("inizioMattina", "errors", "Not.time"); 
+						 errors.rejectValue("inizioMattina", "errors", myProperties.getProperty("Not.time")); 
 					 }
 					 
 				 }
 				 if (!calendario.getFineMattina().equalsIgnoreCase("assente")){
 					 if (!isTime(calendario.getFineMattina())){
-						 errors.rejectValue("fineMattina", "errors", "Not.time"); 
+						 errors.rejectValue("fineMattina", "errors", myProperties.getProperty("Not.time")); 
 					 }
 					 
 				 }
@@ -102,20 +103,20 @@ public class FormSecurityValidator implements Validator{
 					calendario.getInizioPomeriggio().equalsIgnoreCase("assente")&
 					!calendario.getFinePomeriggio().equalsIgnoreCase("assente")){
 					
-							 errors.rejectValue("inizioMattina", "errors", "Not.interval"); 
-							 errors.rejectValue("finePomeriggio", "errors", "not.interval"); 
+							 errors.rejectValue("inizioMattina", "errors",  myProperties.getProperty("Not.interval")); 
+							 errors.rejectValue("finePomeriggio", "errors",  myProperties.getProperty("Not.interval")); 
 						 
 			}else{
 			
 					 if (!calendario.getInizioPomeriggio().equalsIgnoreCase("assente")){
 						 if (!isTime(calendario.getInizioPomeriggio())){
-							 errors.rejectValue("inizioPomeriggio", "errors", "Not.time"); 
+							 errors.rejectValue("inizioPomeriggio", "errors", myProperties.getProperty("Not.time")); 
 						 }
 						 
 					 }
 					 if (!calendario.getFinePomeriggio().equalsIgnoreCase("assente")){
 						 if (!isTime(calendario.getFinePomeriggio())){
-							 errors.rejectValue("finePomeriggio", "errors", "not.time"); 
+							 errors.rejectValue("finePomeriggio", "errors", myProperties.getProperty("Not.time")); 
 						 }
 						 
 					 }

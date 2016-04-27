@@ -41,6 +41,7 @@ public class CalendarioBean {
 	@DateTimeFormat(pattern="dd/mm/yyyy")
 	String dataStr;
 	
+	
 	@Column(name="iniziomattina")
 	String inizioMattina;
 	

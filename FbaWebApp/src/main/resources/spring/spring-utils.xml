@@ -14,6 +14,7 @@
 		  <property name="locations">
 		    <list>
 		      <value>classpath*:properties/constants.properties</value>
+		      <value>classpath*:properties/messages.properties</value>
 		    </list>
 		  </property>	
 	</bean>

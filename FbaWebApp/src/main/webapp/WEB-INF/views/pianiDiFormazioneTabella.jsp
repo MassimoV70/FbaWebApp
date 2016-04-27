@@ -181,7 +181,7 @@
 		
 			$('#idPiano').val(id);
 			$('#idModulo').val(modulo);
-			$('#idTipoModulo').val(modulo);
+			$('#idTipoModulo').val(tipoModulo);
 			
 			if (operazione=='modulo'){
 				$("#modificaPianoForm").attr('action','/FbaWebApp/adminGestioneModulo');

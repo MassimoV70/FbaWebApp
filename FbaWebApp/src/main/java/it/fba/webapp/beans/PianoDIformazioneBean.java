@@ -64,8 +64,9 @@ public class PianoDIformazioneBean {
 	String dataFineAttStr;
 	
 	// numero partecipanti
-	@NotNull
+
 	@NumberFormat
+	@Size(min=1, max=100)
 	@Column(name="numpartecipanti")
 	String numPartecipanti;
 	
@@ -111,17 +112,17 @@ public class PianoDIformazioneBean {
 	String modulo1;
 	
 	//modalita formativa modulo 1
-	@NotNull
+	@Size(min=1, max=50)
 	@Column(name="fadmod1")
 	String fadMod1;
 
 	// titolo modulo2
-	@Size(min=0, max=50)
+	@Size(min=2, max=50)
 	@Column(name="modulo2")
 	String modulo2;
 	
 	//modalita formativa modulo 2
-	@NotNull
+	@Size(min=1, max=50)
 	@Column(name="fadmod2")
 	String fadMod2;
 	

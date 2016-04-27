@@ -46,6 +46,7 @@
 					<form:input path="dataInizioStr" disabled="${disabled}" id="datepicker" cssClass="inputUser"/>
 					<form:errors path="dataInizioStr" cssClass="error" />
 					<br>
+					<form:hidden path="dataInizioStr"  id="inputUser" />
 					<label for="dataFineStr">Data Fine Attivit&agrave:</label>
 					<br>
 					<form:input path="dataFineStr" disabled="${disabled}" id="datepicker1" cssClass="inputUser"/>

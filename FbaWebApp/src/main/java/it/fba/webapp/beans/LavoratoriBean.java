@@ -32,11 +32,11 @@ public class LavoratoriBean {
 	@Column(name="matricola")
 	String matricola;
 	
-	@NotNull
+	@Size(min=1, max=100)
 	@Column(name="orepresenza")
 	String orePresenza;
 	
-	@NotNull
+	@Size(min=1, max=100)
 	@Column(name="esitotest")
 	String esitoTest;
 	

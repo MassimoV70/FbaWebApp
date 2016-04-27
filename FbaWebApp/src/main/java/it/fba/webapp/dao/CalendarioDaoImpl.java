@@ -27,7 +27,7 @@ public class CalendarioDaoImpl implements CalendarioDao {
 						  + "set c.data= :dataStr, c.inizioMattina= :inizioMattinaStr, c.fineMattina= :fineMattinaStr, "
 						  + "c.inizioPomeriggio= :inizioPomeriggioStr, c.finePomeriggio= :finePomeriggioStr, c.stato= :statoStr "
 						  + "where c.id= :idStr"; 
-	private final String queryDeleteCalendario = "Delete from CalendarioBean where c.nomeModulo= :nomeModuloStr and c.idPiano= :idPianoStr";
+	private final String queryDeleteCalendario = "Delete from CalendarioBean c where c.nomeModulo= :nomeModuloStr and c.idPiano= :idPianoStr";
 	private final String queryDeleteCalendariPiano = "Delete from CalendarioBean c where  c.idPiano= :idPianoStr";
 	
 	@Override

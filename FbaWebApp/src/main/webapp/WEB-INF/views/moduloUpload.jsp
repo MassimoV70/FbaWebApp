@@ -16,20 +16,23 @@
  	        <h3> ${calendario}</h3>
  	         <form:hidden path="nomeModulo"/>
  	         <form:hidden path="idPiano"/>
+ 	           <c:if test="${!disabled}">
  	          <P>Vai alla sezione calendario caricato</P>
         		<input type="button"  onclick="mostraCalendario();" value="Visualizza calendario associato"  >
         		<br>
+       
 	 	     <label for="fileData">Seleziona il file xls o xlsx da caricare:</label>
 			 <br>
 			 <br>
-			 <form:input  type="file"  path="fileData" id="fileData" disabled="${disabled}"/>
+			 <form:input  type="file"  path="fileData" id="fileData"/>
 			  <br>
-		</div>	
+		    </c:if>
+		 </div> 
 		     <br>
+		     <c:if test="${!disabled}">
  	    	 <input type="submit" />
-			
- 	    
- 	     
+			 </c:if>
+ 	   
  	</form:form >
 </div>
 <div id="formDiv"> 	

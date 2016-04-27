@@ -261,8 +261,11 @@ public class FbaController {
 		             
 					//ModelAndView modelWiev = new ModelAndView();
 					UsersBean utente = new UsersBean();
-					 validator.userFormValidator(userFormModify, bindingResult);
+					 
 					try{
+						userFormModify.setDataInizio(Utils.dataDBFormatter(userFormModify.getDataInizioStr()));
+						userFormModify.setDataFine(Utils.dataDBFormatter(userFormModify.getDataFineStr()));
+						 validator.userFormValidator(userFormModify, bindingResult);
 						if(!bindingResult.hasErrors()){
 							ApplicationContext context = new ClassPathXmlApplicationContext("spring\\spring-jpa.xml","spring\\spring-utils.xml");
 							UsersDao usersService = (UsersDao) context.getBean("UsersDaoImpl");
@@ -287,6 +290,8 @@ public class FbaController {
 					modelWiev.addObject("listaStati", listaStati);
 					if(!bindingResult.hasErrors()){
 						modelWiev.addObject("disabled", true);
+					}else{
+						modelWiev.addObject("disabled", false);
 					}
 					modelWiev.addObject("userFormModify",userFormModify);
 					modelWiev.setViewName("modificaUtente");
@@ -424,7 +429,7 @@ public class FbaController {
 				public ModelAndView modifyPiano(ModelMap model, @ModelAttribute("pianoFormazioneForm") PianoDIformazioneBean pianoDiFormazione, BindingResult bindingResult) {
 		             
 					ModelAndView modelWiev = new ModelAndView();
-					validator.pianoFormazioneValidator(pianoDiFormazione, bindingResult);
+					validator.pianoFormazioneValidator(pianoDiFormazione, bindingResult,myProperties);
 				ApplicationContext context=null;
 					try{
 						if(!bindingResult.hasErrors()){
@@ -433,6 +438,32 @@ public class FbaController {
 							context = new ClassPathXmlApplicationContext("spring\\spring-jpa.xml","spring\\spring-utils.xml");
 							PianiFormazioneDao pianiFormazioneDao = (PianiFormazioneDao) context.getBean("PianiFormazioneDaoImpl");
 							pianiFormazioneDao.updatePianoDiFormazione(pianoDiFormazione);
+						
+							// cancellazioni degli eventuali calendari dei moduli diventati fad
+							ArrayList<CalendarioBean> listaCalendario = new ArrayList<>();
+							CalendarioBean calendarioModuloBean = new CalendarioBean();
+							calendarioModuloBean.setIdPiano(pianoDiFormazione.getId());
+							CalendarioDao calendarioDao = (CalendarioDao) context.getBean("CalendarioDaoImpl");
+							if (pianoDiFormazione.getFadMod1().equalsIgnoreCase("fad")){
+								calendarioModuloBean.setNomeModulo(pianoDiFormazione.getModulo1());
+								listaCalendario = calendarioDao.getAllCalednario(calendarioModuloBean);
+							    if (listaCalendario!=null&&!listaCalendario.isEmpty()){
+									 // cancello il calendario che era aula e adesso è diventato fad
+									 calendarioDao.deleteAllCalednari(calendarioModuloBean);
+									 
+								 }
+							}
+							
+							if (pianoDiFormazione.getFadMod2().equalsIgnoreCase("fad")){
+								listaCalendario = null;
+								calendarioModuloBean.setNomeModulo(pianoDiFormazione.getModulo2());
+								listaCalendario = calendarioDao.getAllCalednario(calendarioModuloBean);
+								 if (listaCalendario!=null&&!listaCalendario.isEmpty()){
+									 // cancello il calendario che era aula e adesso è diventato fad
+									 calendarioDao.deleteAllCalednari(calendarioModuloBean);
+									 
+								 }
+							}
 						}   
 					((ConfigurableApplicationContext)context).close();
 					}catch(Exception e){
@@ -451,7 +482,11 @@ public class FbaController {
 					modelWiev.addObject("title", "Modifica Piano Di Formazione");
 					modelWiev.addObject("message", myProperties.getProperty("piani.formazione.modifica"));
 					modelWiev.addObject("pianoFormazioneForm", pianoDiFormazione);
-					modelWiev.addObject("disabled", true);
+					if (!bindingResult.hasErrors()){
+						modelWiev.addObject("disabled", true);
+					}else{
+						modelWiev.addObject("disabled", false);
+					}
 					modelWiev.setViewName("modificaPianoFormazione");
 				 return modelWiev;
 
@@ -569,10 +604,12 @@ public class FbaController {
 					lavoratoriBean.setNomeModulo(pianoDiFormazione.getModulo1());
 					if (pianoDiFormazione.getFadMod1().equalsIgnoreCase("fad")){
 						model.addObject("disabled", true);
+					}else{
+						model.addObject("disabled", false);
 					}
 					model.addObject("calendarioModuloBean", calendarioModuloBean);
 					model.addObject("lavoratoriBean", lavoratoriBean);
-					model.addObject("title", "Gestione Modulo+"+calendarioModuloBean.getNomeModulo()+" Tipologia "+pianoDiFormazione.getFadMod1());
+					model.addObject("title", "Gestione Modulo "+calendarioModuloBean.getNomeModulo()+" Tipologia "+pianoDiFormazione.getFadMod1());
 					model.addObject("message", "pagina di gestione del modulo associato al piano");
 					model.addObject("calendario", "Sezione Calendario");
 					model.addObject("lavoratori", "Sezione Lavoratori");
@@ -713,7 +750,7 @@ public class FbaController {
 				ApplicationContext context=null;
 				
 					try{
-						validator.calendarioValidator(calendarioBean, bindingResult);
+						validator.calendarioValidator(calendarioBean, bindingResult, myProperties);
 						if(!bindingResult.hasErrors()){
 							context = new ClassPathXmlApplicationContext("spring\\spring-jpa.xml","spring\\spring-utils.xml");
 							 CalendarioDao calendarioDao = (CalendarioDao) context.getBean("CalendarioDaoImpl");
@@ -733,7 +770,11 @@ public class FbaController {
 					modelWiev.addObject("title", "Modifica Calendario Giorno");
 					modelWiev.addObject("message", myProperties.getProperty("calendario.giorno.modifica"));
 					modelWiev.addObject("calendarioBeanForm", calendarioBean);
-					modelWiev.addObject("disabled", true);
+					if(!bindingResult.hasErrors()){
+						modelWiev.addObject("disabled", true);
+					}else{
+						modelWiev.addObject("disabled", false);
+					}
 					modelWiev.setViewName("modificaGiornoCalendario");
 				 return modelWiev;
 				
