@@ -271,8 +271,6 @@ public class FbaController {
 							UsersDao usersService = (UsersDao) context.getBean("UsersDaoImpl");
 							       
 							utente = usersService.findUserbyUsername(userFormModify.getUsername());
-							userFormModify.setDataInizio(Utils.dataDBFormatter(userFormModify.getDataInizioStr()));
-							userFormModify.setDataFine(Utils.dataDBFormatter(userFormModify.getDataFineStr()));
 							userFormModify.setRole(utente.getRole());
 							if (utente.getUsername()!=null){
 								usersService.updateUser(userFormModify);
@@ -312,14 +310,18 @@ public class FbaController {
 				}
 				
 				// metodo che elabora il file excel piani di formazione
-				@RequestMapping(value ={ "/adminElaboraUploadPiani","/userElaboraformPiani"}, method = RequestMethod.POST)
+				@RequestMapping(value ={ "/adminElaboraUploadPiani","/userElaboraUploadPiani"}, method = RequestMethod.POST)
 				public ModelAndView elaboraUploadPiani(HttpServletRequest request,  @ModelAttribute("fileBean") FileBean fileBean) {
 					ModelAndView modelWiev = new ModelAndView();
 					ArrayList<HashMap<String, String>> listaExcel = new ArrayList<>();
 					ArrayList<PianoDIformazioneBean> listaPiani = new ArrayList<>();
-				
+					PianoDIformazioneBean piano = new PianoDIformazioneBean(); 
+					modelWiev.addObject("pianoFormazioneForm",piano); 
+					modelWiev.addObject("listaPiani", listaPiani);
+					modelWiev.setViewName("pianiDiFormazioneTabella");
 					ApplicationContext context=null;
 					try {
+						
 						
 						ImportServiceExcel importService = new ImportServiceExcel();
 						listaExcel = importService.importFile(fileBean);
@@ -328,19 +330,23 @@ public class FbaController {
 						 context = new ClassPathXmlApplicationContext("spring\\spring-jpa.xml","spring\\spring-utils.xml");
 						 PianiFormazioneDao pianiFormazioneDao = (PianiFormazioneDao) context.getBean("PianiFormazioneDaoImpl");
 						 pianiFormazioneDao.caricaPianiFormazione(listaPiani);
-						 PianoDIformazioneBean piano = new PianoDIformazioneBean(); 
-						modelWiev.addObject("pianoFormazioneForm",piano); 
-						modelWiev.addObject("listaPiani", listaPiani);
-						modelWiev.setViewName("pianiDiFormazioneTabella");
+						 listaPiani = pianiFormazioneDao.getAllPiani(fileBean.getUsername());
+						 listaPiani = Utils.pianoFormazioneFormSetting(listaPiani);
 						
+											
 						
 					} catch (Exception e) {
 						// TODO: handle exception
 						e.printStackTrace();
 						logger.error(e.getMessage());
+						
 						modelWiev.addObject("errorMessage", myProperties.getProperty("errore.file.excel"));
-						modelWiev.setViewName("pianiFormazioneUpload");
-						return modelWiev;
+					    fileBean = new FileBean();
+					    modelWiev.addObject("title", "Upload Piani Di Formazione");
+					    modelWiev.addObject("message", "Pagina per il caricamento dei piani di formazione");
+					    modelWiev.addObject("fileBean", fileBean);
+					    modelWiev.setViewName("pianiFormazioneUpload");
+						
 					}finally{
 						if(context!=null){
 							((ConfigurableApplicationContext)context).close();
@@ -348,6 +354,7 @@ public class FbaController {
 						
 						
 					}
+					
 					
 					return modelWiev;
 				}
@@ -378,7 +385,7 @@ public class FbaController {
 					}	
 					
 						PianoDIformazioneBean piano = new PianoDIformazioneBean();
-						modelWiev.addObject("title", "Tabella Piani  Di Formazione");
+						modelWiev.addObject("title", "Tabella Piani Di Formazione");
 						modelWiev.addObject("message", myProperties.getProperty("piani.formazione.elenco"));
 						modelWiev.addObject("listaPiani", listaPiani);
 						modelWiev.addObject("pianoFormazioneForm",piano);
@@ -426,10 +433,10 @@ public class FbaController {
 				
 				// metodo modifica piano di formazione
 				@RequestMapping(value = {"/adminModifyPiano","/userModifyPiano"} , method = RequestMethod.POST)
-				public ModelAndView modifyPiano(ModelMap model, @ModelAttribute("pianoFormazioneForm") PianoDIformazioneBean pianoDiFormazione, BindingResult bindingResult) {
+				public ModelAndView modifyPiano(ModelMap model, @Valid @ModelAttribute("pianoFormazioneForm") PianoDIformazioneBean pianoDiFormazione, BindingResult bindingResult) {
 		             
 					ModelAndView modelWiev = new ModelAndView();
-					validator.pianoFormazioneValidator(pianoDiFormazione, bindingResult,myProperties);
+					validator.pianoFormazioneValidator(pianoDiFormazione, bindingResult, myProperties);
 				ApplicationContext context=null;
 					try{
 						if(!bindingResult.hasErrors()){
@@ -465,7 +472,7 @@ public class FbaController {
 								 }
 							}
 						}   
-					((ConfigurableApplicationContext)context).close();
+					
 					}catch(Exception e){
 						e.printStackTrace();
 						logger.error(e.getMessage());
@@ -492,6 +499,7 @@ public class FbaController {
 
 				}
 				
+				// eleimina il piano selezionato, i relativi modoli e lavoratori
 				@RequestMapping(value ={ "/adminCancellaPiano","/userCancellaPiano"}, method = RequestMethod.POST)
 				public ModelAndView cancellaPiano(HttpServletRequest request,  @ModelAttribute("pianoDIformazioneBean") PianoDIformazioneBean pianoDIformazioneBean) {
 					ModelAndView modelWiev = new ModelAndView();
@@ -535,6 +543,7 @@ public class FbaController {
 						return modelWiev;
 					}
 				
+				// per richieste future
 				@RequestMapping(value ={ "/adminCancellaTuttiPiani","/userCancellaTuttiPiani"}, method = RequestMethod.POST)
 				public ModelAndView cancellaTuttiPiani(HttpServletRequest request, @ModelAttribute("pianoDIformazioneBean") PianoDIformazioneBean pianoFormazione) {
 					ModelAndView modelWiev = new ModelAndView();
@@ -566,7 +575,7 @@ public class FbaController {
 						return modelWiev;
 					}
 				
-
+                //metodo che inoltra sulla pagina di gestione del moduoo selezionato
 				@RequestMapping(value = { "/adminGestioneModulo","/userGestioneModulo"}, method = RequestMethod.POST)
 				public ModelAndView gestioneModulo(HttpServletRequest request, @ModelAttribute("pianoFormazioneForm") PianoDIformazioneBean pianoDiFormazione) {
 					
@@ -637,12 +646,21 @@ public class FbaController {
 						context = new ClassPathXmlApplicationContext("spring\\spring-jpa.xml","spring\\spring-utils.xml");
 						CalendarioDao calendarioDao = (CalendarioDao) context.getBean("CalendarioDaoImpl");
 						calendarioDao.caricaCalendari(listaCalendario);
+						listaCalendario = calendarioDao.getAllCalednario(calendarioBean);
+						listaCalendario = Utils.calendarioModuloFormSetting(listaCalendario);
+						
 						 
 					} catch (Exception e) {
 						// TODO: handle exception
 						e.printStackTrace();
 						logger.error(e.getMessage());
 						modelWiev.addObject("errorMessage", myProperties.getProperty("errore.file.excel"));
+						modelWiev.addObject("calendarioModuloBean", calendarioBean);
+						modelWiev.addObject("lavoratoriBean", lavoratoriBean);
+						modelWiev.addObject("title", "Gestione Modulo "+calendarioBean.getNomeModulo()+" Tipologia Aula");
+						modelWiev.addObject("message", "pagina di gestione del modulo associato al piano");
+						modelWiev.addObject("calendario", "Sezione Calendario");
+						modelWiev.addObject("lavoratori", "Sezione Lavoratori");
 						modelWiev.setViewName("moduloUpload");
 						return modelWiev;
 					}finally{
@@ -657,15 +675,19 @@ public class FbaController {
 					}
 					CalendarioBean calendarioBeanForm = new CalendarioBean();
 					PianoDIformazioneBean pianoFormazioneForm = new PianoDIformazioneBean();
+					pianoFormazioneForm.setId(calendarioBean.getIdPiano());
+					pianoFormazioneForm.setModulo1(calendarioBean.getNomeModulo());
 					modelWiev.addObject("title", "Tabella Calendario Modulo "+nomeModulo);
 					modelWiev.addObject("message", myProperties.getProperty("calendario.elenco"));
 					modelWiev.addObject("listaCalendari", listaCalendario);
-					modelWiev.addObject("calendarioBeanForm",calendarioBeanForm);
+					modelWiev.addObject("calendarioBeanForm",calendarioBean);
 					modelWiev.addObject("pianoFormazioneForm",pianoFormazioneForm);
 					modelWiev.setViewName("calendarioModuloTabella");
 					return modelWiev;
 				}
 				
+				
+				// metodo che carica e proietta il calendario associato al modulo
 				@RequestMapping(value ={ "/adminMostraCalendario","/userMostraCalendario"}, method = RequestMethod.POST)
 				public ModelAndView mostraCalendario( @ModelAttribute("calendarioBeanForm") CalendarioBean calendarioBean) {
 					ModelAndView modelWiev = new ModelAndView();
@@ -721,7 +743,7 @@ public class FbaController {
 						
 						calendarioBeanForm= calendarioDao.findGiornoCalendario(calendarioBean);
 						calendarioBeanForm.setDataStr(Utils.formattaData(calendarioBeanForm.getData()));
-					((ConfigurableApplicationContext)context).close();
+					
 					}catch(Exception e){
 						e.printStackTrace();
 						logger.error(e.getMessage());
@@ -796,7 +818,7 @@ public class FbaController {
 							 listaCalendario = calendarioDao.getAllCalednario(calendarioBean);
 							 listaCalendario = Utils.calendarioModuloFormSetting(listaCalendario);
 							 }   
-					((ConfigurableApplicationContext)context).close();
+					
 					}catch(Exception e){
 						e.printStackTrace();
 						logger.error(e.getMessage());
@@ -843,7 +865,7 @@ public class FbaController {
 						context = new ClassPathXmlApplicationContext("spring\\spring-jpa.xml","spring\\spring-utils.xml");
 						LavoratoriDao lavoratoriDao = (LavoratoriDao) context.getBean("LavoratoriDaoImpl");
 						lavoratoriDao.caricaLavoratori(listaLavoratori);
-						 
+						listaLavoratori = lavoratoriDao.getAllLavoratori(lavoratoriBean); 
 					} catch (Exception e) {
 						// TODO: handle exception
 						e.printStackTrace();
@@ -864,6 +886,8 @@ public class FbaController {
 					}
 					LavoratoriBean lavoratoreBean = new LavoratoriBean();
 					PianoDIformazioneBean pianoFormazioneForm = new PianoDIformazioneBean();
+					pianoFormazioneForm.setId(lavoratoriBean.getIdPiano());
+					pianoFormazioneForm.setModulo1(lavoratoriBean.getNomeModulo());
 					modelWiev.addObject("title", "Tabella Lavoratori Modulo "+nomeModulo);
 					modelWiev.addObject("message", myProperties.getProperty("lavoratori.elenco"));
 					modelWiev.addObject("listaLavoratori", listaLavoratori);
@@ -951,7 +975,7 @@ public class FbaController {
 				
 				// metodo modifica lavoratore
 				@RequestMapping(value = {"/adminModificaLavoratore","/userModificaLavoratore"} , method = RequestMethod.POST)
-				public ModelAndView modificaLavoratoreFo(ModelMap model,@Valid @ModelAttribute("lavoratoriBean") LavoratoriBean lavoratoriBean, BindingResult bindingResult) {
+				public ModelAndView modificaLavoratore(ModelMap model,@Valid @ModelAttribute("lavoratoriBean") LavoratoriBean lavoratoriBean, BindingResult bindingResult) {
 		             
 					ModelAndView modelWiev = new ModelAndView();
 					
@@ -965,7 +989,7 @@ public class FbaController {
 							
 							lavoratoriDao.updateLavoratore(lavoratoriBean);
 						 }   
-					((ConfigurableApplicationContext)context).close();
+					
 					}catch(Exception e){
 						e.printStackTrace();
 						logger.error(e.getMessage());
@@ -978,7 +1002,11 @@ public class FbaController {
 					modelWiev.addObject("title", "Modifica dati lavoratore");
 					modelWiev.addObject("message", myProperties.getProperty("lavoratori.modifica"));
 					modelWiev.addObject("lavoratoriBean", lavoratoriBean);
-					modelWiev.addObject("disabled", true);
+					if(!bindingResult.hasErrors()){
+						modelWiev.addObject("disabled", true);
+					}else{
+						modelWiev.addObject("disabled", false);
+					}
 					modelWiev.setViewName("modificaLavoratore");
 				 return modelWiev;
 				

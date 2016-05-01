@@ -34,7 +34,11 @@ public class ExcelValidator {
 				pianoFormazione.setDataInizioAtt(Utils.dataDBFormatter(pianoFormazione.getDataInizioAttStr()));
 				pianoFormazione.setDataFineAttStr(map.get("5"));
 				pianoFormazione.setDataFineAtt(Utils.dataDBFormatter(pianoFormazione.getDataFineAttStr()));
-				pianoFormazione.setNumPartecipanti(map.get("6"));
+				if(FormSecurityValidator.isNumber(map.get("6"))){
+					pianoFormazione.setNumPartecipanti(map.get("6"));
+				}else{
+					pianoFormazione.setNumPartecipanti("0");
+				}
 				pianoFormazione.setCompImprInn(validaOpzioni(map.get("7")));
 				pianoFormazione.setCompSett(validaOpzioni(map.get("8")));
 				pianoFormazione.setDelocInter(validaOpzioni(map.get("9")));
@@ -45,9 +49,17 @@ public class ExcelValidator {
 				pianoFormazione.setMobEstOutRic(validaOpzioni(map.get("14")));
 				pianoFormazione.setSviluppoLoc(validaOpzioni(map.get("15")));
 				pianoFormazione.setModulo1(map.get("16"));
-				pianoFormazione.setFadMod1(map.get("17"));
+				if(map.get("17").equalsIgnoreCase("fad")){
+					pianoFormazione.setFadMod1("fad");
+				}else{
+					pianoFormazione.setFadMod1("aula");
+				}
 				pianoFormazione.setModulo2(map.get("18"));
-				pianoFormazione.setFadMod2(map.get("19"));
+				if(map.get("19").equalsIgnoreCase("fad")){
+					pianoFormazione.setFadMod2("fad");
+				}else{
+					pianoFormazione.setFadMod2("aula");
+				}
 				if (map.get("20")!=null){
 					pianoFormazione.setAttuatorePIVA(map.get("20"));
 					
@@ -136,7 +148,12 @@ public class ExcelValidator {
 			lavoratore.setStato("1");
 			lavoratore.setNomeModulo(lavoratoriBean.getNomeModulo());
 			lavoratore.setMatricola(map.get("1"));
-			lavoratore.setOrePresenza(map.get("2"));
+			if(FormSecurityValidator.isNumber(map.get("2"))){
+				lavoratore.setOrePresenza(map.get("2"));
+			}else{
+				lavoratore.setOrePresenza("0");
+				lavoratore.setStato("0");
+			}
 			if (map.get("3")!=null){
 				lavoratore.setEsitoTest(map.get("3"));
 			}else{

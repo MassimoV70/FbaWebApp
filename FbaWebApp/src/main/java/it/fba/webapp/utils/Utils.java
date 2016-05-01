@@ -26,6 +26,10 @@ public class Utils {
 	final static SimpleDateFormat formatterDB= new SimpleDateFormat("dd/MM/yyyy");
 	private static final String TIME24HOURS_PATTERN = 
             "([01]?[0-9]|2[0-3]):[0-5][0-9]";
+	private static final String NUMBER_PATTERN = 
+            "([0-9]*)";
+	private static final String DATE_PATTERN = 
+            "([0-3]?[0-9])/[01]?[0-2]/[ANNO]";
 	
 	public static String dataOggi() {
 		Date dataOggi=null;

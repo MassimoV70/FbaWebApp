@@ -55,7 +55,7 @@ public class CalendarioDaoImpl implements CalendarioDao {
 		
 		// TODO Auto-generated method stub
 		int i= query.setParameter("dataStr", calendarioBean.getData()).setParameter("inizioMattinaStr", calendarioBean.getInizioMattina())
-		         .setParameter("fineMattinaStr", calendarioBean.getFinePomeriggio()).setParameter("inizioPomeriggioStr", calendarioBean.getInizioPomeriggio())
+		         .setParameter("fineMattinaStr", calendarioBean.getFineMattina()).setParameter("inizioPomeriggioStr", calendarioBean.getInizioPomeriggio())
 		         .setParameter("finePomeriggioStr", calendarioBean.getFinePomeriggio()).setParameter("statoStr",calendarioBean.getStato())
 		         .setParameter("idStr",calendarioBean.getId()).executeUpdate();
 		        

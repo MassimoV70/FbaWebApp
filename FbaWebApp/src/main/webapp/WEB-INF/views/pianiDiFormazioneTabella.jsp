@@ -203,10 +203,11 @@
 	
 	<script type="text/javascript">
 	
-	function elaboraPiano(id,modulo, operazione){
+	function elaboraPiano(id,modulo,tipoModulo, operazione){
 		
 		$('#idPiano').val(id);
 		$('#idModulo').val(modulo);
+		$('#idTipoModulo').val(tipoModulo);
 		
 		if (operazione=='modulo'){
 			$("#modificaPianoForm").attr('action','/FbaWebApp/userGestioneModulo');

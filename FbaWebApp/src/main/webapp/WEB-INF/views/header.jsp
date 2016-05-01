@@ -31,7 +31,9 @@
         <h2> ${title}</h2>
 		
 		<h3> ${message}</h3>
-		<h3> ${errorMessage}</h3>
+		<c:if test="${not empty errorMessage}">
+		<div class="error">${errorMessage}</div>
+		</c:if>
 	   
 		<c:url value="/j_spring_security_logout" var="logoutUrl" />
 		<form action="${logoutUrl}" method="post" id="logoutForm">

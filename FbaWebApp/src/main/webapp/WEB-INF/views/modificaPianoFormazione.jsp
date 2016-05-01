@@ -15,6 +15,7 @@
 			 	<div id="inputDiv">	
 			 		<form:hidden path="username" value="${pageContext.request.userPrincipal.name}"/>
 			 		<form:hidden path="id" />
+			 		<form:hidden path="enabled" />
 					<label for="pianoDiFormazione">Titolo piano di formazione:</label>
 					<br>
 					<form:input path="pianoDiFormazione" disabled="${disabled}" id="inputUser" cssClass="inputUser"/>

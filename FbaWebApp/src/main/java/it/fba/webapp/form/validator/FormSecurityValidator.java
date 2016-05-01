@@ -20,6 +20,12 @@ public class FormSecurityValidator implements Validator{
 	
 	private static final String TIME24HOURS_PATTERN = 
             "([01]?[0-9]|2[0-3]):[0-5][0-9]";
+	
+	private static final String NUMBER_PATTERN = 
+            "([0-9]*)";
+	private static final String DATE_PATTERN = 
+            "([0-3]?[0-9])/[01]?[0-2]/[ANNO]";
+	
 	private Pattern pattern;
 	
 
@@ -159,6 +165,27 @@ public class FormSecurityValidator implements Validator{
 		
 	}
 	
+	public static boolean isNumber (String numero)throws Exception{
+		boolean bau = false;
+		try{
+			bau = Pattern.matches(NUMBER_PATTERN, numero);
+		}catch(Exception e){
+			e.printStackTrace();
+			throw e;
+		}
+		return bau;
+	}
+	
+	public static boolean isDate (String data)throws Exception{
+		boolean bau = false;
+		try{
+			bau = Pattern.matches(DATE_PATTERN, data);
+		}catch(Exception e){
+			e.printStackTrace();
+			throw e;
+		}
+		return bau;
+	}
 
 	
 
