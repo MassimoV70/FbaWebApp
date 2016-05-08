@@ -249,7 +249,7 @@ public class FbaController {
 				modelWiev.addObject("message", myProperties.getProperty("pagina.amministratore"));
 				modelWiev.addObject("listaStati", listaStati);
 				modelWiev.addObject("disabled", false);
-				modelWiev.addObject("userFormModify",utente);
+				modelWiev.addObject("userForm",utente);
 				modelWiev.setViewName("modificaUtente");
 			 return modelWiev;
 
@@ -257,16 +257,17 @@ public class FbaController {
 			
 			// metodo modifica dati utentie
 				@RequestMapping(value = "/adminModifyUser", method = RequestMethod.POST)
-				public ModelAndView adminModifyUser(ModelAndView modelWiev, @Valid @ModelAttribute("userFormModify") UsersBean userFormModify, BindingResult bindingResult) {
+				public ModelAndView adminModifyUser(ModelAndView modelWiev, @Valid @ModelAttribute("userForm") UsersBean userFormModify, BindingResult bindingResult) {
 		             
 					//ModelAndView modelWiev = new ModelAndView();
 					UsersBean utente = new UsersBean();
 					 
 					try{
-						userFormModify.setDataInizio(Utils.dataDBFormatter(userFormModify.getDataInizioStr()));
-						userFormModify.setDataFine(Utils.dataDBFormatter(userFormModify.getDataFineStr()));
+					
 						 validator.userFormValidator(userFormModify, bindingResult);
 						if(!bindingResult.hasErrors()){
+							userFormModify.setDataInizio(Utils.dataDBFormatter(userFormModify.getDataInizioStr()));
+							userFormModify.setDataFine(Utils.dataDBFormatter(userFormModify.getDataFineStr()));
 							ApplicationContext context = new ClassPathXmlApplicationContext("spring\\spring-jpa.xml","spring\\spring-utils.xml");
 							UsersDao usersService = (UsersDao) context.getBean("UsersDaoImpl");
 							       
@@ -291,7 +292,7 @@ public class FbaController {
 					}else{
 						modelWiev.addObject("disabled", false);
 					}
-					modelWiev.addObject("userFormModify",userFormModify);
+					modelWiev.addObject("userForm",userFormModify);
 					modelWiev.setViewName("modificaUtente");
 				 return modelWiev;
 
@@ -316,9 +317,7 @@ public class FbaController {
 					ArrayList<HashMap<String, String>> listaExcel = new ArrayList<>();
 					ArrayList<PianoDIformazioneBean> listaPiani = new ArrayList<>();
 					PianoDIformazioneBean piano = new PianoDIformazioneBean(); 
-					modelWiev.addObject("pianoFormazioneForm",piano); 
-					modelWiev.addObject("listaPiani", listaPiani);
-					modelWiev.setViewName("pianiDiFormazioneTabella");
+					
 					ApplicationContext context=null;
 					try {
 						
@@ -331,7 +330,7 @@ public class FbaController {
 						 PianiFormazioneDao pianiFormazioneDao = (PianiFormazioneDao) context.getBean("PianiFormazioneDaoImpl");
 						 pianiFormazioneDao.caricaPianiFormazione(listaPiani);
 						 listaPiani = pianiFormazioneDao.getAllPiani(fileBean.getUsername());
-						 listaPiani = Utils.pianoFormazioneFormSetting(listaPiani);
+						 
 						
 											
 						
@@ -346,7 +345,7 @@ public class FbaController {
 					    modelWiev.addObject("message", "Pagina per il caricamento dei piani di formazione");
 					    modelWiev.addObject("fileBean", fileBean);
 					    modelWiev.setViewName("pianiFormazioneUpload");
-						
+					    return modelWiev;
 					}finally{
 						if(context!=null){
 							((ConfigurableApplicationContext)context).close();
@@ -354,8 +353,9 @@ public class FbaController {
 						
 						
 					}
-					
-					
+					modelWiev.addObject("pianoFormazioneForm",piano); 
+					modelWiev.setViewName("pianiDiFormazioneTabella");
+					modelWiev.addObject("listaPiani", listaPiani);
 					return modelWiev;
 				}
 				
@@ -371,7 +371,7 @@ public class FbaController {
 						 context = new ClassPathXmlApplicationContext("spring\\spring-jpa.xml","spring\\spring-utils.xml");
 						 PianiFormazioneDao pianiFormazioneDao = (PianiFormazioneDao) context.getBean("PianiFormazioneDaoImpl");
 						 listaPiani = pianiFormazioneDao.getAllPiani(user.getUsername());
-						 listaPiani = Utils.pianoFormazioneFormSetting(listaPiani);
+						
 					
 					} catch (Exception e) {
 						// TODO: handle exception
@@ -407,7 +407,7 @@ public class FbaController {
 						PianiFormazioneDao pianiFormazioneDao = (PianiFormazioneDao) context.getBean("PianiFormazioneDaoImpl");
 						
 						pianoDIformazioneBean= pianiFormazioneDao.findPianiFormazione(pianoFormazione);
-						pianoDIformazioneBean = Utils.singoloPianoFormazioneFormSetting(pianoDIformazioneBean);
+						
 						
 					((ConfigurableApplicationContext)context).close();
 					}catch(Exception e){
@@ -440,8 +440,7 @@ public class FbaController {
 				ApplicationContext context=null;
 					try{
 						if(!bindingResult.hasErrors()){
-							pianoDiFormazione.setDataInizioAtt(Utils.dataDBFormatter(pianoDiFormazione.getDataInizioAttStr()));
-							pianoDiFormazione.setDataFineAtt(Utils.dataDBFormatter(pianoDiFormazione.getDataFineAttStr()));
+							
 							context = new ClassPathXmlApplicationContext("spring\\spring-jpa.xml","spring\\spring-utils.xml");
 							PianiFormazioneDao pianiFormazioneDao = (PianiFormazioneDao) context.getBean("PianiFormazioneDaoImpl");
 							pianiFormazioneDao.updatePianoDiFormazione(pianoDiFormazione);
@@ -520,7 +519,7 @@ public class FbaController {
 						 UsersBean user = new UsersBean();
 						 user.setUsername(request.getUserPrincipal().getName());
 						 listaPiani = pianiFormazioneDao.getAllPiani(user.getUsername());
-						 listaPiani = Utils.pianoFormazioneFormSetting(listaPiani);
+						
 					
 					} catch (Exception e) {
 						// TODO: handle exception

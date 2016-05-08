@@ -20,7 +20,7 @@
 		            
 					<label for="matricola">Matricola:</label>
 					<br>
-					<form:input path="matricola" disabled="${disabled}" id="datepicker" cssClass="inputUser"/>
+					<form:input path="matricola" disabled="${disabled}" id="inputUser" cssClass="inputUser"/>
 					<form:errors path="matricola" cssClass="error" />
 					<br>
 					<label for="orePresenza">Ore presenza:</label>

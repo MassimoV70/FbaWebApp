@@ -16,10 +16,15 @@
 			 		<form:hidden path="username" value="${pageContext.request.userPrincipal.name}"/>
 			 		<form:hidden path="id" />
 			 		<form:hidden path="enabled" />
-					<label for="pianoDiFormazione">Titolo piano di formazione:</label>
+			 		<label for="nuemroProtocollo">Numero protocollo:</label>
 					<br>
-					<form:input path="pianoDiFormazione" disabled="${disabled}" id="inputUser" cssClass="inputUser"/>
-					<form:errors path="pianoDiFormazione" cssClass="error" />
+					<form:input path="nuemroProtocollo" disabled="${disabled}" id="inputUser" cssClass="inputUser"/>
+					<form:errors path="nuemroProtocollo" cssClass="error" />
+					<br>
+					<label for="nomeProgetto">Titolo progetto:</label>
+					<br>
+					<form:input path="nomeProgetto" disabled="${disabled}" id="inputUser" cssClass="inputUser"/>
+					<form:errors path="nomeProgetto" cssClass="error" />
 					<br>
 					<label for="tipoCorsoPiano">Tipologia corso:</label>
 					<br>
@@ -30,84 +35,6 @@
 					<br>
 					<form:input path="tematicaFormativa" disabled="${disabled}" id="inputUser" cssClass="inputUser"/>
 					<form:errors path="tematicaFormativa" cssClass="error" />
-					<br>
-					<label for="dataInizioAttStr">Inizio attivita formativa:</label>
-					<br>
-					<form:input path="dataInizioAttStr" disabled="${disabled}" id="datepicker" cssClass="inputUser"/>
-					<form:errors path="dataInizioAttStr" cssClass="error" />
-					<br>
-					<label for="dataFineAttStr">Fine attivita formativa:</label>
-					<br>
-					<form:input path="dataFineAttStr" disabled="${disabled}" id="datepicker1" cssClass="inputUser"/>
-					<form:errors path="dataFineAttStr" cssClass="error" />
-					<br>
-					<label for="numPartecipanti">Numero partecipanti:</label>
-					<br>
-					<form:input path="numPartecipanti" disabled="${disabled}" id="inputUser" cssClass="inputUser"/>
-					<form:errors path="numPartecipanti" cssClass="error" />
-					<br>
-					<label for="compImprInn">Competitivita impresa innovazione:</label>
-					<br>
-					<form:select path="compImprInn" disabled="${disabled}" id="inputUser" cssClass="inputUser">
-						<form:options items="${listaSelezione}"/>
-					</form:select>
-					<form:errors path="compImprInn" cssClass="error" />
-					<br>
-					<label for="compSett">Competitivita settoriale:</label>
-					<br>
-					<form:select path="compSett" disabled="${disabled}" id="inputUser" cssClass="inputUser">
-						<form:options items="${listaSelezione}"/>
-					</form:select>
-					<form:errors path="compSett" cssClass="error" />
-					<br>
-					<label for="delocInter">Delocalizzazione internazionalizzazione:</label>
-					<br>
-					<form:select path="delocInter" disabled="${disabled}" id="inputUser" cssClass="inputUser">
-						<form:options items="${listaSelezione}"/>
-					</form:select>
-					<form:errors path="delocInter" cssClass="error" />
-					<br>
-					<label for="formObblExLeg">Formazione obbligatoria ex leg:</label>
-					<br>
-					<form:select path="formObblExLeg" disabled="${disabled}" id="inputUser" cssClass="inputUser">
-						<form:options items="${listaSelezione}"/>
-					</form:select>
-					<form:errors path="formObblExLeg" cssClass="error" />
-					<br>
-					<label for="formInIngresso">Formazione in ingresso:</label>
-					<br>
-					<form:select path="formInIngresso" disabled="${disabled}" id="inputUser" cssClass="inputUser">
-						<form:options items="${listaSelezione}"/>
-					</form:select>
-					<form:errors path="formInIngresso" cssClass="error" />
-					<br>
-					<label for="mantenimOccup">Mantenimento occupazione:</label>
-					<br>
-					<form:select path="mantenimOccup" disabled="${disabled}" id="inputUser" cssClass="inputUser">
-						<form:options items="${listaSelezione}"/>
-					</form:select>
-					<form:errors path="mantenimOccup" cssClass="error" />
-					<br>
-					<label for="manutAggComp">Manutenzione aggiornamento delle competenze:</label>
-					<br>
-					<form:select path="manutAggComp" disabled="${disabled}" id="inputUser" cssClass="inputUser">
-						<form:options items="${listaSelezione}"/>
-					</form:select>
-					<form:errors path="manutAggComp" cssClass="error" />
-					<br>
-					<label for="mobEstOutRic">Mobilita esterna outplacement ricollocazione:</label>
-					<br>
-					<form:select path="mobEstOutRic" disabled="${disabled}" id="inputUser" cssClass="inputUser">
-						<form:options items="${listaSelezione}"/>
-					</form:select>
-					<form:errors path="mobEstOutRic" cssClass="error" />
-					<br>
-					<label for="sviluppoLoc">Sviluppo locale:</label>
-					<br>
-					<form:select path="sviluppoLoc" disabled="${disabled}" id="inputUser" cssClass="inputUser">
-						<form:options items="${listaSelezione}"/>
-					</form:select>
-					<form:errors path="sviluppoLoc" cssClass="error" />
 					<br>
 					<label for="modulo1">Titolo modulo1:</label>
 					<br>
@@ -121,6 +48,11 @@
 					</form:select>
 					<form:errors path="fadMod1" cssClass="error" />
 					<br>
+					<label for="durataModulo1">Durata modulo1</label>
+					<br>
+					<form:input path="durataModulo1" disabled="${disabled}" id="inputUser" cssClass="inputUser"/>
+					<form:errors path="durataModulo1" cssClass="error" />
+					<br>
 					<label for="modulo2">Titolo modulo2</label>
 					<br>
 					<form:input path="modulo2" disabled="${disabled}" id="inputUser" cssClass="inputUser"/>
@@ -132,6 +64,11 @@
 						<form:options items="${listaSelezioneFad}"/>
 					</form:select>
 					<form:errors path="fadMod2" cssClass="error" />
+					<br>
+					<label for="durataModulo2">Durata modulo2</label>
+					<br>
+					<form:input path="durataModulo2" disabled="${disabled}" id="inputUser" cssClass="inputUser"/>
+					<form:errors path="durataModulo2" cssClass="error" />
 					<br>
 					<label for="attuatorePIVA">Partita IVA attuatore:</label>
 					<br>

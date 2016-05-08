@@ -4,25 +4,16 @@
 		<c:if test="${not empty listaPiani}">
 	
 				<tr>
-					<td>Piano Di Formazione</td>
+					<td>Nomero Protocollo</td>
+					<td>Nome Progetto</td>
 					<td>Tipologia corso</td>
 					<td>Tematica formativa</td>
-					<td>Inizio att.</td>
-					<td>Fine att.</td>
-					<td>Num. part.</td>
-					<td>Comp. imp. inn.</td>
-					<td>Comp. sett.</td>
-					<td>Del. Int.</td>
-					<td>Form. obbl.</td>
-					<td>Form. ingr.</td>
-					<td>Mant. occup.</td>
-					<td>Manut. agg. comp.</td>
-					<td>Mob. est. out. ric.</td>
-					<td>Svil. loc.</td>
 					<td>Modulo 1</td>
 					<td>Mod. form. mod1</td>
+					<td>Durata Modulo 1</td>
 					<td>Modulo 2</td>
 					<td>Mod. form. mod2</td>
+					<td>Durata Modulo 2</td>
 					<td>Att. P.IVA</td>
 					<td>Allegato 1</td>
 					<td>Allegato 2</td>
@@ -33,70 +24,30 @@
 				</tr>
 				<c:forEach var="listValue" items="${listaPiani}">
 				  <tr>
-					<td>${listValue.pianoDiFormazione}</td>
+				    <td>${listValue.nuemroProtocollo}</td>
+					<td>${listValue.nomeProgetto}</td>
 					<td>${listValue.tipoCorsoPiano}</td>
 					<td>${listValue.tematicaFormativa}</td>
-					<td>${listValue.dataInizioAttStr}</td>
-					<td>${listValue.dataFineAttStr}</td>
-					<td>${listValue.numPartecipanti}</td>
-					<td>
-						<c:choose>
-							    <c:when test="${listValue.compImprInn==1}"><img src= "resources/images/ok.png" alt="abilitato" title="abilitato"/></c:when>
-								<c:otherwise> <img src= "resources/images/notOK.png" alt="disabilitato" title="disabilitato"/></c:otherwise>
-						</c:choose>
-					</td>
-					<td>
-						<c:choose>
-							    <c:when test="${listValue.compSett==1}"><img src= "resources/images/ok.png" alt="abilitato" title="abilitato"/></c:when>
-								<c:otherwise> <img src= "resources/images/notOK.png" alt="disabilitato" title="disabilitato"/></c:otherwise>
-						</c:choose>
-					</td> 
-					<td>
-						<c:choose>
-							    <c:when test="${listValue.delocInter==1}"><img src= "resources/images/ok.png" alt="abilitato" title="abilitato"/></c:when>
-								<c:otherwise> <img src= "resources/images/notOK.png" alt="disabilitato" title="disabilitato"/></c:otherwise>
-						</c:choose>
-					</td> 
-					<td>
-						<c:choose>
-							    <c:when test="${listValue.formObblExLeg==1}"><img src= "resources/images/ok.png" alt="abilitato" title="abilitato"/></c:when>
-								<c:otherwise> <img src= "resources/images/notOK.png" alt="disabilitato" title="disabilitato"/></c:otherwise>
-						</c:choose>
-					</td>
-					<td> 
-						<c:choose>
-							    <c:when test="${listValue.formInIngresso==1}"><img src= "resources/images/ok.png" alt="abilitato" title="abilitato"/></c:when>
-								<c:otherwise> <img src= "resources/images/notOK.png" alt="disabilitato" title="disabilitato"/></c:otherwise>
-						</c:choose> 
-					</td>
-					<td>
-						<c:choose>
-							    <c:when test="${listValue.mantenimOccup==1}"><img src= "resources/images/ok.png" alt="abilitato" title="abilitato"/></c:when>
-								<c:otherwise> <img src= "resources/images/notOK.png" alt="disabilitato" title="disabilitato"/></c:otherwise>
-						</c:choose>
-					</td>
-					<td> 
-						<c:choose>
-							    <c:when test="${listValue.mobEstOutRic==1}"><img src= "resources/images/ok.png" alt="abilitato" title="abilitato"/></c:when>
-								<c:otherwise> <img src= "resources/images/notOK.png" alt="disabilitato" title="disabilitato"/></c:otherwise>
-						</c:choose>
-					</td> 
-					<td>
-						<c:choose>
-							    <c:when test="${listValue.sviluppoLoc==1}"><img src= "resources/images/ok.png" alt="abilitato" title="abilitato"/></c:when>
-								<c:otherwise> <img src= "resources/images/notOK.png" alt="disabilitato" title="disabilitato"/></c:otherwise>
-						</c:choose>
-					</td>
-					<td> 
-						<c:choose>
-							    <c:when test="${listValue.compImprInn==1}"><img src= "resources/images/ok.png" alt="abilitato" title="abilitato"/></c:when>
-								<c:otherwise> <img src= "resources/images/notOK.png" alt="disabilitato" title="disabilitato"/></c:otherwise>
-						</c:choose>
-					</td> 
-					<td><a onclick="elaboraPiano('${listValue.id}','${listValue.modulo1}','${listValue.fadMod1}','modulo')" title="vai al modulo">${listValue.modulo1}</a></td>
+					<c:choose>
+						 <c:when test="${listValue.modulo1!='assente'}">
+							<td><a onclick="elaboraPiano('${listValue.id}','${listValue.modulo1}','${listValue.fadMod1}','modulo')" title="vai al modulo">${listValue.modulo1}</a></td>
+						 </c:when>
+						 <c:otherwise>
+						  <td>assente</td>
+						 </c:otherwise>
+					</c:choose>
 					<td>${listValue.fadMod1}</td>
-					<td><a onclick="elaboraPiano('${listValue.id}','${listValue.modulo2}','${listValue.fadMod2}','modulo')" title="vai al modulo">${listValue.modulo2}</a></td>
+					<td>${listValue.durataModulo1}</td>
+					<c:choose>
+						 <c:when test="${listValue.modulo2!='assente'}">
+							<td><a onclick="elaboraPiano('${listValue.id}','${listValue.modulo2}','${listValue.fadMod2}','modulo')" title="vai al modulo">${listValue.modulo2}</a></td>
+						</c:when>
+						<c:otherwise>
+						  <td>assente</td>
+						 </c:otherwise>
+					</c:choose>
 					<td>${listValue.fadMod2}</td>
+					<td>${listValue.duratamodulo2}</td>
 					<td>${listValue.attuatorePIVA}</td>
 					<td>${listValue.nomeAllegato1}</td>
 					<td>${listValue.nomeAllegato2}</td>

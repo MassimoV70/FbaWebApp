@@ -109,22 +109,22 @@ public class Utils {
        
 	}
 	
-	public static ArrayList<PianoDIformazioneBean> pianoFormazioneFormSetting (ArrayList<PianoDIformazioneBean> listaPiani){
-		try{
-			if (listaPiani!=null&&!listaPiani.isEmpty()){
-				for(PianoDIformazioneBean piano :listaPiani ){
-					piano.setDataInizioAttStr(Utils.formattaData(piano.getDataInizioAtt()));
-					piano.setDataFineAttStr(Utils.formattaData(piano.getDataFineAtt()));
-					
-					
-				}
-			}
-		}catch(Exception e){
-			e.printStackTrace();
-			return null;
-		}
-		return listaPiani;
-	}
+//	public static ArrayList<PianoDIformazioneBean> pianoFormazioneFormSetting (ArrayList<PianoDIformazioneBean> listaPiani){
+//		try{
+//			if (listaPiani!=null&&!listaPiani.isEmpty()){
+//				for(PianoDIformazioneBean piano :listaPiani ){
+//					piano.setDataInizioAttStr(Utils.formattaData(piano.getDataInizioAtt()));
+//					piano.setDataFineAttStr(Utils.formattaData(piano.getDataFineAtt()));
+//					
+//					
+//				}
+//			}
+//		}catch(Exception e){
+//			e.printStackTrace();
+//			return null;
+//		}
+//		return listaPiani;
+//	}
 	
 	public static ArrayList<CalendarioBean> calendarioModuloFormSetting (ArrayList<CalendarioBean> listaCalendario){
 		try{
@@ -160,21 +160,21 @@ public class Utils {
 		
 	}
    
-   public static PianoDIformazioneBean singoloPianoFormazioneFormSetting (PianoDIformazioneBean piano){
-		try{
-			if (piano.getDataInizioAtt()!=null){
-				piano.setDataInizioAttStr(Utils.formattaData(piano.getDataInizioAtt()));
-			}
-			if (piano.getDataFineAtt()!=null){
-				piano.setDataFineAttStr(Utils.formattaData(piano.getDataFineAtt()));
-			}
-			
-		}catch(Exception e){
-			e.printStackTrace();
-			return null;
-		}
-		return piano;
-	}
+//   public static PianoDIformazioneBean singoloPianoFormazioneFormSetting (PianoDIformazioneBean piano){
+//		try{
+//			if (piano.getDataInizioAtt()!=null){
+//				piano.setDataInizioAttStr(Utils.formattaData(piano.getDataInizioAtt()));
+//			}
+//			if (piano.getDataFineAtt()!=null){
+//				piano.setDataFineAttStr(Utils.formattaData(piano.getDataFineAtt()));
+//			}
+//			
+//		}catch(Exception e){
+//			e.printStackTrace();
+//			return null;
+//		}
+//		return piano;
+//	}
    
    
 

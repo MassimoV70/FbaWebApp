@@ -69,12 +69,12 @@ public class UsersBean {
 	
 	
 	@Transient
-	@DateTimeFormat(pattern="dd/mm/yyyy")
+	@Size(min=10, max=10)
 	private String dataInizioStr;
 	
 	
 	@Transient
-	@DateTimeFormat(pattern="dd/mm/yyyy")
+	@Size(min=10, max=10)
 	private String dataFineStr;
 	
 	@Transient

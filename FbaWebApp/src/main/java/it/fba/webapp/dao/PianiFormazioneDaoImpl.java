@@ -25,12 +25,10 @@ public class PianiFormazioneDaoImpl implements PianiFormazioneDao{
 	private final String queryFindPiano = "Select p from PianoDIformazioneBean p where id= :idStr and username= :usernameStr";
 	private final String queryDeleteByUser = "Delete from PianoDIformazioneBean p  where username= :usernameStr";
 	private final String queryUpdatePiano = "Update PianoDIformazioneBean p "
-										  + "set p.pianoDiFormazione= :nomePianoStr, p.tipoCorsoPiano= :tipoCorsoPianoStr, p.tematicaFormativa= :tematicaFormativaStr,"
-										  + "p.dataInizioAtt= :dataInizioAttStr, p.dataFineAtt= :dataFineAttStr, p.numPartecipanti= :numPartecipantiStr,"
-										  + "p.compImprInn= :compImprInnStr, p.compSett= :compSettStr, p.delocInter= :delocInterStr,"
-										  + "p.formObblExLeg= :formObblExLegStr, p.formInIngresso= :formInIngressoStr, p.mantenimOccup= :mantenimOccupStr,"
-										  + "p.manutAggComp= :manutAggCompStr, p.mobEstOutRic= :mobEstOutRicStr, p.sviluppoLoc= :sviluppoLocStr,"
-										  + "p.modulo1= :modulo1, p.fadMod1= :fadMod1Str, p.modulo2= :modulo2, p.fadMod2= :fadMod2Str, p.attuatorePIVA= :pivaAtt "
+										  + "set p.nuemroProtocollo= :nuemroProtocolloStr,p.nomeProgetto= :nomeProgettoStr, p.tipoCorsoPiano= :tipoCorsoPianoStr, p.tematicaFormativa= :tematicaFormativaStr,"
+										  + "p.modulo1= :modulo1, p.fadMod1= :fadMod1Str, p.durataModulo1= :durataModulo1Str,"
+										  + " p.modulo2= :modulo2, p.fadMod2= :fadMod2Str,p.durataModulo2= :durataModulo2Str"
+										  + " p.attuatorePIVA= :pivaAtt "
 										  + "where id= :idStr and username= :usernameStr";
 	private final String queryDeletePiano = "Delete from PianoDIformazioneBean p  where id= :idStr";
 
@@ -51,15 +49,12 @@ public class PianiFormazioneDaoImpl implements PianiFormazioneDao{
 		Query query = entityManager.createQuery(queryUpdatePiano);
 		
 		
-	   int i= query.setParameter("nomePianoStr", pianoDiFormazioneBean.getPianoDiFormazione())
+	   int i= query.setParameter("nuemroProtocolloStr", pianoDiFormazioneBean.getNuemroProtocollo()).setParameter("nomeProgettoStr", pianoDiFormazioneBean.getNomeProgetto())
 			 .setParameter("tipoCorsoPianoStr", pianoDiFormazioneBean.getTipoCorsoPiano()).setParameter("tematicaFormativaStr", pianoDiFormazioneBean.getTematicaFormativa())
-			 .setParameter("dataInizioAttStr", pianoDiFormazioneBean.getDataInizioAtt()).setParameter("dataFineAttStr", pianoDiFormazioneBean.getDataFineAtt())
-			 .setParameter("numPartecipantiStr", pianoDiFormazioneBean.getNumPartecipanti())
-			 .setParameter("compImprInnStr", pianoDiFormazioneBean.getCompImprInn()).setParameter("compSettStr", pianoDiFormazioneBean.getCompSett()).setParameter("delocInterStr", pianoDiFormazioneBean.getDelocInter())
-			 .setParameter("formObblExLegStr", pianoDiFormazioneBean.getFormObblExLeg()).setParameter("formInIngressoStr", pianoDiFormazioneBean.getFormInIngresso()).setParameter("mantenimOccupStr", pianoDiFormazioneBean.getMantenimOccup())
-			 .setParameter("manutAggCompStr", pianoDiFormazioneBean.getManutAggComp()).setParameter("mobEstOutRicStr", pianoDiFormazioneBean.getMobEstOutRic()).setParameter("sviluppoLocStr", pianoDiFormazioneBean.getSviluppoLoc())
 			 .setParameter("modulo1", pianoDiFormazioneBean.getModulo1()).setParameter("fadMod1Str", pianoDiFormazioneBean.getFadMod1())
+			 .setParameter("durataModulo1Str", pianoDiFormazioneBean.getDurataModulo1())
 	         .setParameter("modulo2", pianoDiFormazioneBean.getModulo2()).setParameter("fadMod2Str", pianoDiFormazioneBean.getFadMod2())
+	         .setParameter("durataModulo2Str", pianoDiFormazioneBean.getDurataModulo2())
 	         .setParameter("pivaAtt", pianoDiFormazioneBean.getAttuatorePIVA())
 	         .setParameter("usernameStr", pianoDiFormazioneBean.getUsername()).setParameter("idStr",pianoDiFormazioneBean.getId()).executeUpdate();
 		

@@ -32,13 +32,13 @@ public class CalendarioBean {
 	@Column(name="nomemodulo")
 	String nomeModulo;
 	
-	
+	@DateTimeFormat(pattern="dd/mm/yyyy")
 	@Column(name="data")
 	Date data;
 	
 	@Transient
 	@NotNull
-	@DateTimeFormat(pattern="dd/mm/yyyy")
+	@Size(min=10, max=10)
 	String dataStr;
 	
 	
