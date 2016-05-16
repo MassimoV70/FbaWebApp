@@ -24,7 +24,7 @@
 						</c:choose> 
 					</td>					
 					<td>
-						<input type="image"  onclick="elaboraLavoratore('${listValue.id}','${listValue.idPiano}','${listValue.nomeModulo}','allega');" value="Allega" src= "resources/images/pdf.png" alt="Allegato Lavoratore" title="Allegati Lavoratore">
+						<%-- <input type="image"  onclick="elaboraLavoratore('${listValue.id}','${listValue.idPiano}','${listValue.nomeModulo}','allega');" value="Allega" src= "resources/images/pdf.png" alt="Allegato Lavoratore" title="Allegati Lavoratore"> --%>
 						<input type="image"  onclick="elaboraLavoratore('${listValue.id}','${listValue.idPiano}','${listValue.nomeModulo}','modifica');" value="Indietro" src= "resources/images/settings.png" alt="Modificia lavoratore" title="Modificia lavoratore">
 						<input type="image"  onclick="elaboraLavoratore('${listValue.id}','${listValue.idPiano}','${listValue.nomeModulo}','cancella');" value="Indietro" src= "resources/images/elimina.png"  alt="Elimina lavoratore" title="Elimina lavoratore">
 				

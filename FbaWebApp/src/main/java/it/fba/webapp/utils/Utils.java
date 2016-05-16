@@ -176,6 +176,16 @@ public class Utils {
 //		return piano;
 //	}
    
+   public static String eliminaSpazi(String stringa){
+	   if (stringa!=null&&!stringa.isEmpty()){
+		   stringa=stringa.trim();
+		   stringa=stringa.replace("  ", " ");
+	   }
+	   
+	   return stringa;
+	   
+	   
+   }
    
 
 }

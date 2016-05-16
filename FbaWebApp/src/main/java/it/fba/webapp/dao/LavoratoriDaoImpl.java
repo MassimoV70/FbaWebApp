@@ -12,6 +12,7 @@ import org.springframework.stereotype.Repository;
 
 import it.fba.webapp.beans.CalendarioBean;
 import it.fba.webapp.beans.LavoratoriBean;
+import it.fba.webapp.beans.PianoDIformazioneBean;
 
 @Repository("LavoratoriDaoImpl")
 @Transactional()
@@ -21,6 +22,7 @@ public class LavoratoriDaoImpl implements LavoratoriDao{
 	EntityManager entityManager;
 	
 	private final String queryAll = "Select l from LavoratoriBean l where l.idPiano= :idPianoStr and l.nomeModulo= :nomemoduloStr";
+	private final String esistonoLavoratori = "Select l from LavoratoriBean l where l.idPiano= :idPianoStr";
 	private final String queryUpdateLavoratore = "Update LavoratoriBean l "
 						  + "set l.matricola= :matricolaStr, l.orePresenza= :orePresenzaStr, l.esitoTest= :esitoTestStr, l.stato= :statoStr "
 						  + "where l.id= :idStr"; 
@@ -87,6 +89,16 @@ public class LavoratoriDaoImpl implements LavoratoriDao{
 		int i= query.setParameter("idPianoStr", lavoratoriBean.getIdPiano()).executeUpdate();
 		
 		
+	}
+	
+	@Override
+	public ArrayList<LavoratoriBean> esistonoLavoratori(PianoDIformazioneBean pianoDIformazioneBean) throws SQLException {
+		// TODO Auto-generated method stub
+		Query query = entityManager.createQuery(esistonoLavoratori);
+		@SuppressWarnings("unchecked")
+		
+		ArrayList<LavoratoriBean> resultList = (ArrayList<LavoratoriBean>)query.setParameter("idPianoStr", pianoDIformazioneBean.getId()).getResultList();
+		return resultList;
 	}
 	
 	

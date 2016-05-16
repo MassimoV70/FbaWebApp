@@ -23,6 +23,7 @@ public class CalendarioDaoImpl implements CalendarioDao {
 	EntityManager entityManager;
 	
 	private final String queryAll = "Select c from CalendarioBean c where c.idPiano= :idPianoStr and c.nomeModulo= :nomemoduloStr";
+	private final String queryEsisteCalendario = "Select c from CalendarioBean c where c.idPiano= :idPianoStr";
 	private final String queryUpdateGiorno = "Update CalendarioBean c "
 						  + "set c.data= :dataStr, c.inizioMattina= :inizioMattinaStr, c.fineMattina= :fineMattinaStr, "
 						  + "c.inizioPomeriggio= :inizioPomeriggioStr, c.finePomeriggio= :finePomeriggioStr, c.stato= :statoStr "
@@ -97,6 +98,16 @@ public class CalendarioDaoImpl implements CalendarioDao {
 		// TODO Auto-generated method stub
 		int i= query.setParameter("idPianoStr", calendarioBean.getIdPiano()).executeUpdate();
 		
+	}
+	
+	@Override
+	public ArrayList<CalendarioBean> esisteCalendario (PianoDIformazioneBean pianoDIformazioneBean) throws SQLException {
+		// TODO Auto-generated method stub
+		Query query = entityManager.createQuery(queryEsisteCalendario);
+		@SuppressWarnings("unchecked")
+		
+		ArrayList<CalendarioBean> resultList = (ArrayList<CalendarioBean>)query.setParameter("idPianoStr", pianoDIformazioneBean.getId()).getResultList();
+		return resultList;
 	}
 	
 	

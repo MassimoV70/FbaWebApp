@@ -36,6 +36,11 @@
 					<form:input path="tematicaFormativa" disabled="${disabled}" id="inputUser" cssClass="inputUser"/>
 					<form:errors path="tematicaFormativa" cssClass="error" />
 					<br>
+					<label for="tematicaFormativa">Numero partecipanti:</label>
+					<br>
+					<form:input path="numeroPartecipanti" disabled="${disabled}" id="inputUser" cssClass="inputUser"/>
+					<form:errors path="numeroPartecipanti" cssClass="error" />
+					<br>
 					<label for="modulo1">Titolo modulo1:</label>
 					<br>
 					<form:input path="modulo1" disabled="${disabled}" id="inputUser" cssClass="inputUser"/>
@@ -69,6 +74,16 @@
 					<br>
 					<form:input path="durataModulo2" disabled="${disabled}" id="inputUser" cssClass="inputUser"/>
 					<form:errors path="durataModulo2" cssClass="error" />
+					<br>
+					<label for="formeAiuti">Forme di aiuti</label>
+					<br>
+					<form:input path="formeAiuti" disabled="${disabled}" id="inputUser" cssClass="inputUser"/>
+					<form:errors path="formeAiuti" cssClass="error" />
+					<br>
+					<label for="categSvantagg">Categorie svantaggiate</label>
+					<br>
+					<form:input path="categSvantagg" disabled="${disabled}" id="inputUser" cssClass="inputUser"/>
+					<form:errors path="categSvantagg" cssClass="error" />
 					<br>
 					<label for="attuatorePIVA">Partita IVA attuatore:</label>
 					<br>

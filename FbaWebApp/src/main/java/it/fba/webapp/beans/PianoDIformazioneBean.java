@@ -45,6 +45,11 @@ public class PianoDIformazioneBean {
 	@Column(name="tematicaformativa")
 	String tematicaFormativa;
 	
+	//numero partecipanti
+	@Size(min=1, max=10)
+	@Column(name="numeropartecipanti")
+	String numeroPartecipanti;
+	
 	// titolo modulo 2
 	@Size(min=2, max=50)
 	@Column(name="modulo1")
@@ -77,7 +82,7 @@ public class PianoDIformazioneBean {
 	@Column(name="duratamodulo2")
 	String durataModulo2;
 	
-		// partita iva attuatore
+	// partita iva attuatore
 	@NotNull
 	@Size(min=2, max=50)
 	@Column(name="pivaAttuatore")
@@ -108,19 +113,15 @@ public class PianoDIformazioneBean {
 	@Column(name="username")
 	String username;
 	
+	// forme di aiuti
+	@Size(min=2, max=50)
+	@Column(name="formeaiuti")
+	String formeAiuti;
 	
-	@Column(name="allegato1")
-	CommonsMultipartFile allegato1;
-	
-	@Column(name="allegato2")
-	CommonsMultipartFile allegato2;
-	
-	@Column(name="allegato3")
-	CommonsMultipartFile allegato3;
-	
-	
-	@Column(name="allegato4")
-	CommonsMultipartFile allegato4;
+	// categorie svantaggiate
+	@Size(min=2, max=50)
+	@Column(name="categsvantagg")
+	String categSvantagg;
 
 
 	public int getId() {
@@ -303,44 +304,38 @@ public class PianoDIformazioneBean {
 	}
 
 
-	public CommonsMultipartFile getAllegato1() {
-		return allegato1;
+	public String getNumeroPartecipanti() {
+		return numeroPartecipanti;
 	}
 
 
-	public void setAllegato1(CommonsMultipartFile allegato1) {
-		this.allegato1 = allegato1;
+	public void setNumeroPartecipanti(String numeroPartecipanti) {
+		this.numeroPartecipanti = numeroPartecipanti;
 	}
 
 
-	public CommonsMultipartFile getAllegato2() {
-		return allegato2;
+	public String getFormeAiuti() {
+		return formeAiuti;
 	}
 
 
-	public void setAllegato2(CommonsMultipartFile allegato2) {
-		this.allegato2 = allegato2;
+	public void setFormeAiuti(String formeAiuti) {
+		this.formeAiuti = formeAiuti;
 	}
 
 
-	public CommonsMultipartFile getAllegato3() {
-		return allegato3;
+	public String getCategSvantagg() {
+		return categSvantagg;
 	}
 
 
-	public void setAllegato3(CommonsMultipartFile allegato3) {
-		this.allegato3 = allegato3;
+	public void setCategSvantagg(String categSvantagg) {
+		this.categSvantagg = categSvantagg;
 	}
+    
+	
 
-
-	public CommonsMultipartFile getAllegato4() {
-		return allegato4;
-	}
-
-
-	public void setAllegato4(CommonsMultipartFile allegato4) {
-		this.allegato4 = allegato4;
-	}
+	
 
 	
 	

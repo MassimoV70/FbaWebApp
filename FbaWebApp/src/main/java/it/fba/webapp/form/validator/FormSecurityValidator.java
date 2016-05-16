@@ -21,6 +21,9 @@ public class FormSecurityValidator implements Validator{
 	private static final String TIME24HOURS_PATTERN = 
             "([01]?[0-9]|2[0-3]):[0-5][0-9]";
 	
+	private static final String HOURSMIN_PATTERN= 
+            "([0-9]*):[0-5][0-9]";
+	
 	private static final String NUMBER_PATTERN = 
             "([0-9]*)";
 	private static final String DATE_PATTERN = 
@@ -180,6 +183,17 @@ public class FormSecurityValidator implements Validator{
 		boolean bau = false;
 		try{
 			bau = Pattern.matches(DATE_PATTERN, data);
+		}catch(Exception e){
+			e.printStackTrace();
+			throw e;
+		}
+		return bau;
+	}
+	
+	public static boolean isOreMin (String numero)throws Exception{
+		boolean bau = false;
+		try{
+			bau = Pattern.matches(HOURSMIN_PATTERN, numero);
 		}catch(Exception e){
 			e.printStackTrace();
 			throw e;

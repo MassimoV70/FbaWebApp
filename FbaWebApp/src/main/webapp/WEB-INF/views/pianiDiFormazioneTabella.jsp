@@ -1,24 +1,24 @@
 <%@ include file="header.jsp" %>
-<div class="CSSTableGenerator"   >
-	<table>
+<div  class="CSSTableGenerator"   >
+	<table id="tabella">
 		<c:if test="${not empty listaPiani}">
 	
 				<tr>
-					<td>Nomero Protocollo</td>
+					<td>Numero Protocollo</td>
 					<td>Nome Progetto</td>
 					<td>Tipologia corso</td>
 					<td>Tematica formativa</td>
+					<td>N. part.</td>
 					<td>Modulo 1</td>
 					<td>Mod. form. mod1</td>
 					<td>Durata Modulo 1</td>
 					<td>Modulo 2</td>
 					<td>Mod. form. mod2</td>
 					<td>Durata Modulo 2</td>
+					<td>Regime aiuti</td>
+					<td>Cat. svant.</td>
 					<td>Att. P.IVA</td>
-					<td>Allegato 1</td>
-					<td>Allegato 2</td>
-					<td>Allegato 3</td>
-					<td>Allegato 4</td>
+					<td>Allegati</td>
 					<td>Stato</td>
 					<td>Azioni</td>
 				</tr>
@@ -28,6 +28,7 @@
 					<td>${listValue.nomeProgetto}</td>
 					<td>${listValue.tipoCorsoPiano}</td>
 					<td>${listValue.tematicaFormativa}</td>
+					<td>${listValue.numeroPartecipanti}</td>
 					<c:choose>
 						 <c:when test="${listValue.modulo1!='assente'}">
 							<td><a onclick="elaboraPiano('${listValue.id}','${listValue.modulo1}','${listValue.fadMod1}','modulo')" title="vai al modulo">${listValue.modulo1}</a></td>
@@ -47,24 +48,35 @@
 						 </c:otherwise>
 					</c:choose>
 					<td>${listValue.fadMod2}</td>
-					<td>${listValue.duratamodulo2}</td>
+					<td>${listValue.durataModulo2}</td>
+					<td>${listValue.formeAiuti}</td>
+					<td>${listValue.categSvantagg}</td>
 					<td>${listValue.attuatorePIVA}</td>
-					<td>${listValue.nomeAllegato1}</td>
-					<td>${listValue.nomeAllegato2}</td>
-					<td>${listValue.nomeAllegato3}</td>
-					<td>${listValue.nomeAllegato4}</td>
+					<td>${listValue.nomeAllegato1}
+						${listValue.nomeAllegato2}
+					    ${listValue.nomeAllegato3}
+					    ${listValue.nomeAllegato4}
+					</td>
 					<td>
 						<c:choose>
 						    <c:when test="${listValue.enabled==1}"><img src= "resources/images/ok.png" alt="abilitato" title="abilitato"/></c:when>
 							<c:otherwise> <img src= "resources/images/notOK.png" alt="disabilitato" title="disabilitato"/></c:otherwise>
 						</c:choose> 
 					</td>					
-					<td>
-						<input type="image"  onclick="elaboraPiano('${listValue.id}','','','allega');" value="Allega" src= "resources/images/pdf.png" alt="Allegati attuatore" title="Allegati attuatore">
-						<input type="image"  onclick="elaboraPiano('${listValue.id}','','','rendiconta');" value="Rendiconta" src= "resources/images/rendicontazione.png" alt="Giustificativi spesa" title="Giustificativi spesa">
-						<input type="image"  onclick="elaboraPiano('${listValue.id}','','','modifica');" value="Modifica" src= "resources/images/settings.png" alt="Modificia piano" title="Modificia piano">
-						<input type="image"  onclick="elaboraPiano('${listValue.id}','','','cancella');" value="Cancella" src= "resources/images/elimina.png"  alt="Elimina piano" title="Elimina piano">
-				
+					<td >
+						<div class="toggler" onmousedown="mostra('${listValue.id}'); " >
+						 <div id="azioni${listValue.id}" class="toggle" >
+						  	<img alt="azioni" src="resources/images/azioni.png" title="Apri azioni">
+						  	
+						 </div>
+						 <div id="effect${listValue.id}"  class="funzioni" >
+						 	<img alt="azioni" src="resources/images/azioniChiudi.png" onclick="nascondi('${listValue.id}');" title="Chiudi azioni">
+							<input type="image"  onclick="elaboraPiano('${listValue.id}','','','allega','');" value="Allega" src= "resources/images/pdf.png" alt="Allegati attuatore" title="Allegati attuatore">
+							<input type="image"  onclick="elaboraPiano('${listValue.id}','${listValue.modulo1}','','implementa','${listValue.modulo2}');" value="Implementa" src= "resources/images/implModulo.png" alt="Implementa piano" title="Implementa piano">
+							<input type="image"  onclick="elaboraPiano('${listValue.id}','','','modifica','');" value="Modifica" src= "resources/images/settings.png" alt="Modificia piano" title="Modificia piano">
+							<input type="image"  onclick="elaboraPiano('${listValue.id}','','','cancella','');" value="Cancella" src= "resources/images/elimina.png"  alt="Elimina piano" title="Elimina piano">
+						 </div>
+						</div>
 					</td>
 				   </tr>
 				</c:forEach>
@@ -100,27 +112,12 @@
 	<form:form action="" method="POST" modelAttribute="pianoFormazioneForm" id="modificaPianoForm" >
 		<form:hidden path="id"  id="idPiano" />
 		<form:hidden path="modulo1"  id="idModulo" />
+		<form:hidden path="modulo2"  id="idModulo2" />
 		<form:hidden path="fadMod1"  id="idTipoModulo" />
 		<form:hidden path="username" value="${pageContext.request.userPrincipal.name}"/>
 	</form:form>
 	
-	<script type="text/javascript">
-	 /*  $(function() {
-		    $( "#dialog-confirm" ).dialog({
-		      resizable: false,
-		      height:140,
-		      modal: true,
-		      buttons: {
-		        "Elimina piano": function() {
-		          $( this ).dialog( "close" );
-		        },
-		        Cancel: function() {
-		          $( this ).dialog( "close" );
-		        }
-		      }
-		    });
-		  }); */
-	</script>
+	
 	
 	
 	
@@ -128,11 +125,12 @@
 	
 	<script type="text/javascript">
 	
-		function elaboraPiano(id,modulo,tipoModulo, operazione){
+		function elaboraPiano(id,modulo,tipoModulo, operazione, modulo2){
 		
 			$('#idPiano').val(id);
 			$('#idModulo').val(modulo);
 			$('#idTipoModulo').val(tipoModulo);
+			$('#idModulo2').val(modulo2);
 			
 			if (operazione=='modulo'){
 				$("#modificaPianoForm").attr('action','/FbaWebApp/adminGestioneModulo');
@@ -144,7 +142,7 @@
 				$("#modificaPianoForm").attr('action','/FbaWebApp/adminCancellaPiano');
 				$("#modificaPianoForm").submit(); 
 			}else{
-				$("#modificaPianoForm").attr('action','/FbaWebApp/adminModifyPianoForm');
+				$("#modificaPianoForm").attr('action','/FbaWebApp/adminImplementaPianoForm');
 				$("#modificaPianoForm").submit();
 			}
 		}
@@ -154,12 +152,12 @@
 	
 	<script type="text/javascript">
 	
-	function elaboraPiano(id,modulo,tipoModulo, operazione){
+	function elaboraPiano(id,modulo,tipoModulo, operazione, modulo2){
 		
 		$('#idPiano').val(id);
 		$('#idModulo').val(modulo);
 		$('#idTipoModulo').val(tipoModulo);
-		
+		$('#idModulo2').val(modulo2);
 		if (operazione=='modulo'){
 			$("#modificaPianoForm").attr('action','/FbaWebApp/userGestioneModulo');
 	   	 	$("#modificaPianoForm").submit();
@@ -170,15 +168,38 @@
 			$("#modificaPianoForm").attr('action','/FbaWebApp/userCancellaPiano');
 			$("#modificaPianoForm").submit(); 
 		}else{
-			$("#modificaPianoForm").attr('action','/FbaWebApp/userModifyPianoForm');
+			$("#modificaPianoForm").attr('action','/FbaWebApp/userImplementaPianoForm');
 			$("#modificaPianoForm").submit();
 		}
 	}
+	
+	
 						
 		</script>
 	</sec:authorize>
-	<!-- <div id="dialog-confirm" title="Empty the recycle bin?">
- 		 <p><span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 20px 0;"></span>Il piano, i calendari e i lavoratori collegati verranno eliminati definitivamente. Sei sicuro?</p>
-	</div> -->
+	<script type="text/javascript">
+	$(document).ready(function() {
+	
+		$(".toggle").show();
+		$(".funzioni").hide();
+		
+	})
+	
+	
+	
+	
+	
+	function nascondi(id){
+		
+		$("#azioni"+id).fadeIn("slow");
+		$("#effect"+id).fadeOut();
+	}
+	
+	function mostra(id){
+		$("#effect"+id).fadeIn("slow");
+		$("#azioni"+id).fadeOut();
+	}
+	</script>
+	
 </body>
 </html>

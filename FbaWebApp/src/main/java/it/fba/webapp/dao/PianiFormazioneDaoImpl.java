@@ -25,10 +25,10 @@ public class PianiFormazioneDaoImpl implements PianiFormazioneDao{
 	private final String queryFindPiano = "Select p from PianoDIformazioneBean p where id= :idStr and username= :usernameStr";
 	private final String queryDeleteByUser = "Delete from PianoDIformazioneBean p  where username= :usernameStr";
 	private final String queryUpdatePiano = "Update PianoDIformazioneBean p "
-										  + "set p.nuemroProtocollo= :nuemroProtocolloStr,p.nomeProgetto= :nomeProgettoStr, p.tipoCorsoPiano= :tipoCorsoPianoStr, p.tematicaFormativa= :tematicaFormativaStr,"
-										  + "p.modulo1= :modulo1, p.fadMod1= :fadMod1Str, p.durataModulo1= :durataModulo1Str,"
-										  + " p.modulo2= :modulo2, p.fadMod2= :fadMod2Str,p.durataModulo2= :durataModulo2Str"
-										  + " p.attuatorePIVA= :pivaAtt "
+										  + "set p.nuemroProtocollo= :nuemroProtocolloStr, p.nomeProgetto= :nomeProgettoStr, p.tipoCorsoPiano= :tipoCorsoPianoStr, p.tematicaFormativa= :tematicaFormativaStr,"
+										  + " p.modulo1= :modulo1, p.fadMod1= :fadMod1Str, p.durataModulo1= :durataModulo1Str,"
+										  + " p.modulo2= :modulo2, p.fadMod2= :fadMod2Str, p.durataModulo2= :durataModulo2Str,"
+										  + " p.formeAiuti= :formeAiutiStr, p.categSvantagg= :categSvantaggStr ,p.attuatorePIVA= :pivaAtt "
 										  + "where id= :idStr and username= :usernameStr";
 	private final String queryDeletePiano = "Delete from PianoDIformazioneBean p  where id= :idStr";
 
@@ -55,6 +55,8 @@ public class PianiFormazioneDaoImpl implements PianiFormazioneDao{
 			 .setParameter("durataModulo1Str", pianoDiFormazioneBean.getDurataModulo1())
 	         .setParameter("modulo2", pianoDiFormazioneBean.getModulo2()).setParameter("fadMod2Str", pianoDiFormazioneBean.getFadMod2())
 	         .setParameter("durataModulo2Str", pianoDiFormazioneBean.getDurataModulo2())
+	         .setParameter("formeAiutiStr", pianoDiFormazioneBean.getFormeAiuti())
+	         .setParameter("categSvantaggStr", pianoDiFormazioneBean.getCategSvantagg())
 	         .setParameter("pivaAtt", pianoDiFormazioneBean.getAttuatorePIVA())
 	         .setParameter("usernameStr", pianoDiFormazioneBean.getUsername()).setParameter("idStr",pianoDiFormazioneBean.getId()).executeUpdate();
 		

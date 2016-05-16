@@ -16,22 +16,14 @@
  	        <h3> ${calendario}</h3>
  	         <form:hidden path="nomeModulo"/>
  	         <form:hidden path="idPiano"/>
- 	           <c:if test="${!disabled}">
+ 	         <c:if test="${!disabled}">
  	          <P>Vai alla sezione calendario caricato</P>
         		<input type="button"  onclick="mostraCalendario();" value="Visualizza calendario associato"  >
         		<br>
-       
-	 	     <label for="fileData">Seleziona il file xls o xlsx da caricare:</label>
-			 <br>
-			 <br>
-			 <form:input  type="file"  path="fileData" id="fileData"/>
-			  <br>
+   
 		    </c:if>
 		 </div> 
-		     <br>
-		     <c:if test="${!disabled}">
- 	    	 <input type="submit" />
-			 </c:if>
+		    
  	   
  	</form:form >
 </div>
@@ -44,25 +36,15 @@
  	          <P>Vai alla sezione lavoratori caricati</P>
         		<input type="button"  onclick="mostraLavoratori();" value="Visualizza lavoratori associati" >
         	 <br>
-	 	     <label for="fileData">Seleziona il file xls o xlsx da caricare:</label>
-			 <br>
-			 <br>
-			 <form:input  type="file"  path="fileData" id="fileData"/>
-			  <br>
+	 	     
 		</div>	
-		     <br>
- 	    	 <input type="submit" />
-			
- 	    
- 	     
- 	</form:form >
+		<br>
+ 	  </form:form >
 </div>
     
 <sec:authorize access="hasRole('ROLE_ADMIN')">
 	<div id="bottoniDiv">
-		
-				<input type="button"  onclick="location.href='/FbaWebApp/adminMostraPiani'" value="Indietro" >
-					
+		<input type="button"  onclick="location.href='/FbaWebApp/adminMostraPiani'" value="Indietro" >
 	</div>
 	<script type="text/javascript">
 		

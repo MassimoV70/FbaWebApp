@@ -4,7 +4,9 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 import it.fba.webapp.beans.CalendarioBean;
+import it.fba.webapp.beans.ImplementaPianoFormBean;
 import it.fba.webapp.beans.LavoratoriBean;
+import it.fba.webapp.beans.PianoDIformazioneBean;
 
 public interface LavoratoriDao {
 	
@@ -21,5 +23,7 @@ public interface LavoratoriDao {
 	ArrayList<LavoratoriBean> getAllLavoratori(LavoratoriBean lavoratoriBean) throws SQLException;
 	
 	void deleteLavoratoriPiano (LavoratoriBean lavoratoriBean)throws SQLException;
+	
+	public ArrayList<LavoratoriBean> esistonoLavoratori(PianoDIformazioneBean pianoDIformazioneBean) throws SQLException;
 
 }

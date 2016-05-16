@@ -2,7 +2,7 @@
 
 
        <div id="formDiv">
-        <h2>Exception occured at: </h2><form:formatDate value="${exception.date}" pattern="yyyy-MM-dd" />
+        <h2>Exception occured at: </h2><form value="${exception.date}" pattern="yyyy-MM-dd" />
         <h2>Exception Message   : </h2>${exception.message}
         </div>
          <div id="funzioniDiv">
