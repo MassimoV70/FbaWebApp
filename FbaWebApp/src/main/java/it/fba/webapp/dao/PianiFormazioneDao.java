@@ -19,5 +19,7 @@ public interface PianiFormazioneDao {
 	void deleteAllPianiDIFormazione (String username)throws SQLException;
 	
 	ArrayList<PianoDIformazioneBean> getAllPiani(String username) throws SQLException;
+	
+	void updatePianoDiFormazioneAllegati (PianoDIformazioneBean pianoDiFormazione) throws SQLException;
 
 }

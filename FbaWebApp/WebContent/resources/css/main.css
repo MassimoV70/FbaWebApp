@@ -4,6 +4,9 @@
 @import url('jquery-ui.structure.min.css');
 @import url('jquery-ui.theme.css');
 @import url('jquery-ui.theme.min.css');
+@import url('dataTables.jqueryui.css');
+@import url('jquery.dataTables.css');
+
 
 
 
@@ -172,7 +175,7 @@ input[type=button]:hover {
 
 #bottoniDiv {
    text-align: center;
-    
+  
 }
 #headerDiv{
 	width: auto;
@@ -197,6 +200,12 @@ body{
 	-webkit-border-radius: 5px;
 	-moz-border-radius: 5px;
 	border: 1px solid #000;
+	
+}
+
+.funzioni{
+	width: 40px;
+	height: auto;
 	
 }
 
@@ -298,3 +307,48 @@ body{
 	border-width:0px 0px 1px 1px;
 }
 
+#tabellaFile{
+	
+	width: 35%;
+	height: 100%;
+	float: left;
+	margin: 20px auto;
+	padding: 20px;
+}
+
+#formDivInputFile{
+	width: 55%;
+	padding: 20px;
+	margin-top: 40px;
+	margin-right: 20px;
+	margin-left: 20px;
+	
+	background: #fff;
+	-webkit-border-radius: 5px;
+	-moz-border-radius: 5px;
+	border: 1px solid #000;
+	float: left;
+	display:block;
+}
+
+#inputDivFiles{
+	
+	padding-left: 20%;
+	margin-left: 15%;
+	
+}
+
+#contenitore{
+	
+	
+	width: 100%;
+	height: 400px;
+	margin: 20px auto;
+	
+}
+
+#bottoniDivInputFile{
+	
+   text-align: center;
+ 
+}

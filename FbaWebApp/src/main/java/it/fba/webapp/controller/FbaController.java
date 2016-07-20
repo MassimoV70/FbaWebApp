@@ -1,16 +1,24 @@
 package it.fba.webapp.controller;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import javax.transaction.Transactional;
 import javax.validation.Valid;
 
+import org.apache.commons.fileupload.FileItem;
 import org.apache.log4j.Logger;
+import org.jboss.as.controller.client.helpers.standalone.impl.ModelControllerClientServerDeploymentManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -26,17 +34,29 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.commons.CommonsMultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.google.gson.Gson;
+
+import it.fba.webapp.beans.AttuatoreBean;
 import it.fba.webapp.beans.CalendarioBean;
+import it.fba.webapp.beans.DatiFIleUploadBean;
 import it.fba.webapp.beans.FileBean;
 import it.fba.webapp.beans.ImplementaPianoFormBean;
 import it.fba.webapp.beans.LavoratoriBean;
+import it.fba.webapp.beans.LavoratoriFileBean;
+import it.fba.webapp.beans.ListaFileBean;
 import it.fba.webapp.beans.PianoDIformazioneBean;
+import it.fba.webapp.beans.RendicontazioneBean;
+import it.fba.webapp.beans.RendicontazioneFileBean;
 import it.fba.webapp.beans.UsersBean;
+import it.fba.webapp.dao.AttuatoriDao;
 import it.fba.webapp.dao.CalendarioDao;
 import it.fba.webapp.dao.LavoratoriDao;
 import it.fba.webapp.dao.PianiFormazioneDao;
+import it.fba.webapp.dao.PianiFormazioneDaoImpl;
+import it.fba.webapp.dao.RendicontazioneDao;
 import it.fba.webapp.dao.UsersDao;
 import it.fba.webapp.exception.CustomGenericException;
 import it.fba.webapp.fileInputOutput.ImportServiceExcel;
@@ -318,7 +338,7 @@ public class FbaController {
 					ArrayList<HashMap<String, String>> listaExcel = new ArrayList<>();
 					ArrayList<PianoDIformazioneBean> listaPiani = new ArrayList<>();
 					PianoDIformazioneBean piano = new PianoDIformazioneBean(); 
-					
+					AttuatoreBean attuatoreBean = new AttuatoreBean();
 					ApplicationContext context=null;
 					try {
 						
@@ -329,6 +349,25 @@ public class FbaController {
 						
 						 context = new ClassPathXmlApplicationContext("spring\\spring-jpa.xml","spring\\spring-utils.xml");
 						 PianiFormazioneDao pianiFormazioneDao = (PianiFormazioneDao) context.getBean("PianiFormazioneDaoImpl");
+						 AttuatoriDao attuatoriDao= (AttuatoriDao) context.getBean("AttuatoreDaoImpl");
+						 AttuatoreBean attuatoreResult = new AttuatoreBean();
+						 for(PianoDIformazioneBean singoloPiano :listaPiani){
+							    
+							    if (attuatoreResult==null||!(attuatoreResult.getAttuatorePIVA()!=null&&attuatoreBean.getAttuatorePIVA().equalsIgnoreCase(singoloPiano.getAttuatorePIVA()))){
+							    	    attuatoreBean.setAttuatorePIVA(singoloPiano.getAttuatorePIVA());
+							    		attuatoreResult = attuatoriDao.leggiNomiAllegati(attuatoreBean);
+							    }
+							    	
+							   if (attuatoreResult!=null){
+									singoloPiano.setAttuatorePIVA(attuatoreResult.getAttuatorePIVA());
+									singoloPiano.setNomeAllegato1(attuatoreResult.getNomeAllegato1());
+									singoloPiano.setNomeAllegato2(attuatoreResult.getNomeAllegato2());
+									singoloPiano.setNomeAllegato3(attuatoreResult.getNomeAllegato3());
+									singoloPiano.setNomeAllegato4(attuatoreResult.getNomeAllegato4());
+								}
+							    
+							 
+						 }
 						 pianiFormazioneDao.caricaPianiFormazione(listaPiani);
 						 listaPiani = pianiFormazioneDao.getAllPiani(fileBean.getUsername());
 						 
@@ -410,7 +449,7 @@ public class FbaController {
 						pianoDIformazioneBean= pianiFormazioneDao.findPianiFormazione(pianoFormazione);
 						
 						
-					((ConfigurableApplicationContext)context).close();
+					
 					}catch(Exception e){
 						e.printStackTrace();
 						logger.error(e.getMessage());
@@ -437,14 +476,28 @@ public class FbaController {
 				public ModelAndView modifyPiano(ModelMap model, @Valid @ModelAttribute("pianoFormazioneForm") PianoDIformazioneBean pianoDiFormazione, BindingResult bindingResult) {
 		             
 					ModelAndView modelWiev = new ModelAndView();
-					validator.pianoFormazioneValidator(pianoDiFormazione, bindingResult, myProperties);
-				ApplicationContext context=null;
+					ApplicationContext context=null;
 					try{
+						validator.pianoFormazioneValidator(pianoDiFormazione, bindingResult, myProperties);
 						if(!bindingResult.hasErrors()){
 							pianoDiFormazione.setEnabled("1");
 							context = new ClassPathXmlApplicationContext("spring\\spring-jpa.xml","spring\\spring-utils.xml");
 							PianiFormazioneDao pianiFormazioneDao = (PianiFormazioneDao) context.getBean("PianiFormazioneDaoImpl");
+							
+							//aggiorno i nomi degli allegati del piano.
+							AttuatoreBean attuatoreBean = new AttuatoreBean();
+						    attuatoreBean.setAttuatorePIVA(pianoDiFormazione.getAttuatorePIVA());		
+							AttuatoriDao attuatoriDao= (AttuatoriDao) context.getBean("AttuatoreDaoImpl");
+							AttuatoreBean attuatoreResult = attuatoriDao.leggiNomiAllegati(attuatoreBean);
+							if (attuatoreResult!=null){
+								pianoDiFormazione.setAttuatorePIVA(attuatoreResult.getAttuatorePIVA());
+								pianoDiFormazione.setNomeAllegato1(attuatoreResult.getNomeAllegato1());
+								pianoDiFormazione.setNomeAllegato2(attuatoreResult.getNomeAllegato2());
+								pianoDiFormazione.setNomeAllegato3(attuatoreResult.getNomeAllegato3());
+								pianoDiFormazione.setNomeAllegato4(attuatoreResult.getNomeAllegato4());
+							}
 							pianiFormazioneDao.updatePianoDiFormazione(pianoDiFormazione);
+							
 						
 							// cancellazioni degli eventuali calendari dei moduli diventati fad
 							ArrayList<CalendarioBean> listaCalendario = new ArrayList<>();
@@ -508,14 +561,18 @@ public class FbaController {
 					try {
 						 CalendarioBean calendario = new CalendarioBean();
 						 LavoratoriBean lavoratori = new LavoratoriBean();
+						 RendicontazioneBean rendicontazione = new RendicontazioneBean();
 						 calendario.setIdPiano(pianoDIformazioneBean.getId());
 						 lavoratori.setIdPiano(pianoDIformazioneBean.getId());
+						 rendicontazione.setIdPiano(pianoDIformazioneBean.getId());
 						 context = new ClassPathXmlApplicationContext("spring\\spring-jpa.xml","spring\\spring-utils.xml");
 						 PianiFormazioneDao pianiFormazioneDao = (PianiFormazioneDao) context.getBean("PianiFormazioneDaoImpl");
 						 CalendarioDao calendarioDao = (CalendarioDao) context.getBean("CalendarioDaoImpl");
 						 LavoratoriDao lavoratoriDao = (LavoratoriDao) context.getBean("LavoratoriDaoImpl");
+						 RendicontazioneDao rendicontazioneDao = (RendicontazioneDao) context.getBean("RendicontazioneDaoImpl");
 						 calendarioDao.deleteCalednariPiano(calendario);
 						 lavoratoriDao.deleteLavoratoriPiano(lavoratori);
+						 rendicontazioneDao.eliminaRendicontazionePiano(rendicontazione);
 						 pianiFormazioneDao.deletePianoDiFormazione(pianoDIformazioneBean);
 						 UsersBean user = new UsersBean();
 						 user.setUsername(request.getUserPrincipal().getName());
@@ -980,7 +1037,7 @@ public class FbaController {
 				ApplicationContext context=null;
 				
 					try{
-						
+						validator.lavoratoriValidator(lavoratoriBean, bindingResult, myProperties);
 						if(!bindingResult.hasErrors()){
 							lavoratoriBean.setStato("1");
 							context = new ClassPathXmlApplicationContext("spring\\spring-jpa.xml","spring\\spring-utils.xml");
@@ -1056,7 +1113,7 @@ public class FbaController {
 				
 				}
 				
-				// metodo modifica dati utentie
+				// metodo che completa il piano con i moduli e la rendicontazione
 				@RequestMapping(value ={"/adminImplementaPianoForm","/userImplementaPianoForm"} , method = RequestMethod.POST)
 				public ModelAndView implementaPianoForm(ModelMap model, @ModelAttribute("pianoFormazioneForm") PianoDIformazioneBean pianoFormazione) {
 		             
@@ -1116,43 +1173,84 @@ public class FbaController {
 					ArrayList<CalendarioBean> listaCalendario2= new ArrayList<>();
 					ArrayList<LavoratoriBean> listaLavoratori1 = new ArrayList<>();
 					ArrayList<LavoratoriBean> listaLavoratori2 = new ArrayList<>();
+					ArrayList<RendicontazioneBean> listaRendicontazione = new ArrayList<>();
 					FileBean fileBean = new FileBean();
 					ImportServiceExcel importService = new ImportServiceExcel();
 					String nomeModulo ="";
 					ApplicationContext context=null;
 					try {
+						
+					    //sezione caricamento file calendario
 						if(implementaPianoFormBean.getFileData1()!=null&&!implementaPianoFormBean.getFileData1().isEmpty()){
 							// carico i calendari per i due moduli
 							fileBean.setFileData(implementaPianoFormBean.fileData1);
 							listaExcel = importService.importFile(fileBean);
-							listaCalendario1 = ExcelValidator.listaCalendariModuliValidator(listaExcel, implementaPianoFormBean.getId(), implementaPianoFormBean.getModulo1());
-							listaCalendario2 = ExcelValidator.listaCalendariModuliValidator(listaExcel, implementaPianoFormBean.getId(), implementaPianoFormBean.getModulo2());
+							try{
+								listaCalendario1 = ExcelValidator.listaCalendariModuliValidator(listaExcel, implementaPianoFormBean.getId(), implementaPianoFormBean.getModulo1());
+								listaCalendario2 = ExcelValidator.listaCalendariModuliValidator(listaExcel, implementaPianoFormBean.getId(), implementaPianoFormBean.getModulo2());
+							}catch(Exception e){
+								modelWiev.addObject("errorMessage", myProperties.getProperty("errore.file.excel",implementaPianoFormBean.fileData1.getName()));
+								throw e;
+							}
 						}
 						
+						//sezione caricamento file lavoratori
 						if(implementaPianoFormBean.getFileData2()!=null&&!implementaPianoFormBean.getFileData2().isEmpty()){
 							// carico i lavortori per i due moduli
 							fileBean.setFileData(implementaPianoFormBean.fileData2);
 							listaExcel = importService.importFile(fileBean);
-							listaLavoratori1 = ExcelValidator.listaLavoratoriModuliValidator(listaExcel,implementaPianoFormBean.getId(), implementaPianoFormBean.getModulo1());
-							listaLavoratori2 = ExcelValidator.listaLavoratoriModuliValidator(listaExcel,implementaPianoFormBean.getId(), implementaPianoFormBean.getModulo2());
+							try{
+								listaLavoratori1 = ExcelValidator.listaLavoratoriModuliValidator(listaExcel,implementaPianoFormBean.getId(), implementaPianoFormBean.getModulo1());
+								listaLavoratori2 = ExcelValidator.listaLavoratoriModuliValidator(listaExcel,implementaPianoFormBean.getId(), implementaPianoFormBean.getModulo2());
+							}catch(Exception e){
+								modelWiev.addObject("errorMessage", myProperties.getProperty("errore.file.excel",implementaPianoFormBean.fileData2.getName()));
+								throw e;
+							}
 						}
+						
+						//sezione caricamento file rendicontazione
+						if(implementaPianoFormBean.getFileData3()!=null&&!implementaPianoFormBean.getFileData3().isEmpty()){
+							// carico i lavortori per i due moduli
+							fileBean.setFileData(implementaPianoFormBean.fileData3);
+							listaExcel = importService.importFile(fileBean);
+							try{
+								listaRendicontazione = ExcelValidator.listaRendicontazioneValidator(listaExcel, implementaPianoFormBean.getId());
+							}catch(Exception e){
+								modelWiev.addObject("errorMessage", myProperties.getProperty("errore.file.excel",implementaPianoFormBean.fileData3.getName()));
+								throw e;
+							}
+							
+						}
+						
 						context = new ClassPathXmlApplicationContext("spring\\spring-jpa.xml","spring\\spring-utils.xml");
 						PianiFormazioneDao pianiFormazioneDao = (PianiFormazioneDao) context.getBean("PianiFormazioneDaoImpl");
 						CalendarioDao calendarioDao = (CalendarioDao) context.getBean("CalendarioDaoImpl");
 						LavoratoriDao lavoratoriDao = (LavoratoriDao) context.getBean("LavoratoriDaoImpl");
+						RendicontazioneDao rendicontazioneDao = (RendicontazioneDao) context.getBean("RendicontazioneDaoImpl");
 						
-						if (listaCalendario1!=null&&!listaCalendario1.isEmpty()){
-							calendarioDao.caricaCalendari(listaCalendario1);
+						try{
+							if (listaCalendario1!=null&&!listaCalendario1.isEmpty()){
+								calendarioDao.caricaCalendari(listaCalendario1);
+							}
+							if (listaCalendario2!=null&&!listaCalendario2.isEmpty()){
+								calendarioDao.caricaCalendari(listaCalendario2);
+							}
+							
+							if (listaLavoratori1!=null&&!listaLavoratori1.isEmpty()){
+								lavoratoriDao.caricaLavoratori(listaLavoratori1);
+								
+							}
+							if (listaLavoratori2!=null&&!listaLavoratori2.isEmpty()){
+								lavoratoriDao.caricaLavoratori(listaLavoratori2);
+							}
+							if (listaRendicontazione!=null&&!listaRendicontazione.isEmpty()){
+								rendicontazioneDao.caricaRendicontazione(listaRendicontazione);
+							}
+						}catch(Exception e){
+							modelWiev.addObject("errorMessage", myProperties.getProperty("errore.scrittura.db"));
+							throw e;
 						}
-						if (listaCalendario2!=null&&!listaCalendario2.isEmpty()){
-							calendarioDao.caricaCalendari(listaCalendario2);
-						}
-						if (listaLavoratori1!=null&&!listaLavoratori1.isEmpty()){
-							lavoratoriDao.caricaLavoratori(listaLavoratori1);
-						}
-						if (listaLavoratori2!=null&&!listaLavoratori2.isEmpty()){
-							lavoratoriDao.caricaLavoratori(listaLavoratori2);
-						}
+						
 						listaPiani = pianiFormazioneDao.getAllPiani(request.getUserPrincipal().getName());
 						
 						
@@ -1160,7 +1258,6 @@ public class FbaController {
 						// TODO: handle exception
 						e.printStackTrace();
 						logger.error(e.getMessage());
-						modelWiev.addObject("errorMessage", myProperties.getProperty("errore.file.excel"));
 						modelWiev.setViewName("implementaProgetto");
 						return modelWiev;
 						
@@ -1179,10 +1276,529 @@ public class FbaController {
 					modelWiev.setViewName("pianiDiFormazioneTabella");
 				
 					return modelWiev;
+				}
+				
+				// metodo che esegue l'upload degli allegati degli attuatori associandoli ai piani.
+				@RequestMapping(value ={ "/adminUploadAttuatoreForm","/userUploadAttuatoreForm"}, method = RequestMethod.POST)
+				public ModelAndView uploadAttuatoreForm (HttpServletRequest request,ModelMap model, @ModelAttribute("pianoFormazioneForm") PianoDIformazioneBean pianoFormazione){
+					ModelAndView modelWiev = new ModelAndView();
+					ImplementaPianoFormBean implementaPianoFormBean = new ImplementaPianoFormBean();
+					implementaPianoFormBean.setAttuatorePIVA(pianoFormazione.getAttuatorePIVA());
+					ArrayList<PianoDIformazioneBean> listaPiani = new ArrayList<>();
+					AttuatoreBean attuatoreBean = new AttuatoreBean();
+					ApplicationContext context=null;
+					
+					
+					try {
+						context = new ClassPathXmlApplicationContext("spring\\spring-jpa.xml","spring\\spring-utils.xml");
+						if (pianoFormazione.getAttuatorePIVA()!=null&&!pianoFormazione.getAttuatorePIVA().isEmpty()){
+							attuatoreBean.setAttuatorePIVA(pianoFormazione.getAttuatorePIVA());
+							AttuatoriDao attuatoriDao= (AttuatoriDao) context.getBean("AttuatoreDaoImpl");
+							boolean esiste = attuatoriDao.esisteAttuatore(attuatoreBean);
+							if(esiste){
+								modelWiev.addObject("attuatore", "L'operazione aggiornerà gli allegati della partita IVA");
+							}
+						}else{
+							PianiFormazioneDao pianiFormazioneDao = (PianiFormazioneDao) context.getBean("PianiFormazioneDaoImpl");
+							listaPiani = pianiFormazioneDao.getAllPiani(request.getUserPrincipal().getName());
+							PianoDIformazioneBean piano = new PianoDIformazioneBean();
+							modelWiev.addObject("errorMessage", "Il piano selezionato non ha una partita IVA");
+							modelWiev.addObject("title", "Tabella Piani Di Formazione");
+							modelWiev.addObject("message", myProperties.getProperty("piani.formazione.elenco"));
+							modelWiev.addObject("listaPiani", listaPiani);
+							modelWiev.addObject("pianoFormazioneForm",piano);
+							modelWiev.setViewName("pianiDiFormazioneTabella");
+						
+							return modelWiev;
+							
+						}
+					} catch (Exception e) {
+						// TODO: handle exception
+						e.printStackTrace();
+						logger.error(e.getMessage());
+						throw new CustomGenericException(new Date(), myProperties.getProperty("errore.generale"));
+					}finally {
+						if(context!=null){
+							((ConfigurableApplicationContext)context).close();
+						}
+					}
+					modelWiev.addObject("implementaPianoFormBean", implementaPianoFormBean);
+					modelWiev.setViewName("attuatoreUpload");
+					return modelWiev;
+				}
+
+
+				// metodo che esegue l'upload degli allegati degli attuatori associandoli ai piani.
+				@RequestMapping(value ={ "/adminUploadAttuatore","/userUploadAttuatore"}, method = RequestMethod.POST)
+				public ModelAndView uploadAttuatore (HttpServletRequest request,@ModelAttribute("implementaPianoFormBean") ImplementaPianoFormBean implementaPianoFormBean, BindingResult bindingResult){
+					ModelAndView modelWiev = new ModelAndView();
+					ArrayList<PianoDIformazioneBean> listaPiani = new ArrayList<>();
+					AttuatoreBean attuatoreBean = new AttuatoreBean();
+					PianoDIformazioneBean pianoDiFormazione = new PianoDIformazioneBean();
+					ApplicationContext context=null;
+					try {
+						ImportServiceExcel service = new ImportServiceExcel();
+						attuatoreBean = service.importaCertificati(implementaPianoFormBean);
+						context = new ClassPathXmlApplicationContext("spring\\spring-jpa.xml","spring\\spring-utils.xml");
+						PianiFormazioneDao pianiFormazioneDao = (PianiFormazioneDao) context.getBean("PianiFormazioneDaoImpl");
+						AttuatoriDao attuatoriDao= (AttuatoriDao) context.getBean("AttuatoreDaoImpl");
+						attuatoreBean.setAttuatorePIVA(implementaPianoFormBean.getAttuatorePIVA());
+						validator.attuatoriValidator(attuatoreBean, bindingResult, myProperties);
+						if (!bindingResult.hasErrors()){
+							boolean esiste = attuatoriDao.esisteAttuatore(attuatoreBean);
+							if (!esiste){
+								attuatoriDao.creaAttuatore(attuatoreBean);
+							}else{
+								attuatoriDao.updateAttuatore(attuatoreBean);
+							}
+							AttuatoreBean attuatoreResult = attuatoriDao.leggiNomiAllegati(attuatoreBean);
+							if (attuatoreResult!=null){
+								pianoDiFormazione.setAttuatorePIVA(attuatoreResult.getAttuatorePIVA());
+								pianoDiFormazione.setNomeAllegato1(attuatoreResult.getNomeAllegato1());
+								pianoDiFormazione.setNomeAllegato2(attuatoreResult.getNomeAllegato2());
+								pianoDiFormazione.setNomeAllegato3(attuatoreResult.getNomeAllegato3());
+								pianoDiFormazione.setNomeAllegato4(attuatoreResult.getNomeAllegato4());
+								pianiFormazioneDao.updatePianoDiFormazioneAllegati(pianoDiFormazione);
+							}
+							listaPiani = pianiFormazioneDao.getAllPiani(request.getUserPrincipal().getName());
+						}else{
+							modelWiev.addObject("implementaPianoFormBean", implementaPianoFormBean);
+							modelWiev.setViewName("attuatoreUpload");
+							return modelWiev;
+						}
+						
+					} catch (Exception e) {
+						// TODO: handle exception
+						e.printStackTrace();
+						logger.error(e.getMessage());
+						modelWiev.addObject("errorMessage", myProperties.getProperty("errore.filePdf.multipli"));
+						modelWiev.addObject("implementaPianoFormBean", implementaPianoFormBean);
+						modelWiev.setViewName("attuatoreUpload");
+						return modelWiev;
+					}finally{
+						if(context!=null){
+							((ConfigurableApplicationContext)context).close();
+						}
+					}
+					
+					PianoDIformazioneBean piano = new PianoDIformazioneBean();
+					modelWiev.addObject("title", "Tabella Piani Di Formazione");
+					modelWiev.addObject("message", myProperties.getProperty("piani.formazione.elenco"));
+					modelWiev.addObject("listaPiani", listaPiani);
+					modelWiev.addObject("pianoFormazioneForm",piano);
+					modelWiev.setViewName("pianiDiFormazioneTabella");
+				
+					return modelWiev;
+				}
+				
+				
+				// carica la rendicontazione relativa al progetto
+				@RequestMapping(value ={ "/adminMostraRendicontazione","/userMostraRendicontazione"}, method = RequestMethod.POST)
+				public ModelAndView mostraRendicontazione(HttpServletRequest request,  @ModelAttribute("pianoFormazioneForm") PianoDIformazioneBean pianoFormazione) {
+					ModelAndView modelWiev = new ModelAndView();
+					ArrayList<RendicontazioneBean> listaRendicontazione = new ArrayList<>();
+					ApplicationContext context=null;
+					
+					try {
+						 context = new ClassPathXmlApplicationContext("spring\\spring-jpa.xml","spring\\spring-utils.xml");
+						 RendicontazioneDao rendicontazioneDao = (RendicontazioneDao) context.getBean("RendicontazioneDaoImpl");
+						 listaRendicontazione = rendicontazioneDao.getAllrendicontazione(pianoFormazione);
+						 listaRendicontazione = Utils.rendicontazioneFormSetting(listaRendicontazione);
+					
+					} catch (Exception e) {
+						// TODO: handle exception
+						e.printStackTrace();
+						logger.error(e.getMessage());
+						throw new CustomGenericException(new Date(), myProperties.getProperty("errore.generale"));
+					}finally{
+						if(context!=null){
+							((ConfigurableApplicationContext)context).close();
+						}
+					}	
+					
+						
+						RendicontazioneBean rendicontazione = new RendicontazioneBean();
+						modelWiev.addObject("title", "Tabella Rendicontazione Progetto");
+						modelWiev.addObject("message", myProperties.getProperty("rendicontazione.elenco"));
+						modelWiev.addObject("listaRendicontazione", listaRendicontazione);
+						modelWiev.addObject("pianoFormazioneForm",pianoFormazione);
+						modelWiev.addObject("rendicontazioneBeanForm",rendicontazione);
+						modelWiev.setViewName("rendicontazioneTabella");
+					
+						return modelWiev;
+					}
+				
+				
+				// carica la pagina di modifica della rendicontazione
+				@RequestMapping(value ={ "/adminModificaRendForm","/userModificaRendForm"}, method = RequestMethod.POST)
+				public ModelAndView modificaRendicontazioneForm(@ModelAttribute("rendicontazioneBeanForm") RendicontazioneBean rendicontazioneBeanForm) {
+					ModelAndView modelWiev = new ModelAndView();
+					
+					ApplicationContext context=null;
+					
+					try {
+						 context = new ClassPathXmlApplicationContext("spring\\spring-jpa.xml","spring\\spring-utils.xml");
+						 RendicontazioneDao rendicontazioneDao = (RendicontazioneDao) context.getBean("RendicontazioneDaoImpl");
+						 rendicontazioneBeanForm = rendicontazioneDao.findRendicontazioneById(rendicontazioneBeanForm);
+						 rendicontazioneBeanForm.setDataGiustificativoStr(Utils.formattaData(rendicontazioneBeanForm.getDataGiustificativo()));
+					
+					} catch (Exception e) {
+						// TODO: handle exception
+						e.printStackTrace();
+						logger.error(e.getMessage());
+						throw new CustomGenericException(new Date(), myProperties.getProperty("errore.generale"));
+					}finally{
+						if(context!=null){
+							((ConfigurableApplicationContext)context).close();
+						}
+					}	
+					
+						
+						PianoDIformazioneBean pianoDIformazioneBean = new PianoDIformazioneBean();
+						modelWiev.addObject("title", "Pagina di modifica soggetto rendicontato");
+						modelWiev.addObject("message", myProperties.getProperty("rendicontazione.modifica"));
+						modelWiev.addObject("pianoFormazioneForm", pianoDIformazioneBean);
+						modelWiev.addObject("rendicontazioneBeanForm", rendicontazioneBeanForm);
+						modelWiev.setViewName("modificaRendicontazione");
+					
+						return modelWiev;
+					}
+				
+				// modifica il soggetto di rendicontazione
+				@RequestMapping(value ={ "/adminModificaRendicontazione","/userModificaRendicontazione"}, method = RequestMethod.POST)
+				public ModelAndView modificaRendicontazione( @Valid @ModelAttribute("rendicontazioneBeanForm") RendicontazioneBean rendicontazioneBeanForm, BindingResult bindingResult) {
+					ModelAndView modelWiev = new ModelAndView();
+					
+					ApplicationContext context=null;
+					boolean diasbled = false;
+					try {
+						validator.rendicontazioneValidator(rendicontazioneBeanForm, bindingResult, myProperties);
+						if (!bindingResult.hasErrors()){
+							 context = new ClassPathXmlApplicationContext("spring\\spring-jpa.xml","spring\\spring-utils.xml");
+							 RendicontazioneDao rendicontazioneDao = (RendicontazioneDao) context.getBean("RendicontazioneDaoImpl");
+							 rendicontazioneBeanForm.setDataGiustificativo(Utils.dataDBFormatter(rendicontazioneBeanForm.getDataGiustificativoStr()));
+							 rendicontazioneDao.updateRendicontazione(rendicontazioneBeanForm);
+							 rendicontazioneBeanForm = rendicontazioneDao.findRendicontazioneById(rendicontazioneBeanForm);
+							 rendicontazioneBeanForm.setDataGiustificativoStr(Utils.formattaData(rendicontazioneBeanForm.getDataGiustificativo()));
+							 diasbled=true;
+						}
+					
+					} catch (Exception e) {
+						// TODO: handle exception
+						e.printStackTrace();
+						logger.error(e.getMessage());
+						throw new CustomGenericException(new Date(), myProperties.getProperty("errore.generale"));
+					}finally{
+						if(context!=null){
+							((ConfigurableApplicationContext)context).close();
+						}
+					}	
+					
+						
+					    PianoDIformazioneBean pianoDIformazioneBean = new PianoDIformazioneBean();
+					    pianoDIformazioneBean.setId(rendicontazioneBeanForm.getIdPiano());
+						modelWiev.addObject("title", "Pagina di modifica soggetto rendicontato");
+						modelWiev.addObject("message", myProperties.getProperty("rendicontazione.modifica"));
+						modelWiev.addObject("rendicontazioneBeanForm", rendicontazioneBeanForm);
+						modelWiev.addObject("pianoFormazioneForm", pianoDIformazioneBean);
+						modelWiev.addObject("disabled", diasbled);
+						modelWiev.setViewName("modificaRendicontazione");
+					
+						return modelWiev;
+					}
+				
+				// Elimina il soggetto rendicontato
+				@RequestMapping(value ={ "/adminEliminaSoggettoRend","/userEliminaSoggettoRend"}, method = RequestMethod.POST)
+				public ModelAndView eliminaSoggettoRend(@ModelAttribute("rendicontazioneBeanForm") RendicontazioneBean rendicontazioneBeanForm) {
+					ModelAndView modelWiev = new ModelAndView();
+					ArrayList<RendicontazioneBean> listaRendicontazione = new ArrayList<>();
+					ApplicationContext context=null;
+					PianoDIformazioneBean pianoFormazione = new PianoDIformazioneBean();
+					pianoFormazione.setId(rendicontazioneBeanForm.getIdPiano());
+					try {
+						 context = new ClassPathXmlApplicationContext("spring\\spring-jpa.xml","spring\\spring-utils.xml");
+						 RendicontazioneDao rendicontazioneDao = (RendicontazioneDao) context.getBean("RendicontazioneDaoImpl");
+						 rendicontazioneDao.eliminaSoggettoRendicontato(rendicontazioneBeanForm);
+						 listaRendicontazione = rendicontazioneDao.getAllrendicontazione(pianoFormazione);
+						 listaRendicontazione = Utils.rendicontazioneFormSetting(listaRendicontazione);
+					
+					} catch (Exception e) {
+						// TODO: handle exception
+						e.printStackTrace();
+						logger.error(e.getMessage());
+						throw new CustomGenericException(new Date(), myProperties.getProperty("errore.generale"));
+					}finally{
+						if(context!=null){
+							((ConfigurableApplicationContext)context).close();
+						}
+					}	
+					
+						
+						RendicontazioneBean rendicontazione = new RendicontazioneBean();
+						modelWiev.addObject("title", "Tabella Rendicontazione Progetto");
+						modelWiev.addObject("message", myProperties.getProperty("rendicontazione.elenco"));
+						modelWiev.addObject("listaRendicontazione", listaRendicontazione);
+						modelWiev.addObject("pianoFormazioneForm",pianoFormazione);
+						modelWiev.addObject("rendicontazioneBeanForm",rendicontazione);
+						modelWiev.setViewName("rendicontazioneTabella");
+					
+						return modelWiev;
+					}
+				
+				
+				
+				//Carica il form per l'upload dei file di rendicontazione
+				@RequestMapping(value ={ "/adminRendicontazioneFile","/userRendicontazioneFile"}, method = RequestMethod.GET)
+				public ModelAndView caricaFileRendForm (HttpServletRequest request,  @ModelAttribute("rendicontazioneBeanForm") RendicontazioneBean rendicontazioneBeanForm) {
+					ModelAndView modelWiev = new ModelAndView();
+					ApplicationContext context =null;
+					ArrayList<RendicontazioneFileBean> listaFileRendicontazione = new ArrayList<>();
+					String username = request.getUserPrincipal().getName();
+					try {
+					
+						context = new ClassPathXmlApplicationContext("spring\\spring-jpa.xml","spring\\spring-utils.xml");
+						RendicontazioneDao rendicontazioneDao = (RendicontazioneDao) context.getBean("RendicontazioneDaoImpl");
+						listaFileRendicontazione = rendicontazioneDao.getElencoFileRendicontazione(username);
+					
+					} catch (Exception e) {
+						// TODO: handle exception
+						e.printStackTrace();
+						logger.error(e.getMessage());
+					}
+					RendicontazioneFileBean rendicontazioneBean = new RendicontazioneFileBean();
+						modelWiev.addObject("title", "Upload File Rendicontazione");
+						modelWiev.addObject("rendicontazioneBean", rendicontazioneBean);
+						modelWiev.addObject("listaFileRendicontazione", listaFileRendicontazione);
+						modelWiev.addObject("message", myProperties.getProperty("rendicontazione.file"));
+						modelWiev.setViewName("rendicontazioneFileUpload");
+					
+						return modelWiev;
+					}
+				
+				
+				//Esegue l'upload dei file di rendicontazione
+				@RequestMapping(value ={ "/adminRendicontUpload","/userRendicontUpload"}, method = RequestMethod.POST)
+				public ModelAndView caricaFileRend (HttpServletRequest request,  @ModelAttribute("uploadForm") ListaFileBean rendicontazioneFileList) {
+					ModelAndView modelWiev = new ModelAndView();
+					ApplicationContext context=null;
+					ArrayList<DatiFIleUploadBean> listaDatiFiles = new ArrayList<>();
+					try {
+						
+						String username = request.getUserPrincipal().getName();
+						context = new ClassPathXmlApplicationContext("spring\\spring-jpa.xml","spring\\spring-utils.xml");
+						RendicontazioneDao rendicontazioneDao = (RendicontazioneDao) context.getBean("RendicontazioneDaoImpl");
+						for(CommonsMultipartFile fileItem : rendicontazioneFileList.getListaFile()){
+							
+						 if (fileItem!=null&&(!fileItem.getOriginalFilename().equalsIgnoreCase(""))){
+							RendicontazioneFileBean rendicontazioneFileBean = new RendicontazioneFileBean();
+							DatiFIleUploadBean datiFile = new DatiFIleUploadBean();
+							datiFile.setNomeFile(fileItem.getOriginalFilename());
+							if(fileItem.getSize()!=0){
+								datiFile.setSizeFile(Long.toString(fileItem.getSize()/1000)+" MB");
+								if(fileItem.getOriginalFilename().endsWith("pdf")){
+									rendicontazioneFileBean.setUsername(username);
+									rendicontazioneFileBean.setNomeAllegato(fileItem.getOriginalFilename());
+								    // verifica se il file esiste sul DB
+									boolean trovato = false;
+									trovato = rendicontazioneDao.esisteFile(rendicontazioneFileBean.getNomeAllegato(),username);
+									if (!trovato){
+										rendicontazioneFileBean.setAllegatoFile(fileItem.getBytes());
+										if(rendicontazioneFileBean.getClass()!=null){
+										
+											rendicontazioneDao.caricaFileRendicontazione(rendicontazioneFileBean);
+											 
+										}else{
+											datiFile.setErrore("Impossibile caricare il file.");
+										}
+										
+									}else{
+										datiFile.setErrore("Il file è già presente nel database.");
 									}
-
-
+								}else{
+									datiFile.setErrore("Non è un file PDF.");
+								}
+							}else{
+								datiFile.setErrore("Non è stato possibile accedere al file.");
+							}
+							listaDatiFiles.add(datiFile);
+						 }
+						}
+						
+						
+						
+						
+						
+						
+					} catch (Exception e) {
+						// TODO: handle exception
+						e.printStackTrace();
+						logger.error(e.getMessage());
+					}
+						modelWiev.addObject("title", " Riepilogo Upload File Rendicontazione");
+						modelWiev.addObject("message", myProperties.getProperty("riepilogo.upload"));
+						modelWiev.addObject("listaDatiFiles", listaDatiFiles);
+						modelWiev.setViewName("fileUploadReuslt");
+					
+						return modelWiev;
+					}
 			
+				//Elina il file di rendicontazione
+				@RequestMapping(value ={ "/adminCancellaRendiconFile","/userCancellaRendiconFile"}, method = RequestMethod.POST)
+				public ModelAndView cancellaRendiconFile (HttpServletRequest request,  @ModelAttribute("rendicontazioneBean") RendicontazioneFileBean rendicontazioneFileBean) {
+					ModelAndView modelWiev = new ModelAndView();
+					ApplicationContext context =null;
+					ArrayList<RendicontazioneFileBean> listaFileRendicontazione = new ArrayList<>();
+					String username = request.getUserPrincipal().getName();
+					try {
+					
+						context = new ClassPathXmlApplicationContext("spring\\spring-jpa.xml","spring\\spring-utils.xml");
+						RendicontazioneDao rendicontazioneDao = (RendicontazioneDao) context.getBean("RendicontazioneDaoImpl");
+						rendicontazioneDao.eliminaFile(rendicontazioneFileBean);
+						listaFileRendicontazione = rendicontazioneDao.getElencoFileRendicontazione(username);
+					
+					} catch (Exception e) {
+						// TODO: handle exception
+						e.printStackTrace();
+						logger.error(e.getMessage());
+					}
+					RendicontazioneFileBean rendicontazioneBean = new RendicontazioneFileBean();
+						modelWiev.addObject("title", "Upload File Rendicontazione");
+						modelWiev.addObject("rendicontazioneBean", rendicontazioneBean);
+						modelWiev.addObject("listaFileRendicontazione", listaFileRendicontazione);
+						modelWiev.addObject("message", myProperties.getProperty("rendicontazione.file"));
+						modelWiev.setViewName("rendicontazioneFileUpload");
+					
+						return modelWiev;
+					}
+				
+				//Carica il form per l'upload dei file dei lavoratori
+				@RequestMapping(value ={ "/adminLavoratoriFile","/userLavoratoriFile"}, method = RequestMethod.GET)
+				public ModelAndView caricaFileLavoratoriForm (HttpServletRequest request) {
+					ModelAndView modelWiev = new ModelAndView();
+					ApplicationContext context =null;
+					ArrayList<LavoratoriFileBean> listaFileLavoratori = new ArrayList<>();
+					String username = request.getUserPrincipal().getName();
+					try {
+					
+						context = new ClassPathXmlApplicationContext("spring\\spring-jpa.xml","spring\\spring-utils.xml");
+						LavoratoriDao lavoratoriDao = (LavoratoriDao) context.getBean("LavoratoriDaoImpl");
+						listaFileLavoratori = lavoratoriDao.getElencoFileLavoratori(username);
+					
+					} catch (Exception e) {
+						// TODO: handle exception
+						e.printStackTrace();
+						logger.error(e.getMessage());
+					}
+					 LavoratoriFileBean lavoratoriFileBean = new LavoratoriFileBean();
+						modelWiev.addObject("title", "Upload File Lavoratori");
+						modelWiev.addObject("lavoratoriFileBean", lavoratoriFileBean);
+						modelWiev.addObject("listaFileLavoratori", listaFileLavoratori);
+						modelWiev.addObject("message", myProperties.getProperty("lavoratori.file"));
+						modelWiev.setViewName("lavoratoriFileUpload");
+					
+						return modelWiev;
+					}
+				
+				
+				//Esegue l'upload dei file dei lavoratori
+				@RequestMapping(value ={ "/adminLavoratoriUpload","/userLavoratoriUpload"}, method = RequestMethod.POST)
+				public ModelAndView caricaFileLavoratori (HttpServletRequest request,  @ModelAttribute("uploadForm") ListaFileBean lavoratoriFileList) {
+					ModelAndView modelWiev = new ModelAndView();
+					ApplicationContext context=null;
+					ArrayList<DatiFIleUploadBean> listaDatiFiles = new ArrayList<>();
+					try {
+						
+						String username = request.getUserPrincipal().getName();
+						context = new ClassPathXmlApplicationContext("spring\\spring-jpa.xml","spring\\spring-utils.xml");
+						LavoratoriDao lavoratoriDao = (LavoratoriDao) context.getBean("LavoratoriDaoImpl");
+						for(CommonsMultipartFile fileItem : lavoratoriFileList.getListaFile()){
+							
+						 if (fileItem!=null&&(!fileItem.getOriginalFilename().equalsIgnoreCase(""))){
+							LavoratoriFileBean lavoratoriFileBean = new LavoratoriFileBean();
+							DatiFIleUploadBean datiFile = new DatiFIleUploadBean();
+							datiFile.setNomeFile(fileItem.getOriginalFilename());
+							if(fileItem.getSize()!=0){
+								datiFile.setSizeFile(Long.toString(fileItem.getSize()/1000)+" MB");
+								if(fileItem.getOriginalFilename().endsWith("pdf")){
+									lavoratoriFileBean.setUsername(username);
+									lavoratoriFileBean.setNomeAllegato(fileItem.getOriginalFilename());
+								    // verifica se il file esiste sul DB
+									boolean trovato = false;
+									trovato = lavoratoriDao.esisteFile(lavoratoriFileBean.getNomeAllegato(),username);
+									if (!trovato){
+										lavoratoriFileBean.setAllegatoFile(fileItem.getBytes());
+										if(lavoratoriFileBean.getClass()!=null){
+										
+											lavoratoriDao.caricaFileLavoratori(lavoratoriFileBean);
+											 
+										}else{
+											datiFile.setErrore("Impossibile caricare il file.");
+										}
+										
+									}else{
+										datiFile.setErrore("Il file è già presente nel database.");
+									}
+								}else{
+									datiFile.setErrore("Non è un file PDF.");
+								}
+							}else{
+								datiFile.setErrore("Non è stato possibile accedere al file.");
+							}
+							listaDatiFiles.add(datiFile);
+						 }
+						}
+						
+						
+						
+						
+						
+						
+					} catch (Exception e) {
+						// TODO: handle exception
+						e.printStackTrace();
+						logger.error(e.getMessage());
+					}
+						modelWiev.addObject("title", " Riepilogo Upload File Lavoratori");
+						modelWiev.addObject("message", myProperties.getProperty("riepilogo.upload"));
+						modelWiev.addObject("listaDatiFiles", listaDatiFiles);
+						modelWiev.setViewName("fileUploadReuslt");
+					
+						return modelWiev;
+					}
+			
+				//Elimina il file del lavoratore
+				@RequestMapping(value ={ "/adminCancellaLavoratoriFile","/userCancellaLavoratoriFile"}, method = RequestMethod.POST)
+				public ModelAndView cancellaLavoratoriFile (HttpServletRequest request,  @ModelAttribute("lavoratoriFileBean") LavoratoriFileBean lavoratoriFileBean) {
+					ModelAndView modelWiev = new ModelAndView();
+					ApplicationContext context =null;
+					ArrayList<LavoratoriFileBean> listaFileLavoratori = new ArrayList<>();
+					String username = request.getUserPrincipal().getName();
+					try {
+					
+						context = new ClassPathXmlApplicationContext("spring\\spring-jpa.xml","spring\\spring-utils.xml");
+						LavoratoriDao lavoratoriDao = (LavoratoriDao) context.getBean("LavoratoriDaoImpl");
+						lavoratoriDao.eliminaFile(lavoratoriFileBean);
+						listaFileLavoratori = lavoratoriDao.getElencoFileLavoratori(username);
+					
+					} catch (Exception e) {
+						// TODO: handle exception
+						e.printStackTrace();
+						logger.error(e.getMessage());
+					}
+						
+					  LavoratoriFileBean lavoratoriFileBeanForm = new LavoratoriFileBean();
+						modelWiev.addObject("title", "Upload File Lavoratori");
+						modelWiev.addObject("lavoratoriFileBean", lavoratoriFileBeanForm);
+						modelWiev.addObject("listaFileLavoratori", listaFileLavoratori);
+						modelWiev.addObject("message", myProperties.getProperty("lavoratori.file"));
+						modelWiev.setViewName("lavoratoriFileUpload");
+				
+					return modelWiev;
+					
+						
+					}
+				
+				
 			
 
 }

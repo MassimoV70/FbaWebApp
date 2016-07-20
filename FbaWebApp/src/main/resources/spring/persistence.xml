@@ -7,5 +7,9 @@ version="1.0">
 		<class>it.fba.webapp.beans.PianoDIformazioneBean</class>
 		<class>it.fba.webapp.beans.CalendarioBean</class>
 		<class>it.fba.webapp.beans.LavoratoriBean</class>
+		<class>it.fba.webapp.beans.AttuatoreBean</class>
+		<class>it.fba.webapp.beans.RendicontazioneBean</class>
+		<class>it.fba.webapp.beans.RendicontazioneFileBean</class>
+		<class>it.fba.webapp.beans.LavoratoriFileBean</class>
 	</persistence-unit>
 </persistence>

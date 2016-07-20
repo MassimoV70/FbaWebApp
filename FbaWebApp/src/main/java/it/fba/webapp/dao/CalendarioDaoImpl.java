@@ -43,7 +43,6 @@ public class CalendarioDaoImpl implements CalendarioDao {
 		// TODO Auto-generated method stub
 		for(CalendarioBean calendario:listaCalendari){
 			entityManager.persist(calendario);
-			entityManager.flush();
 			entityManager.clear();
 		}
 		

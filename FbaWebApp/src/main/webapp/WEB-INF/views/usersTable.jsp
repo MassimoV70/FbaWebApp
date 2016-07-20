@@ -1,8 +1,10 @@
 <%@ include file="header.jsp" %>
 
-	<div class="CSSTableGenerator" >
-	<table>
-		<c:if test="${not empty usersList}">
+	<div  >
+	<table id="table_id" class="display">
+		<c:if test="${not empty usersList}">			
+		<thead>
+		
 	
 				<tr>
 					<td>Nome</td>
@@ -15,6 +17,8 @@
 				 	<td>Data Fine Attivit&agrave</td>
 				 	<td>Azioni</td>
 				</tr>
+				</thead>
+			<tbody>
 				<c:forEach var="listValue" items="${usersList}">
 				  <tr>
 					<td>${listValue.nome}</td>
@@ -37,6 +41,8 @@
 				   </tr>
 				</c:forEach>
 			   
+			
+			</tbody>
 			</c:if>
 	</table> 
 	</div>
@@ -55,6 +61,27 @@
 	
 	</form:form>
 	<script type="text/javascript">
+		$(document).ready(function() {
+			
+			$("#table_id").DataTable({
+				"language":{
+					"lengthMenu":"Mostra _MENU_ righe",
+					"info": "Pagina _PAGE_ di _PAGES_ ",
+					"infoFiltered" : "filtrate da _MAX_ pagine totali",
+					"search": "Cerca",
+					
+					"oPaginate":{
+						"sFirst": "Primo",
+						"sLast": "Ultimo",
+						"sNext": "Avanti",
+						"sPrevious": "Indietro"
+					}
+				}	
+			
+			});
+		})
+	
+	
 		function gestisciUtente(username, operazione){
 			
 			$('#idUserNamer').val(username);

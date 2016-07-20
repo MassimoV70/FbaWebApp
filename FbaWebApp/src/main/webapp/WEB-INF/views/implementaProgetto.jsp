@@ -47,7 +47,7 @@
 			  <label for="fileData">Seleziona il file xls o xlsx di rendicontazione da caricare:</label>
 			 <br>
 			 <br>
-			 <form:input  type="file"  path="fileData3" id="fileData3" disabled="true"/>
+			 <form:input  type="file"  path="fileData3" id="fileData3" />
 			  <br>
 		   
 		 </div> 

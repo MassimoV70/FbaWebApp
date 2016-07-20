@@ -13,6 +13,7 @@ import org.springframework.validation.Errors;
 
 import it.fba.webapp.beans.CalendarioBean;
 import it.fba.webapp.beans.PianoDIformazioneBean;
+import it.fba.webapp.beans.RendicontazioneBean;
 import it.fba.webapp.beans.UsersBean;
 
 
@@ -180,12 +181,38 @@ public class Utils {
 	   if (stringa!=null&&!stringa.isEmpty()){
 		   stringa=stringa.trim();
 		   stringa=stringa.replace("  ", " ");
+		   stringa=stringa.replace("\n", " ");
 	   }
 	   
 	   return stringa;
 	   
 	   
    }
+   
+   public static String convertDoubleToString(Double numero)throws Exception{
+	   
+	   String numeroStringa = "";
+	  
+	    numeroStringa = numero.toString();
+	  
+	   return numeroStringa;
+   }
+   
+   public static ArrayList<RendicontazioneBean> rendicontazioneFormSetting (ArrayList<RendicontazioneBean> listaRendicontazione){
+		try{
+			if (listaRendicontazione!=null&&!listaRendicontazione.isEmpty()){
+				for(RendicontazioneBean rendicontazione : listaRendicontazione ){
+					rendicontazione.setDataGiustificativoStr(Utils.formattaData(rendicontazione.getDataGiustificativo()));
+					
+					
+				}
+			}
+		}catch(Exception e){
+			e.printStackTrace();
+			return null;
+		}
+		return listaRendicontazione;
+	}
    
 
 }

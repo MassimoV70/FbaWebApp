@@ -12,7 +12,9 @@ import org.springframework.stereotype.Repository;
 
 import it.fba.webapp.beans.CalendarioBean;
 import it.fba.webapp.beans.LavoratoriBean;
+import it.fba.webapp.beans.LavoratoriFileBean;
 import it.fba.webapp.beans.PianoDIformazioneBean;
+import it.fba.webapp.beans.RendicontazioneFileBean;
 
 @Repository("LavoratoriDaoImpl")
 @Transactional()
@@ -28,6 +30,10 @@ public class LavoratoriDaoImpl implements LavoratoriDao{
 						  + "where l.id= :idStr"; 
 	private final String queryDeleteLavoratori = "Delete from LavoratoriBean l where l.nomeModulo= :nomeModuloStr and l.idPiano= :idPianoStr";
 	private final String queryDeleteLavoratoriPiano = "Delete from LavoratoriBean l where  l.idPiano= :idPianoStr";
+	private final String trovaFile ="Select f.id from LavoratoriFileBean f where f.nomeAllegato= :nomeAllegatoStr and f.username = :usernameStr";
+	private final String elencoFileByUser ="Select f.id, f.nomeAllegato from LavoratoriFileBean f where f.username = :usernameStr";
+	private final String eliminaFile ="Delete from LavoratoriFileBean f where f.id = :idStr";
+	
 
 	@Override
 	public LavoratoriBean findLavoratore(LavoratoriBean lavoratoriBean) throws SQLException {
@@ -42,7 +48,6 @@ public class LavoratoriDaoImpl implements LavoratoriDao{
 		// TODO Auto-generated method stub
 		for(LavoratoriBean lavoratore:listaLavoratori){
 			entityManager.persist(lavoratore);
-			entityManager.flush();
 			entityManager.clear();
 		}
 		
@@ -99,6 +104,53 @@ public class LavoratoriDaoImpl implements LavoratoriDao{
 		
 		ArrayList<LavoratoriBean> resultList = (ArrayList<LavoratoriBean>)query.setParameter("idPianoStr", pianoDIformazioneBean.getId()).getResultList();
 		return resultList;
+	}
+
+	@Override
+	public void caricaFileLavoratori(LavoratoriFileBean lavoratoriFileBean) {
+		// TODO Auto-generated method stub
+		entityManager.persist(lavoratoriFileBean);
+		
+	}
+
+	@Override
+	public boolean esisteFile(String nomeFile, String username) {
+		// TODO Auto-generated method stub
+		boolean trovato = false;
+		Query query = entityManager.createQuery(trovaFile);
+		
+		ArrayList<Object> oggetti = (ArrayList<Object>) query.setParameter("nomeAllegatoStr", nomeFile).setParameter("usernameStr", username).getResultList();
+		if (oggetti!=null&&oggetti.size()>0){
+			
+				trovato = true;
+			
+		}
+		return trovato;
+	}
+
+	@Override
+	public ArrayList<LavoratoriFileBean> getElencoFileLavoratori(String username) {
+		// TODO Auto-generated method stub
+		ArrayList<LavoratoriFileBean> listaFile = new ArrayList<>();
+		Query query = entityManager.createQuery(elencoFileByUser);
+		ArrayList<Object[]> listaOggetti = (ArrayList<Object[]>) query.setParameter("usernameStr", username).getResultList();
+		if(listaOggetti!=null&&!listaOggetti.isEmpty()){
+			for (Object[] oggetto : listaOggetti){
+				LavoratoriFileBean lavoratoriFileBean = new LavoratoriFileBean();
+				lavoratoriFileBean.setId((Integer)oggetto[0]);
+				lavoratoriFileBean.setNomeAllegato( (String)oggetto[1]);
+				listaFile.add(lavoratoriFileBean);
+			}
+		}
+		return listaFile;
+	}
+
+	@Override
+	public void eliminaFile(LavoratoriFileBean lavoratoriFileBean) {
+		// TODO Auto-generated method stub
+		Query query = entityManager.createQuery(eliminaFile);
+		query.setParameter("idStr", lavoratoriFileBean.getId()).executeUpdate();
+		
 	}
 	
 	

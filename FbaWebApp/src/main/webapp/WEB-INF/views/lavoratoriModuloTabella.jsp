@@ -1,41 +1,50 @@
 <%@ include file="header.jsp" %>
-<div class="CSSTableGenerator" >
-	<table>
-		<c:if test="${not empty listaLavoratori}">
-	
-				<tr>
-					<td>Numero Matricola</td>
-					<td>Ore Presenza</td>
-					<td>Esito test</td>
-					<td>Allegato</td>
-					<td>Stato</td>
-					<td>Azioni</td>
-				</tr>
-				<c:forEach var="listValue" items="${listaLavoratori}">
-				  <tr>
-					<td>${listValue.matricola}</td>
-					<td>${listValue.orePresenza}</td>
-					<td>${listValue.esitoTest}</td>
-					<td>${listValue.nomeAllegato}</td>
-				   <td>
-						<c:choose>
-						    <c:when test="${listValue.stato==1}"><img src= "resources/images/ok.png" alt="abilitato" title="abilitato"/></c:when>
-							<c:otherwise> <img src= "resources/images/notOK.png" alt="disabilitato" title="disabilitato"/></c:otherwise>
-						</c:choose> 
-					</td>					
-					<td>
-						<%-- <input type="image"  onclick="elaboraLavoratore('${listValue.id}','${listValue.idPiano}','${listValue.nomeModulo}','allega');" value="Allega" src= "resources/images/pdf.png" alt="Allegato Lavoratore" title="Allegati Lavoratore"> --%>
-						<input type="image"  onclick="elaboraLavoratore('${listValue.id}','${listValue.idPiano}','${listValue.nomeModulo}','modifica');" value="Indietro" src= "resources/images/settings.png" alt="Modificia lavoratore" title="Modificia lavoratore">
-						<input type="image"  onclick="elaboraLavoratore('${listValue.id}','${listValue.idPiano}','${listValue.nomeModulo}','cancella');" value="Indietro" src= "resources/images/elimina.png"  alt="Elimina lavoratore" title="Elimina lavoratore">
+ <c:choose>
+  	 <c:when test="${not empty listaLavoratori}">
+		<div >
+			<table id="table_id" class="display">
 				
-					</td>
-				   </tr>
-				</c:forEach>
-				
-			   
-			</c:if>
-	</table> 
+		      <thead>
+					<tr>
+						<td>Numero Matricola</td>
+						<td>Ore Presenza</td>
+						<td>Esito test</td>
+						<td>Allegato</td>
+						<td>Stato</td>
+						<td>Azioni</td>
+					</tr>
+			 </thead>
+			 <tbody>
+					<c:forEach var="listValue" items="${listaLavoratori}">
+					  <tr>
+						<td>${listValue.matricola}</td>
+						<td>${listValue.orePresenza}</td>
+						<td>${listValue.esitoTest}</td>
+						<td>${listValue.nomeAllegato}</td>
+					   <td>
+							<c:choose>
+							    <c:when test="${listValue.stato==1}"><img src= "resources/images/ok.png" alt="abilitato" title="abilitato"/></c:when>
+								<c:otherwise> <img src= "resources/images/notOK.png" alt="disabilitato" title="disabilitato"/></c:otherwise>
+							</c:choose> 
+						</td>					
+						<td>
+							<%-- <input type="image"  onclick="elaboraLavoratore('${listValue.id}','${listValue.idPiano}','${listValue.nomeModulo}','allega');" value="Allega" src= "resources/images/pdf.png" alt="Allegato Lavoratore" title="Allegati Lavoratore"> --%>
+							<input type="image"  onclick="elaboraLavoratore('${listValue.id}','${listValue.idPiano}','${listValue.nomeModulo}','modifica');" value="Indietro" src= "resources/images/settings.png" alt="Modificia lavoratore" title="Modificia lavoratore">
+							<input type="image"  onclick="elaboraLavoratore('${listValue.id}','${listValue.idPiano}','${listValue.nomeModulo}','cancella');" value="Indietro" src= "resources/images/elimina.png"  alt="Elimina lavoratore" title="Elimina lavoratore">
+					
+						</td>
+					   </tr>
+					</c:forEach>
+				</tbody>
+		</table> 
 	</div>
+	</c:when>
+	 <c:otherwise>
+	  <div id="formDiv">
+	  	<p align="center">Non ci sono elementi da visualizzare</p>
+	  </div>
+	  </c:otherwise>
+	</c:choose>
 	<div id="bottoniDiv">
 	            <br>
 				<sec:authorize access="hasRole('ROLE_ADMIN')">
@@ -69,6 +78,28 @@
 		<form:hidden path="idPiano"  id="idPiano"/>
 	</form:form>
 	<script type="text/javascript">
+	
+		$(document).ready(function() {
+			
+			$("#table_id").DataTable({
+				"language":{
+					"lengthMenu":"Mostra _MENU_ righe",
+					"info": "Pagina _PAGE_ di _PAGES_ ",
+					"infoFiltered" : "filtrate da _MAX_ pagine totali",
+					"search": "Cerca",
+					
+					"oPaginate":{
+						"sFirst": "Primo",
+						"sLast": "Ultimo",
+						"sNext": "Avanti",
+						"sPrevious": "Indietro"
+					}
+				}	
+			
+			});
+		})
+		
+	
 			function indietro(){
 				$("#idPianoFormazoneForm").submit();
 				

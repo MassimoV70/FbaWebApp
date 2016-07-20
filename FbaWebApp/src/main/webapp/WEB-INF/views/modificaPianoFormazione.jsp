@@ -82,7 +82,9 @@
 					<br>
 					<label for="categSvantagg">Categorie svantaggiate</label>
 					<br>
-					<form:input path="categSvantagg" disabled="${disabled}" id="inputUser" cssClass="inputUser"/>
+					<form:select path="categSvantagg" disabled="${disabled}" id="inputUser" cssClass="inputUser">
+						<form:options items="${listaSelezione}"/>
+					</form:select>
 					<form:errors path="categSvantagg" cssClass="error" />
 					<br>
 					<label for="attuatorePIVA">Partita IVA attuatore:</label>
@@ -93,7 +95,7 @@
 					
 				</div>
 					<c:if test="${disabled !=  true}">
-					  <input type="submit" />
+					  <input type="submit" value="Salva"/>
 					</c:if>
 			</form:form>
 		

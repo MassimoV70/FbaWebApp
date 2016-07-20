@@ -1,43 +1,53 @@
 <%@ include file="header.jsp" %>
-<div class="CSSTableGenerator" >
-	<table>
-		<c:if test="${not empty listaCalendari}">
+
+   <c:choose>
+  	 <c:when test="${not empty listaCalendari}">
+  	 <div >
+   		<table id="table_id" class="display">
+   		<thead>
+			<tr>
+				<td>Data</td>
+				<td>Inizio Mattina</td>
+				<td>Fine Mattina</td>
+				<td>Inizio Pomeriggio</td>
+				<td>Fine Pomeriggio</td>
+				<td>Stato</td>
+				<td>Azioni</td>
+			</tr>
+		</thead>
+		<tbody>
+			<c:forEach var="listValue" items="${listaCalendari}">
+			  <tr>
+				<td>${listValue.dataStr}</td>
+				<td>${listValue.inizioMattina}</td>
+				<td>${listValue.fineMattina}</td>
+				<td>${listValue.inizioPomeriggio}</td>
+				<td>${listValue.finePomeriggio}</td>
+				<td>
+					<c:choose>
+					    <c:when test="${listValue.stato==1}"><img src= "resources/images/ok.png" alt="abilitato" title="abilitato"/></c:when>
+						<c:otherwise> <img src= "resources/images/notOK.png" alt="disabilitato" title="disabilitato"/></c:otherwise>
+					</c:choose> 
+				</td>					
+				<td>
+					
+					<input type="image"  onclick="elaboraGiorno('${listValue.id}','${listValue.idPiano}','${listValue.nomeModulo}','modifica');" value="Indietro" src= "resources/images/settings.png" alt="Modificia giorno" title="Modificia giorno">
+					<input type="image"  onclick="elaboraGiorno('${listValue.id}','${listValue.idPiano}','${listValue.nomeModulo}','cencella');" value="Indietro" src= "resources/images/elimina.png"  alt="Elimina giorno" title="Elimina giorno">
+			
+				</td>
+			   </tr>
+			</c:forEach>
+		</tbody>		
+		</table> 
+		</div>
+	  </c:when>
+	  <c:otherwise>
+	  <div id="formDiv">
+	  	<p align="center">Non ci sono elementi da visualizzare</p>
+	  </div>
+	  </c:otherwise>
+	</c:choose>
 	
-				<tr>
-					<td>Data</td>
-					<td>Inizio Mattina</td>
-					<td>Fine Mattina</td>
-					<td>Inizio Pomeriggio</td>
-					<td>Fine Pomeriggio</td>
-					<td>Stato</td>
-					<td>Azioni</td>
-				</tr>
-				<c:forEach var="listValue" items="${listaCalendari}">
-				  <tr>
-					<td>${listValue.dataStr}</td>
-					<td>${listValue.inizioMattina}</td>
-					<td>${listValue.fineMattina}</td>
-					<td>${listValue.inizioPomeriggio}</td>
-					<td>${listValue.finePomeriggio}</td>
-					<td>
-						<c:choose>
-						    <c:when test="${listValue.stato==1}"><img src= "resources/images/ok.png" alt="abilitato" title="abilitato"/></c:when>
-							<c:otherwise> <img src= "resources/images/notOK.png" alt="disabilitato" title="disabilitato"/></c:otherwise>
-						</c:choose> 
-					</td>					
-					<td>
-						
-						<input type="image"  onclick="elaboraGiorno('${listValue.id}','${listValue.idPiano}','${listValue.nomeModulo}','modifica');" value="Indietro" src= "resources/images/settings.png" alt="Modificia giorno" title="Modificia giorno">
-						<input type="image"  onclick="elaboraGiorno('${listValue.id}','${listValue.idPiano}','${listValue.nomeModulo}','cencella');" value="Indietro" src= "resources/images/elimina.png"  alt="Elimina giorno" title="Elimina giorno">
-				
-					</td>
-				   </tr>
-				</c:forEach>
-				
-			   
-			</c:if>
-	</table> 
-	</div>
 	<div id="bottoniDiv">
 	            <br>
 				<sec:authorize access="hasRole('ROLE_ADMIN')">
@@ -70,6 +80,25 @@
 		<form:hidden path="idPiano"  id="idPiano"/>
 	</form:form>
 	<script type="text/javascript">
+	$(document).ready(function() {
+		
+		$("#table_id").DataTable({
+			"language":{
+				"lengthMenu":"Mostra _MENU_ righe",
+				"info": "Pagina _PAGE_ di _PAGES_ ",
+				"infoFiltered" : "filtrate da _MAX_ pagine totali",
+				"search": "Cerca",
+				
+				"oPaginate":{
+					"sFirst": "Primo",
+					"sLast": "Ultimo",
+					"sNext": "Avanti",
+					"sPrevious": "Indietro"
+				}
+			}	
+		
+		});
+	})
 			function indietro(){
 				$("#idPianoFormazoneForm").submit();
 				

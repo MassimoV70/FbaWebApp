@@ -45,7 +45,7 @@
 				<br>
 			</div>
 			<c:if test="${disabled !=  true}">
-			  <input type="submit" />
+			  <input type="submit" value="Salva"/>
 			</c:if>
 			</form:form>
 		</div>

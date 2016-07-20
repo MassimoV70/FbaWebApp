@@ -6,7 +6,9 @@ import java.util.ArrayList;
 import it.fba.webapp.beans.CalendarioBean;
 import it.fba.webapp.beans.ImplementaPianoFormBean;
 import it.fba.webapp.beans.LavoratoriBean;
+import it.fba.webapp.beans.LavoratoriFileBean;
 import it.fba.webapp.beans.PianoDIformazioneBean;
+import it.fba.webapp.beans.RendicontazioneFileBean;
 
 public interface LavoratoriDao {
 	
@@ -25,5 +27,13 @@ public interface LavoratoriDao {
 	void deleteLavoratoriPiano (LavoratoriBean lavoratoriBean)throws SQLException;
 	
 	public ArrayList<LavoratoriBean> esistonoLavoratori(PianoDIformazioneBean pianoDIformazioneBean) throws SQLException;
+	
+    void caricaFileLavoratori (LavoratoriFileBean lavoratoriFileBean);
+	
+	boolean esisteFile (String nomeFile,String username);
+	
+	ArrayList<LavoratoriFileBean> getElencoFileLavoratori (String username);
+	
+	void eliminaFile(LavoratoriFileBean lavoratoriFileBean);
 
 }

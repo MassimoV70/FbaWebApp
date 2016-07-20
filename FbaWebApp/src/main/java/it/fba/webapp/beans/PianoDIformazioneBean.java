@@ -4,6 +4,8 @@ import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
@@ -21,6 +23,7 @@ import org.springframework.web.multipart.commons.CommonsMultipartFile;
 public class PianoDIformazioneBean {
 	
 	@Id
+	@GeneratedValue(strategy=GenerationType.AUTO)
 	@Column(name="id")
 	int id;
 	
@@ -119,7 +122,7 @@ public class PianoDIformazioneBean {
 	String formeAiuti;
 	
 	// categorie svantaggiate
-	@Size(min=2, max=50)
+	@Size(min=1, max=1)
 	@Column(name="categsvantagg")
 	String categSvantagg;
 

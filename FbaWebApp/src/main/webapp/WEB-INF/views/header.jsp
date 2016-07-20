@@ -10,16 +10,23 @@
 
 <head>
     <spring:url value="/resources/css/main.css" var="mainCSS" />
-   <spring:url value="/resources/js/jquery-1.12.1.min.js" var="jqueryJs" /> 
+   	<spring:url value="/resources/js/jquery-1.12.1.min.js" var="jqueryJs" /> 
     <spring:url value="/resources/js/jquery-ui-1.11.4.custom/jquery-ui.min.js" var="jqueryMin" />
     <spring:url value="/resources/js/jquery-ui-1.11.4.custom/jquery-ui.js" var="jqueryUI" /> 
-   
+    <spring:url value="/resources/js/jquery.blockUI.js" var="jqueryBlock" /> 
+    <spring:url value="/resources/js/DataTables-1.10.12/media/js/jquery.dataTables.js" var="DataTab" /> 
+  
    
     <link href="${mainCSS}" rel="stylesheet" />
-   <script src="${jqueryJs}" type="text/javascript"></script>
+    <script src="${jqueryJs}" type="text/javascript"></script>
     <script src="${jqueryMin}" type="text/javascript"></script>
-    <script src="${jqueryUI}" type="text/javascript"></script> 
+    <script src="${jqueryUI}" type="text/javascript"></script>
+    <script src="${jqueryBlock}" type="text/javascript"></script>
+    <script src="${DataTab}" type="text/javascript"></script>  
+    
    
+   	
+  	
 	
 	<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 	<title>Intesa San Paolo FBA</title>
@@ -48,7 +55,7 @@
 	
 		<c:if test="${pageContext.request.userPrincipal.name != null}">
 			<h3 id="nomeUser">
-				Benevunto : ${pageContext.request.userPrincipal.name} | <a
+				Benvenuto : ${pageContext.request.userPrincipal.name} | <a
 					href="javascript:formSubmit()"> Logout</a>
 			</h3>
 			
