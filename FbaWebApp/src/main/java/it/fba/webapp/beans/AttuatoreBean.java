@@ -7,6 +7,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Lob;
 import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
 
 @Entity
 
@@ -15,9 +16,17 @@ import javax.persistence.Table;
 
 public class AttuatoreBean {
 	
-    @Id
+	@Id
+	@GeneratedValue(strategy=GenerationType.AUTO)
+	@NotNull
+	@Column(name="id")
+	int id;
+	
     @Column(name="attuatorepiva")
 	String attuatorePIVA;
+    
+    @Column(name="username")
+	String username;
 	
     @Column(name="nomeallegato1")
 	String nomeAllegato1;
@@ -118,6 +127,16 @@ public class AttuatoreBean {
 	public void setAllegatoFile4(byte[] allegatoFile4) {
 		this.allegatoFile4 = allegatoFile4;
 	}
+
+	public String getUsername() {
+		return username;
+	}
+
+	public void setUsername(String username) {
+		this.username = username;
+	}
+	
+	
 
 	
 	

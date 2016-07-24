@@ -12,11 +12,7 @@
 								<td>Tematica formativa</td>
 								<td>N. part.</td>
 								<td>Modulo 1</td>
-								<td>Mod. form. mod1</td>
-								<td>Durata Modulo 1</td>
 								<td>Modulo 2</td>
-								<td>Mod. form. mod2</td>
-								<td>Durata Modulo 2</td>
 								<td>Regime aiuti</td>
 								<td>Cat. svant.</td>
 								<td>Att. P.IVA</td>
@@ -36,26 +32,45 @@
 								<td>${listValue.numeroPartecipanti}</td>
 								<c:choose>
 									 <c:when test="${listValue.modulo1!='assente'}">
-										<td><a onclick="elaboraPiano('${listValue.id}','${listValue.modulo1}','${listValue.fadMod1}','modulo','','')" title="vai al modulo">${listValue.modulo1}</a></td>
+										<td>
+										<p><b>Nome</b>
+											<a onclick="elaboraPiano('${listValue.id}','${listValue.modulo1}','${listValue.fadMod1}','modulo','','')" title="vai al modulo">${listValue.modulo1}</a>
+										</p>
+										<p><b>Modalita Formativa</b>
+												${listValue.fadMod1}
+										</p>
+										<p ><b>Durata</b>
+											${listValue.durataModulo1}
+										</p>
+										</td>
 									 </c:when>
 									 <c:otherwise>
 									  <td>assente</td>
 									 </c:otherwise>
 								</c:choose>
-								<td>${listValue.fadMod1}</td>
-								<td>${listValue.durataModulo1}</td>
+								
 								<c:choose>
 									 <c:when test="${listValue.modulo2!='assente'}">
-										<td><a onclick="elaboraPiano('${listValue.id}','${listValue.modulo2}','${listValue.fadMod2}','modulo','','')" title="vai al modulo">${listValue.modulo2}</a></td>
+										<td>
+										    <p><b>Nome</b>
+												<a onclick="elaboraPiano('${listValue.id}','${listValue.modulo2}','${listValue.fadMod2}','modulo','','')" title="vai al modulo">${listValue.modulo2}</a>
+											</p>
+											<p><b>Modalita Formativa</b>
+												${listValue.fadMod2}
+											</p>
+											<p ><b>Durata</b>
+												${listValue.durataModulo2}
+											</p>
+										
+										</td>
 									</c:when>
 									<c:otherwise>
 									  <td>assente</td>
 									 </c:otherwise>
 								</c:choose>
-								<td>${listValue.fadMod2}</td>
-								<td>${listValue.durataModulo2}</td>
 								<td>${listValue.formeAiuti}</td>
 								<td>
+								   
 									<c:if test="${listValue.categSvantagg=='1'}">
 									  Si
 									</c:if>
@@ -65,18 +80,26 @@
 								</td>
 								<td>${listValue.attuatorePIVA}</td>
 								<td>
-									<c:if test="${not empty listValue.nomeAllegato1}">
-										${listValue.nomeAllegato1}<br>
-									</c:if>
-									<c:if test="${not empty listValue.nomeAllegato2}">
-										${listValue.nomeAllegato2}<br>
-									</c:if>
-									<c:if test="${not empty listValue.nomeAllegato3}">
-									    ${listValue.nomeAllegato3}<br>
-									</c:if>
-									<c:if test="${not empty listValue.nomeAllegato4}">
-									    ${listValue.nomeAllegato4}
-									</c:if>
+									<p>
+										<c:if test="${not empty listValue.nomeAllegato1}">
+											${listValue.nomeAllegato1}<br>
+										</c:if>
+									</p>
+									<p>
+										<c:if test="${not empty listValue.nomeAllegato2}">
+											${listValue.nomeAllegato2}<br>
+										</c:if>
+									</p>
+									<p>
+										<c:if test="${not empty listValue.nomeAllegato3}">
+										    ${listValue.nomeAllegato3}<br>
+										</c:if>
+									</p>
+									<p>
+										<c:if test="${not empty listValue.nomeAllegato4}">
+										    ${listValue.nomeAllegato4}
+										</c:if>
+									</p>
 								</td>
 								<td>
 								   <input type="image"  onclick="elaboraPiano('${listValue.id}','','','rendiconta','','');" value="Rendicontazione" src= "resources/images/rendicontazione.png" alt="Rendicontazione progetto" title="Rendicontazione progetto"> 
@@ -84,8 +107,8 @@
 								</td>
 								<td>
 									<c:choose>
-									    <c:when test="${listValue.enabled==1}"><img src= "resources/images/ok.png" alt="abilitato" title="abilitato"/></c:when>
-										<c:otherwise> <img src= "resources/images/notOK.png" alt="disabilitato" title="disabilitato"/></c:otherwise>
+									    <c:when test="${listValue.enabled==1}"><img src= "resources/images/ok.png" alt="inviabile" title="inviabile"/></c:when>
+										<c:otherwise> <img src= "resources/images/notOK.png" alt="non inviabile" title="non inviabile"/></c:otherwise>
 									</c:choose> 
 								</td>					
 								<td >

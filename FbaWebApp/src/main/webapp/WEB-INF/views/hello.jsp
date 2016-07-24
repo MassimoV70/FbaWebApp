@@ -20,15 +20,15 @@
 	        
 	        <br>
 			<P>Vai alla sezione caricamento piani di formazione </P>
-	        <input type="button"  onclick="location.href='/FbaWebApp/userformUploadPiani'" value="Carica Piani Di Formazione" > 
+	        <input type="button"  onclick="location.href='/FbaWebApp/userformUploadPiani'" value="Carica piani di formazione" > 
 	        
 	        <br>
 			<P>Vai alla sezione caricamento file di rendicontazione </P>
-	        <input type="button"  onclick="location.href='/FbaWebApp/userRendicontazioneFile'" value="Rendicontazione File" > 
+	        <input type="button"  onclick="location.href='/FbaWebApp/userRendicontazioneFile'" value="Rendicontazione file" > 
 	        
 	        <br>
 	        <P>Vai alla sezione caricamento file dei lavoratori </P>
-	        <input type="button"  onclick="location.href='/FbaWebApp/userLavoratoriFile'" value="Lavoratori File" > 
+	        <input type="button"  onclick="location.href='/FbaWebApp/userLavoratoriFile'" value="Lavoratori file" > 
 		</div>
 	</sec:authorize>
 	<sec:authorize access="hasRole('ROLE_ADMIN')">
@@ -47,7 +47,7 @@
 
 		
 		<P>Vai alle funzionalità di amministratore</P>
-		<input type="button"  onclick="location.href='/FbaWebApp/admin'" value="Funzionalità Amministratore" >
+		<input type="button"  onclick="location.href='/FbaWebApp/admin'" value="Funzionalità amministratore" >
           
         <br>
         <P>Vai alla sezionone piani di formazione caricati</P>
@@ -55,14 +55,14 @@
        
         <br>
         <P>Vai alla sezione caricamento piani di formazione</P>
-        <input type="button"  onclick="location.href='/FbaWebApp/adminformUploadPiani'" value="Carica Piani Di Formazione" >
+        <input type="button"  onclick="location.href='/FbaWebApp/adminformUploadPiani'" value="Carica piani di formazione" >
         
         <br>
         <P>Vai alla sezione caricamento file di rendicontazione </P>
-	        <input type="button"  onclick="location.href='/FbaWebApp/adminRendicontazioneFile'" value="Rendicontazione File" > 
+	        <input type="button"  onclick="location.href='/FbaWebApp/adminRendicontazioneFile'" value="Rendicontazione file" > 
 	    <br>   
 	    <P>Vai alla sezione caricamento file dei lavoratori </P>
-	     <input type="button"  onclick="location.href='/FbaWebApp/adminLavoratoriFile'" value="Lavoratori File" > 
+	     <input type="button"  onclick="location.href='/FbaWebApp/adminLavoratoriFile'" value="Lavoratori file" > 
       
       </div>  
 	</sec:authorize>

@@ -1,24 +1,16 @@
 package it.fba.webapp.controller;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import javax.transaction.Transactional;
 import javax.validation.Valid;
 
-import org.apache.commons.fileupload.FileItem;
 import org.apache.log4j.Logger;
-import org.jboss.as.controller.client.helpers.standalone.impl.ModelControllerClientServerDeploymentManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -37,8 +29,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.commons.CommonsMultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.google.gson.Gson;
-
 import it.fba.webapp.beans.AttuatoreBean;
 import it.fba.webapp.beans.CalendarioBean;
 import it.fba.webapp.beans.DatiFIleUploadBean;
@@ -55,7 +45,6 @@ import it.fba.webapp.dao.AttuatoriDao;
 import it.fba.webapp.dao.CalendarioDao;
 import it.fba.webapp.dao.LavoratoriDao;
 import it.fba.webapp.dao.PianiFormazioneDao;
-import it.fba.webapp.dao.PianiFormazioneDaoImpl;
 import it.fba.webapp.dao.RendicontazioneDao;
 import it.fba.webapp.dao.UsersDao;
 import it.fba.webapp.exception.CustomGenericException;
@@ -675,7 +664,7 @@ public class FbaController {
 					}
 					model.addObject("calendarioModuloBean", calendarioModuloBean);
 					model.addObject("lavoratoriBean", lavoratoriBean);
-					model.addObject("title", "Gestione Modulo "+calendarioModuloBean.getNomeModulo()+" Tipologia "+pianoDiFormazione.getFadMod1());
+					model.addObject("title", "Modulo "+calendarioModuloBean.getNomeModulo()+" Modalità Di Formazione "+pianoDiFormazione.getFadMod1());
 					model.addObject("message", "pagina di gestione del modulo associato al piano");
 					model.addObject("calendario", "Sezione Calendario");
 					model.addObject("lavoratori", "Sezione Lavoratori");
@@ -984,7 +973,7 @@ public class FbaController {
  					pianoDIformazioneBean.setModulo1(lavoratoriBean.getNomeModulo());
 					
 					
-					modelWiev.addObject("title", "Tabella Calendario Modulo "+nomeModulo);
+					modelWiev.addObject("title", "Tabella Lavoratori Modulo "+nomeModulo);
 					modelWiev.addObject("message", myProperties.getProperty("calendario.elenco"));
 					modelWiev.addObject("lavoratoreBeanForm", lavoratoriBean);
 					modelWiev.addObject("listaLavoratori",listaLavoratori);
@@ -1293,6 +1282,7 @@ public class FbaController {
 						context = new ClassPathXmlApplicationContext("spring\\spring-jpa.xml","spring\\spring-utils.xml");
 						if (pianoFormazione.getAttuatorePIVA()!=null&&!pianoFormazione.getAttuatorePIVA().isEmpty()){
 							attuatoreBean.setAttuatorePIVA(pianoFormazione.getAttuatorePIVA());
+							attuatoreBean.setUsername(request.getUserPrincipal().getName());
 							AttuatoriDao attuatoriDao= (AttuatoriDao) context.getBean("AttuatoreDaoImpl");
 							boolean esiste = attuatoriDao.esisteAttuatore(attuatoreBean);
 							if(esiste){
@@ -1322,6 +1312,8 @@ public class FbaController {
 							((ConfigurableApplicationContext)context).close();
 						}
 					}
+					modelWiev.addObject("title", "Upload Allegati Attuatore");
+					modelWiev.addObject("message", myProperties.getProperty("attuatore.allegati"));
 					modelWiev.addObject("implementaPianoFormBean", implementaPianoFormBean);
 					modelWiev.setViewName("attuatoreUpload");
 					return modelWiev;
@@ -1343,6 +1335,7 @@ public class FbaController {
 						PianiFormazioneDao pianiFormazioneDao = (PianiFormazioneDao) context.getBean("PianiFormazioneDaoImpl");
 						AttuatoriDao attuatoriDao= (AttuatoriDao) context.getBean("AttuatoreDaoImpl");
 						attuatoreBean.setAttuatorePIVA(implementaPianoFormBean.getAttuatorePIVA());
+						attuatoreBean.setUsername(request.getUserPrincipal().getName());
 						validator.attuatoriValidator(attuatoreBean, bindingResult, myProperties);
 						if (!bindingResult.hasErrors()){
 							boolean esiste = attuatoriDao.esisteAttuatore(attuatoreBean);
@@ -1564,6 +1557,7 @@ public class FbaController {
 						// TODO: handle exception
 						e.printStackTrace();
 						logger.error(e.getMessage());
+						throw new CustomGenericException(new Date(), myProperties.getProperty("errore.generale"));
 					}
 					RendicontazioneFileBean rendicontazioneBean = new RendicontazioneFileBean();
 						modelWiev.addObject("title", "Upload File Rendicontazione");
@@ -1594,7 +1588,7 @@ public class FbaController {
 							DatiFIleUploadBean datiFile = new DatiFIleUploadBean();
 							datiFile.setNomeFile(fileItem.getOriginalFilename());
 							if(fileItem.getSize()!=0){
-								datiFile.setSizeFile(Long.toString(fileItem.getSize()/1000)+" MB");
+								datiFile.setSizeFile(Long.toString(fileItem.getSize()/1000)+" KB");
 								if(fileItem.getOriginalFilename().endsWith("pdf")){
 									rendicontazioneFileBean.setUsername(username);
 									rendicontazioneFileBean.setNomeAllegato(fileItem.getOriginalFilename());
@@ -1633,6 +1627,7 @@ public class FbaController {
 						// TODO: handle exception
 						e.printStackTrace();
 						logger.error(e.getMessage());
+						throw new CustomGenericException(new Date(), myProperties.getProperty("errore.generale"));
 					}
 						modelWiev.addObject("title", " Riepilogo Upload File Rendicontazione");
 						modelWiev.addObject("message", myProperties.getProperty("riepilogo.upload"));
@@ -1688,6 +1683,7 @@ public class FbaController {
 						// TODO: handle exception
 						e.printStackTrace();
 						logger.error(e.getMessage());
+						throw new CustomGenericException(new Date(), myProperties.getProperty("errore.generale"));
 					}
 					 LavoratoriFileBean lavoratoriFileBean = new LavoratoriFileBean();
 						modelWiev.addObject("title", "Upload File Lavoratori");
@@ -1757,6 +1753,7 @@ public class FbaController {
 						// TODO: handle exception
 						e.printStackTrace();
 						logger.error(e.getMessage());
+						throw new CustomGenericException(new Date(), myProperties.getProperty("errore.generale"));
 					}
 						modelWiev.addObject("title", " Riepilogo Upload File Lavoratori");
 						modelWiev.addObject("message", myProperties.getProperty("riepilogo.upload"));
@@ -1784,6 +1781,7 @@ public class FbaController {
 						// TODO: handle exception
 						e.printStackTrace();
 						logger.error(e.getMessage());
+						throw new CustomGenericException(new Date(), myProperties.getProperty("errore.generale"));
 					}
 						
 					  LavoratoriFileBean lavoratoriFileBeanForm = new LavoratoriFileBean();

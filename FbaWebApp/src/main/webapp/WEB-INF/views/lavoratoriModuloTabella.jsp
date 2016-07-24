@@ -23,8 +23,8 @@
 						<td>${listValue.nomeAllegato}</td>
 					   <td>
 							<c:choose>
-							    <c:when test="${listValue.stato==1}"><img src= "resources/images/ok.png" alt="abilitato" title="abilitato"/></c:when>
-								<c:otherwise> <img src= "resources/images/notOK.png" alt="disabilitato" title="disabilitato"/></c:otherwise>
+							    <c:when test="${listValue.stato==1}"><img src= "resources/images/ok.png" alt="corretto" title="corretto"/></c:when>
+								<c:otherwise> <img src= "resources/images/notOK.png" alt="non corretto" title="non corretto"/></c:otherwise>
 							</c:choose> 
 						</td>					
 						<td>

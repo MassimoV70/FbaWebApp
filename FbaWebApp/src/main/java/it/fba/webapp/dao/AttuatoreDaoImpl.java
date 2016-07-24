@@ -19,12 +19,12 @@ public class AttuatoreDaoImpl implements AttuatoriDao{
     EntityManager entityManager;
 	
 	private final String queryNomi = "select a.attuatorePIVA, a.nomeAllegato1, a.nomeAllegato2, a.nomeAllegato3, a.nomeAllegato4 from AttuatoreBean a"
-									+ " where a.attuatorePIVA = :attuatorePIVAStr";
+									+ " where a.attuatorePIVA = :attuatorePIVAStr and username= :usernameStr";
 	private final String queryUpdate = "update AttuatoreBean a set a.nomeAllegato1= :nomeAllegatoStr1, a.nomeAllegato2 = :nomeAllegatoStr2,"
 									  + " a.nomeAllegato3= :nomeAllegatoStr3, a.nomeAllegato4= :nomeAllegatoStr4,"
 									  + " a.allegatoFile1= :allegatoFileByte1, a.allegatoFile2= :allegatoFileByte2, "
 									  + " a.allegatoFile3= :allegatoFileByte3, a.allegatoFile4= :allegatoFileByte4 "
-			+ " where a.attuatorePIVA= :attuatorePIVAStr";
+			+ " where a.attuatorePIVA= :attuatorePIVAStr  and username= :usernameStr";
 	
 	
 	
@@ -37,7 +37,7 @@ public class AttuatoreDaoImpl implements AttuatoriDao{
 				.setParameter("nomeAllegatoStr3", attuatoreBean.getNomeAllegato3()).setParameter("nomeAllegatoStr4", attuatoreBean.getNomeAllegato4())
 				.setParameter("allegatoFileByte1", attuatoreBean.getAllegatoFile1()).setParameter("allegatoFileByte2", attuatoreBean.getAllegatoFile2())
 				.setParameter("allegatoFileByte3", attuatoreBean.getAllegatoFile3()).setParameter("allegatoFileByte4", attuatoreBean.getAllegatoFile4())
-				.setParameter("attuatorePIVAStr", attuatoreBean.getAttuatorePIVA()).executeUpdate();
+				.setParameter("attuatorePIVAStr", attuatoreBean.getAttuatorePIVA()).setParameter("usernameStr", attuatoreBean.getUsername()).executeUpdate();
 		
 	}
 
@@ -45,7 +45,8 @@ public class AttuatoreDaoImpl implements AttuatoriDao{
 	public AttuatoreBean leggiNomiAllegati(AttuatoreBean attuatoreBean) throws Exception {
 		// TODO Auto-generated method stub
 		Query query = entityManager.createQuery(queryNomi);
-        ArrayList<Object[]> attuatoreList = (ArrayList<Object[]>) query.setParameter("attuatorePIVAStr", attuatoreBean.getAttuatorePIVA()).getResultList();
+        ArrayList<Object[]> attuatoreList = (ArrayList<Object[]>) query.setParameter("attuatorePIVAStr", attuatoreBean.getAttuatorePIVA())
+        									.setParameter("usernameStr", attuatoreBean.getUsername()).getResultList();
 		if (attuatoreList!=null&&!attuatoreList.isEmpty()){
 				Object[] oggetto = (Object[]) attuatoreList.get(0);
 				attuatoreBean.setAttuatorePIVA((String) oggetto[0]);
@@ -77,7 +78,8 @@ public class AttuatoreDaoImpl implements AttuatoriDao{
 		// TODO Auto-generated method stub
 		boolean esiste=false;
 		Query query = entityManager.createQuery(queryNomi);
-		ArrayList<Object[]> attuatoreList = (ArrayList<Object[]>) query.setParameter("attuatorePIVAStr", attuatoreBean.getAttuatorePIVA()).getResultList();
+		ArrayList<Object[]> attuatoreList = (ArrayList<Object[]>) query.setParameter("attuatorePIVAStr", attuatoreBean.getAttuatorePIVA())
+				           .setParameter("usernameStr", attuatoreBean.getUsername()).getResultList();
 		if (attuatoreList!=null&&!attuatoreList.isEmpty()){
 			Object[] oggetto = (Object[]) attuatoreList.get(0);
 			if ( oggetto[0]!=null){
