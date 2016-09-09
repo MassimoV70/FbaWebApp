@@ -77,6 +77,9 @@
 									<c:if test="${listValue.categSvantagg=='0'}">
 									  No
 									</c:if>
+									<c:if test="${listValue.categSvantagg=='assente'}">
+									 assente
+									</c:if>
 								</td>
 								<td>${listValue.attuatorePIVA}</td>
 								<td>
@@ -106,10 +109,21 @@
 									
 								</td>
 								<td>
-									<c:choose>
-									    <c:when test="${listValue.enabled==1}"><img src= "resources/images/ok.png" alt="inviabile" title="inviabile"/></c:when>
-										<c:otherwise> <img src= "resources/images/notOK.png" alt="non inviabile" title="non inviabile"/></c:otherwise>
-									</c:choose> 
+									
+									<div id="stato">
+										  	<%-- <input type="image"  onclick="elaboraPiano('${listValue.id}','','','valida','','');" value="Valida piano" src= "resources/images/refresh.png" alt="Valida piano" title="Valida piano"> --%>
+										
+										
+											<c:choose>
+										    	<c:when test="${listValue.enabled==1}"><img src= "resources/images/ok.png" alt="inviabile" title="inviabile"/></c:when>
+												<c:otherwise> 
+															<%-- <input type="image"  onclick="elaboraPiano('${listValue.id}','','','erroriProgetto','','');" value="Mostra errori progetto" src= "resources/images/notOK.png" alt="Mostra errori progetto" title="Mostra errori progetto"> --%>
+															<input type="image"  value="Mostra errori progetto" src= "resources/images/notOK.png" alt="Mostra errori progetto" title="Mostra errori progetto">
+												</c:otherwise>
+											</c:choose>
+										
+									  </div>
+									
 								</td>					
 								<td >
 									<div class="toggler" onmousedown="mostra('${listValue.id}'); " >
@@ -201,6 +215,12 @@
 			}else if(operazione=='rendiconta'){
 				$("#modificaPianoForm").attr('action','/FbaWebApp/adminMostraRendicontazione');
 				$("#modificaPianoForm").submit(); 
+			}else if(operazione=='valida'){
+				$("#modificaPianoForm").attr('action','/FbaWebApp/adminValidaPiano');
+				$("#modificaPianoForm").submit();
+			}else if(operazione=='erroriProgetto'){
+				$("#modificaPianoForm").attr('action','/FbaWebApp/adminErroriPiano');
+				$("#modificaPianoForm").submit();
 			}else{
 				$("#modificaPianoForm").attr('action','/FbaWebApp/adminImplementaPianoForm');
 				$("#modificaPianoForm").submit();
@@ -235,10 +255,17 @@
 		}else if(operazione=='rendiconta'){
 			$("#modificaPianoForm").attr('action','/FbaWebApp/userMostraRendicontazione');
 			$("#modificaPianoForm").submit(); 
+		}else if(operazione=='valida'){
+			$("#modificaPianoForm").attr('action','/FbaWebApp/userValidaPiano');
+			$("#modificaPianoForm").submit();
+		}else if(operazione=='erroriProgetto'){
+			$("#modificaPianoForm").attr('action','/FbaWebApp/userErroriPiano');
+			$("#modificaPianoForm").submit();
 		}else{
 			$("#modificaPianoForm").attr('action','/FbaWebApp/userImplementaPianoForm');
 			$("#modificaPianoForm").submit();
 		}
+		
 	}
 	
 	

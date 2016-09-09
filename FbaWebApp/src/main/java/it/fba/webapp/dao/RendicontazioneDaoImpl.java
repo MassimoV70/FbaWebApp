@@ -12,6 +12,7 @@ import org.springframework.stereotype.Repository;
 
 import it.fba.webapp.beans.AttuatoreBean;
 import it.fba.webapp.beans.DatiFIleUploadBean;
+import it.fba.webapp.beans.LavoratoriBean;
 import it.fba.webapp.beans.PianoDIformazioneBean;
 import it.fba.webapp.beans.RendicontazioneBean;
 import it.fba.webapp.beans.RendicontazioneFileBean;
@@ -30,6 +31,8 @@ public class RendicontazioneDaoImpl implements RendicontazioneDao {
 	private final String trovaFile ="Select f.id from RendicontazioneFileBean f where f.nomeAllegato= :nomeAllegatoStr and f.username = :usernameStr";
 	private final String elencoFileByUser ="Select f.id, f.nomeAllegato from RendicontazioneFileBean f where f.username = :usernameStr";
 	private final String eliminaFile ="Delete from RendicontazioneFileBean f where f.id = :idStr";
+	private final String esisteRendicontazione = "Select r from RendicontazioneBean r where r.idPiano= :idPianoStr";
+	private final String queryNomi = "select r.nomeAllegato  from RendicontazioneFileBean r  where r.username= :usernameStr";
 	
 	@Override
 	public RendicontazioneBean findRendicontazioneById(RendicontazioneBean rendicontazioneBean) throws Exception {
@@ -137,6 +140,37 @@ public class RendicontazioneDaoImpl implements RendicontazioneDao {
 		
 		Query query = entityManager.createQuery(eliminaFile);
 		query.setParameter("idStr", rendicontazioneFileBean.getId()).executeUpdate();
+	}
+
+	@Override
+	public ArrayList<RendicontazioneBean> esisteRendicontazione(PianoDIformazioneBean pianoDIformazioneBean)
+			throws SQLException {
+		// TODO Auto-generated method stub
+				Query query = entityManager.createQuery(esisteRendicontazione);
+				@SuppressWarnings("unchecked")
+				
+				ArrayList<RendicontazioneBean> resultList = (ArrayList<RendicontazioneBean>)query.setParameter("idPianoStr", pianoDIformazioneBean.getId()).getResultList();
+				return resultList;
+	}
+
+	@Override
+	public ArrayList<String> leggiNomiAllegati(String username) throws Exception {
+		// TODO Auto-generated method stub
+
+		Query query = entityManager.createQuery(queryNomi);
+        ArrayList<String> rendicontazioneFileiList = (ArrayList<String>) query.setParameter("usernameStr", username).getResultList();
+//		if (lavoratoriList!=null&&!lavoratoriList.isEmpty()){
+//			
+//				Object[] oggetto = (Object[]) attuatoreList.get(0);
+//				
+//				attuatoreBean.setNomeAllegato1((String) oggetto[1]);
+//				attuatoreBean.setNomeAllegato2((String) oggetto[2]);
+//				attuatoreBean.setNomeAllegato3((String) oggetto[3]);
+//				attuatoreBean.setNomeAllegato4((String) oggetto[4]);
+//			
+//		}
+		return rendicontazioneFileiList;
+		
 	}
 	
 	

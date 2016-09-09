@@ -33,5 +33,9 @@ public interface RendicontazioneDao {
 	ArrayList<RendicontazioneFileBean> getElencoFileRendicontazione (String username);
 	
 	void eliminaFile(RendicontazioneFileBean rendicontazioneFileBean);
+	
+	public ArrayList<RendicontazioneBean> esisteRendicontazione(PianoDIformazioneBean pianoDIformazioneBean) throws SQLException;
+	
+	public ArrayList<String> leggiNomiAllegati(String username) throws Exception;
 
 }

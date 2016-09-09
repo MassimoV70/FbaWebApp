@@ -3,6 +3,7 @@ package it.fba.webapp.dao;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
+import it.fba.webapp.beans.AttuatoreBean;
 import it.fba.webapp.beans.CalendarioBean;
 import it.fba.webapp.beans.ImplementaPianoFormBean;
 import it.fba.webapp.beans.LavoratoriBean;
@@ -35,5 +36,7 @@ public interface LavoratoriDao {
 	ArrayList<LavoratoriFileBean> getElencoFileLavoratori (String username);
 	
 	void eliminaFile(LavoratoriFileBean lavoratoriFileBean);
+	
+	public ArrayList<String> leggiNomiAllegati (String username) throws Exception;
 
 }

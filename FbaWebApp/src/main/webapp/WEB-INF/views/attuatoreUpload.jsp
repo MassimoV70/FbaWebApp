@@ -28,43 +28,47 @@
 					 <form:hidden path="attuatorePIVA"/>
 			 <br>
  	         <c:if test="${not empty allegato1}">
- 	         	<div class="msg"> ${allegato1}</div>
+ 	         	<div class="error"> ${allegato1}</div>
  	         </c:if>
  	         <h3> ${allegato1Titolo}</h3>
 	 	     <label for="fileData">Seleziona il primo allegato da caricare:</label>
 			 <br>
 			 <br>
 			 <form:input  type="file"  path="fileData1" id="fileData1"/>
+			 <form:errors path="fileData1" cssClass="error" />
 			 <br>
 			 <br>
 			 <c:if test="${not empty allegato2}">
-			   	<div class="msg"> ${allegato2}</div>
+			   	<div class="error"> ${allegato2}</div>
 			  </c:if>
 			 <h3> ${allegato2Titolo}</h3>
 			 <label for="fileData">Seleziona il secondo allegato da caricare:</label>
 			 <br>
 			 <br>
 			 <form:input  type="file"  path="fileData2" id="fileData2"/>
+			 <form:errors path="fileData2" cssClass="error" />
 			  <br>
 			  <br>
 			   <c:if test="${not empty allegato3}">
-			 <div class="msg"> ${allegato3}</div>
+			 <div class="error"> ${allegato3}</div>
 			 </c:if>
 			  <h3> ${allegato3Titolo}</h3>
 			  <label for="fileData">Seleziona il terzo allegato da caricare:</label>
 			 <br>
 			 <br>
 			 <form:input  type="file"  path="fileData3" id="fileData3" />
+			 <form:errors path="fileData3" cssClass="error" />
 			  <br>
 			  <br>
 			   <c:if test="${not empty allegato4}">
-			 <div class="msg"> ${allegato4}</div>
+			 <div class="error"> ${allegato4}</div>
 			 </c:if>
 			  <h3> ${allegato4Titolo}</h3>
 			  <label for="fileData">Seleziona il quarto allegato da caricare:</label>
 			 <br>
 			 <br>
 			 <form:input  type="file"  path="fileData4" id="fileData4" />
+			 <form:errors path="fileData4" cssClass="error" />
 			  <br>
 		   
 		 </div> 

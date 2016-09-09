@@ -357,3 +357,8 @@ body{
    
     font-weight: bold; 
 }
+#stato {
+   
+   width: 70px;
+	height: 32px;
+}

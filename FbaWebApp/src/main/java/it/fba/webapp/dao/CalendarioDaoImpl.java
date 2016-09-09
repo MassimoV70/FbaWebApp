@@ -108,6 +108,17 @@ public class CalendarioDaoImpl implements CalendarioDao {
 		ArrayList<CalendarioBean> resultList = (ArrayList<CalendarioBean>)query.setParameter("idPianoStr", pianoDIformazioneBean.getId()).getResultList();
 		return resultList;
 	}
+
+	@Override
+	public ArrayList<CalendarioBean> getCalendari(PianoDIformazioneBean pianoDIformazioneBean) throws SQLException {
+		// TODO Auto-generated method stub
+		Query query = entityManager.createQuery(queryEsisteCalendario);
+		@SuppressWarnings("unchecked")
+		
+		ArrayList<CalendarioBean> resultList = (ArrayList<CalendarioBean>)query.setParameter("idPianoStr", pianoDIformazioneBean.getId()).getResultList();
+		return resultList;
+		
+	}
 	
 	
 

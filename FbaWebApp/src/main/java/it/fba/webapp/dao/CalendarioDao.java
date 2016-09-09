@@ -24,4 +24,5 @@ public interface CalendarioDao {
 	
 	public ArrayList<CalendarioBean> esisteCalendario (PianoDIformazioneBean pianoDIformazioneBean) throws SQLException;
 
+	ArrayList<CalendarioBean> getCalendari(PianoDIformazioneBean pianoDIformazioneBean) throws SQLException;
 }

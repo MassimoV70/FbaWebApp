@@ -21,5 +21,7 @@ public interface PianiFormazioneDao {
 	ArrayList<PianoDIformazioneBean> getAllPiani(String username) throws SQLException;
 	
 	void updatePianoDiFormazioneAllegati (PianoDIformazioneBean pianoDiFormazione) throws SQLException;
+	
+	void updateStatoPianoDiFormazione (PianoDIformazioneBean pianoDiFormazioneBean) throws SQLException;
 
 }

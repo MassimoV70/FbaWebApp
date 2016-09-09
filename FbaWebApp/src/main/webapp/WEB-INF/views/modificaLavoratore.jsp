@@ -33,6 +33,11 @@
 					<form:input path="esitoTest" disabled="${disabled}" id="inputUser" cssClass="inputUser"/>
 					<form:errors path="esitoTest" cssClass="error" />
 					<br>
+					<label for="esitoTest">Nome allegato:</label>
+					<br>
+					<form:input path="nomeAllegato" disabled="${disabled}" id="inputUser" cssClass="inputUser"/>
+					<form:errors path="nomeAllegato" cssClass="error" />
+					<br>
 					
 					
 				</div>

@@ -26,14 +26,15 @@ public class LavoratoriDaoImpl implements LavoratoriDao{
 	private final String queryAll = "Select l from LavoratoriBean l where l.idPiano= :idPianoStr and l.nomeModulo= :nomemoduloStr";
 	private final String esistonoLavoratori = "Select l from LavoratoriBean l where l.idPiano= :idPianoStr";
 	private final String queryUpdateLavoratore = "Update LavoratoriBean l "
-						  + "set l.matricola= :matricolaStr, l.orePresenza= :orePresenzaStr, l.esitoTest= :esitoTestStr, l.stato= :statoStr "
+						  + "set l.matricola= :matricolaStr, l.orePresenza= :orePresenzaStr, l.esitoTest= :esitoTestStr,"
+						  + "l.nomeAllegato= :nomeAllegatoStr, l.stato= :statoStr "
 						  + "where l.id= :idStr"; 
 	private final String queryDeleteLavoratori = "Delete from LavoratoriBean l where l.nomeModulo= :nomeModuloStr and l.idPiano= :idPianoStr";
 	private final String queryDeleteLavoratoriPiano = "Delete from LavoratoriBean l where  l.idPiano= :idPianoStr";
 	private final String trovaFile ="Select f.id from LavoratoriFileBean f where f.nomeAllegato= :nomeAllegatoStr and f.username = :usernameStr";
 	private final String elencoFileByUser ="Select f.id, f.nomeAllegato from LavoratoriFileBean f where f.username = :usernameStr";
 	private final String eliminaFile ="Delete from LavoratoriFileBean f where f.id = :idStr";
-	
+	private final String queryNomi = " select l.nomeAllegato  from LavoratoriFileBean l  where l.username= :usernameStr";
 
 	@Override
 	public LavoratoriBean findLavoratore(LavoratoriBean lavoratoriBean) throws SQLException {
@@ -58,7 +59,7 @@ public class LavoratoriDaoImpl implements LavoratoriDao{
 		// TODO Auto-generated method stub
 		Query query = entityManager.createQuery(queryUpdateLavoratore);
 		int i= query.setParameter("matricolaStr", lavoratoriBean.getMatricola()).setParameter("orePresenzaStr", lavoratoriBean.getOrePresenza())
-				 .setParameter("esitoTestStr",lavoratoriBean.getEsitoTest()).setParameter("statoStr",lavoratoriBean.getStato())
+				 .setParameter("esitoTestStr",lavoratoriBean.getEsitoTest()).setParameter("nomeAllegatoStr", lavoratoriBean.getNomeAllegato()).setParameter("statoStr",lavoratoriBean.getStato())
 		         .setParameter("idStr",lavoratoriBean.getId()).executeUpdate();
 		
 	}
@@ -151,6 +152,25 @@ public class LavoratoriDaoImpl implements LavoratoriDao{
 		Query query = entityManager.createQuery(eliminaFile);
 		query.setParameter("idStr", lavoratoriFileBean.getId()).executeUpdate();
 		
+	}
+
+	@Override
+	public ArrayList<String> leggiNomiAllegati(String username) throws Exception {
+		// TODO Auto-generated method stub
+		
+				Query query = entityManager.createQuery(queryNomi);
+		        ArrayList<String> lavoratorFoleiList = (ArrayList<String>) query.setParameter("usernameStr", username).getResultList();
+//				if (lavoratoriList!=null&&!lavoratoriList.isEmpty()){
+//					
+//						Object[] oggetto = (Object[]) attuatoreList.get(0);
+//						
+//						attuatoreBean.setNomeAllegato1((String) oggetto[1]);
+//						attuatoreBean.setNomeAllegato2((String) oggetto[2]);
+//						attuatoreBean.setNomeAllegato3((String) oggetto[3]);
+//						attuatoreBean.setNomeAllegato4((String) oggetto[4]);
+//					
+//				}
+				return lavoratorFoleiList;
 	}
 	
 	

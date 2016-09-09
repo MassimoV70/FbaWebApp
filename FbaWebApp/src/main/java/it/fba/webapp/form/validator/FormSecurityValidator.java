@@ -4,12 +4,17 @@ import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Component;
+import org.springframework.validation.BindingResult;
 import org.springframework.validation.Errors;
+import org.springframework.validation.ObjectError;
 import org.springframework.validation.Validator;
 
 import it.fba.webapp.beans.AttuatoreBean;
 import it.fba.webapp.beans.CalendarioBean;
+import it.fba.webapp.beans.ImplementaPianoFormBean;
 import it.fba.webapp.beans.LavoratoriBean;
 import it.fba.webapp.beans.PianoDIformazioneBean;
 import it.fba.webapp.beans.RendicontazioneBean;
@@ -35,7 +40,8 @@ public class FormSecurityValidator implements Validator{
 	
 	private Pattern pattern;
 	
-
+   @Autowired
+	private MessageSource messageSource;
 	
 
 	public boolean isValid(Object input, Errors errors) {
@@ -228,15 +234,58 @@ public class FormSecurityValidator implements Validator{
 		return bau;
 	}
 
-    public static  void attuatoriValidator(Object attuatoreBean, Errors  errors, Properties myProperties) throws Exception {
+    public static  void attuatoriValidator(Object implementaPianoFormBean, BindingResult  errors, Properties myProperties) throws Exception {
 		
-    	AttuatoreBean attuatore = (AttuatoreBean) attuatoreBean;
+    	ImplementaPianoFormBean attuatore = (ImplementaPianoFormBean) implementaPianoFormBean;
 		try {
             if(attuatore.getAttuatorePIVA()==null&&attuatore.getAttuatorePIVA().isEmpty()){
-            	errors.rejectValue("attuatorePIVA", "errors", myProperties.getProperty("NotNull.attuatoreBean.attuatorePIVA")); 
+            	
+            	ObjectError errore = new ObjectError("errors", myProperties.getProperty("NotNull.attuatoreBean.attuatorePIVA"));
+				errors.addError(errore);
 			}
-			
-			
+            if(attuatore.getFileData1().getOriginalFilename()!=null&&attuatore.getFileData2().getOriginalFilename()!=null
+     			   &&attuatore.getFileData3().getOriginalFilename()!=null&&attuatore.getFileData4().getOriginalFilename()!=null	){
+				if(attuatore.getFileData1().getOriginalFilename().isEmpty()&&attuatore.getFileData2().getOriginalFilename().isEmpty()
+				   &&attuatore.getFileData3().getOriginalFilename().isEmpty()&&attuatore.getFileData4().getOriginalFilename().isEmpty()	){
+					ObjectError errore = new ObjectError("errors", myProperties.getProperty("allegati.assenti"));
+					errors.addError(errore);
+				}else{
+					if(attuatore.getFileData1().getOriginalFilename()!=null&&!attuatore.getFileData1().getOriginalFilename().isEmpty()){
+						if(!attuatore.getFileData1().getOriginalFilename().endsWith("pdf")){
+							
+							ObjectError errore = new ObjectError("errors","il file "+attuatore.getFileData1().getOriginalFilename()+" non è un file pdf.");
+							errors.addError(errore);
+						}
+						
+					}
+					if(attuatore.getFileData2().getOriginalFilename()!=null&&!attuatore.getFileData2().getOriginalFilename().isEmpty()){
+						if(!attuatore.getFileData2().getOriginalFilename().endsWith("pdf")){
+							ObjectError errore = new ObjectError("errors","il file "+attuatore.getFileData2().getOriginalFilename()+" non è un file pdf.");
+							errors.addError(errore);
+						}
+						
+					}
+					if(attuatore.getFileData3().getOriginalFilename()!=null&&!attuatore.getFileData3().getOriginalFilename().isEmpty()){
+						if(!attuatore.getFileData3().getOriginalFilename().endsWith("pdf")){
+							ObjectError errore = new ObjectError("errors","il file "+attuatore.getFileData3().getOriginalFilename()+" non è un file pdf.");
+							errors.addError(errore);
+						}
+						
+					}
+					if(attuatore.getFileData4().getOriginalFilename()!=null&&!attuatore.getFileData4().getOriginalFilename().isEmpty()){
+						if(!attuatore.getFileData4().getOriginalFilename().endsWith(".pdf")){
+							ObjectError errore = new ObjectError("errors","il file "+attuatore.getFileData4().getOriginalFilename()+" non è un file pdf.");
+							errors.addError(errore);
+						}
+						
+					}
+					
+				}
+		    }else{
+		    	ObjectError errore = new ObjectError("errors",myProperties.getProperty("allegati.assenti"));
+				errors.addError(errore);
+		    	
+		    }
 		} catch (Exception e) {
 			// TODO: handle exception
 			e.printStackTrace();
@@ -250,17 +299,17 @@ public static  void rendicontazioneValidator(Object rendicontazioneBean, Errors 
 		RendicontazioneBean rendicontazione = (RendicontazioneBean ) rendicontazioneBean;
 		try {
             
-			if(rendicontazione.getValoreComplessivo()!=null){
+			if(rendicontazione.getValoreComplessivo()!=null&&!rendicontazione.getValoreComplessivo().isEmpty()&&(rendicontazione.getValoreComplessivo().length()>3)){
 				if (!isCifra(rendicontazione.getValoreComplessivo())){
 					errors.rejectValue("valoreComplessivo", "errors", myProperties.getProperty("Not.budget")); 
 				}
 			}
-			if(rendicontazione.getContributoFBA()!=null){
+			if(rendicontazione.getContributoFBA()!=null&&!rendicontazione.getContributoFBA().isEmpty()&&(rendicontazione.getContributoFBA().length()>3)){
 				if (!isCifra(rendicontazione.getContributoFBA())){
 					errors.rejectValue("contributoFBA", "errors", myProperties.getProperty("Not.budget")); 
 				}
 			}
-			if(rendicontazione.getContributoPrivato()!=null){
+			if(rendicontazione.getContributoPrivato()!=null&&!rendicontazione.getContributoPrivato().isEmpty()&&(rendicontazione.getContributoPrivato().length()>3)){
 				if (!isCifra(rendicontazione.getContributoPrivato())){
 					errors.rejectValue("contributoPrivato", "errors", myProperties.getProperty("Not.budget")); 
 				}

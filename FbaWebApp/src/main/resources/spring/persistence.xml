@@ -11,5 +11,6 @@ version="1.0">
 		<class>it.fba.webapp.beans.RendicontazioneBean</class>
 		<class>it.fba.webapp.beans.RendicontazioneFileBean</class>
 		<class>it.fba.webapp.beans.LavoratoriFileBean</class>
+		<class>it.fba.webapp.beans.ErroreProgettoBean</class>
 	</persistence-unit>
 </persistence>

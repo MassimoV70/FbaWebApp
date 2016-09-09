@@ -43,6 +43,7 @@ public class LavoratoriBean {
 	@Column(name="esitotest")
 	String esitoTest;
 	
+	@Size(min=4, max=100)
 	@Column(name="nomeallegato")
 	String nomeAllegato;
 	

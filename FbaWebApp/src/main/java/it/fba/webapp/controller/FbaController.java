@@ -22,6 +22,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -32,6 +33,7 @@ import org.springframework.web.servlet.ModelAndView;
 import it.fba.webapp.beans.AttuatoreBean;
 import it.fba.webapp.beans.CalendarioBean;
 import it.fba.webapp.beans.DatiFIleUploadBean;
+import it.fba.webapp.beans.ErroreProgettoBean;
 import it.fba.webapp.beans.FileBean;
 import it.fba.webapp.beans.ImplementaPianoFormBean;
 import it.fba.webapp.beans.LavoratoriBean;
@@ -43,14 +45,17 @@ import it.fba.webapp.beans.RendicontazioneFileBean;
 import it.fba.webapp.beans.UsersBean;
 import it.fba.webapp.dao.AttuatoriDao;
 import it.fba.webapp.dao.CalendarioDao;
+import it.fba.webapp.dao.ErroriProgettoDao;
 import it.fba.webapp.dao.LavoratoriDao;
 import it.fba.webapp.dao.PianiFormazioneDao;
+import it.fba.webapp.dao.PianiFormazioneDaoImpl;
 import it.fba.webapp.dao.RendicontazioneDao;
 import it.fba.webapp.dao.UsersDao;
 import it.fba.webapp.exception.CustomGenericException;
 import it.fba.webapp.fileInputOutput.ImportServiceExcel;
 import it.fba.webapp.form.validator.ExcelValidator;
 import it.fba.webapp.form.validator.FormSecurityValidator;
+import it.fba.webapp.form.validator.ValidaProgetto;
 import it.fba.webapp.utils.Utils;
 
 
@@ -334,7 +339,7 @@ public class FbaController {
 						
 						ImportServiceExcel importService = new ImportServiceExcel();
 						listaExcel = importService.importFile(fileBean);
-						listaPiani = ExcelValidator.listaPianiFormazioneValidator(listaExcel, fileBean.getUsername());
+						listaPiani = ExcelValidator.listaPianiFormazioneValidator(listaExcel, fileBean.getUsername(), myProperties);
 						
 						 context = new ClassPathXmlApplicationContext("spring\\spring-jpa.xml","spring\\spring-utils.xml");
 						 PianiFormazioneDao pianiFormazioneDao = (PianiFormazioneDao) context.getBean("PianiFormazioneDaoImpl");
@@ -1114,21 +1119,25 @@ public class FbaController {
 					implementaPianoFormBean.setModulo2(pianoFormazione.getModulo2());
 					ArrayList<LavoratoriBean> listaLavoratori = new ArrayList<>();
 					ArrayList<CalendarioBean> listaCalendario = new ArrayList<>();
+					ArrayList<RendicontazioneBean> listaRendicontazione= new ArrayList<>();
 					try{
 					
 							context = new ClassPathXmlApplicationContext("spring\\spring-jpa.xml","spring\\spring-utils.xml");
 							CalendarioDao calendarioDao = (CalendarioDao) context.getBean("CalendarioDaoImpl");
 							LavoratoriDao lavoratoriDao = (LavoratoriDao) context.getBean("LavoratoriDaoImpl");
+							RendicontazioneDao rendicontazioneDao = (RendicontazioneDao) context.getBean("RendicontazioneDaoImpl");
 							listaCalendario = calendarioDao.esisteCalendario(pianoFormazione);
 							listaLavoratori = lavoratoriDao.esistonoLavoratori(pianoFormazione);
+							listaRendicontazione = rendicontazioneDao.esisteRendicontazione(pianoFormazione);
 							if (listaCalendario!=null&&!listaCalendario.isEmpty()){
 								modelWiev.addObject("calendario", myProperties.getProperty("calendari.esistono"));
 							}
 							if (listaLavoratori!=null&&!listaLavoratori.isEmpty()){
 								modelWiev.addObject("lavoratori", myProperties.getProperty("lavoratori.esistono"));
 							}
-							// if rendicontazione esiste...
-							
+							if (listaRendicontazione!=null&&!listaRendicontazione.isEmpty()){
+								modelWiev.addObject("rendicontazione", myProperties.getProperty("rendicontazione.esiste"));
+							}
 					}catch(Exception e){
 						e.printStackTrace();
 						logger.error(e.getMessage());
@@ -1175,8 +1184,8 @@ public class FbaController {
 							fileBean.setFileData(implementaPianoFormBean.fileData1);
 							listaExcel = importService.importFile(fileBean);
 							try{
-								listaCalendario1 = ExcelValidator.listaCalendariModuliValidator(listaExcel, implementaPianoFormBean.getId(), implementaPianoFormBean.getModulo1());
-								listaCalendario2 = ExcelValidator.listaCalendariModuliValidator(listaExcel, implementaPianoFormBean.getId(), implementaPianoFormBean.getModulo2());
+								listaCalendario1 = ExcelValidator.listaCalendariModuliValidator(listaExcel, implementaPianoFormBean.getId(), implementaPianoFormBean.getModulo1(), myProperties);
+								listaCalendario2 = ExcelValidator.listaCalendariModuliValidator(listaExcel, implementaPianoFormBean.getId(), implementaPianoFormBean.getModulo2(), myProperties);
 							}catch(Exception e){
 								modelWiev.addObject("errorMessage", myProperties.getProperty("errore.file.excel",implementaPianoFormBean.fileData1.getName()));
 								throw e;
@@ -1189,8 +1198,8 @@ public class FbaController {
 							fileBean.setFileData(implementaPianoFormBean.fileData2);
 							listaExcel = importService.importFile(fileBean);
 							try{
-								listaLavoratori1 = ExcelValidator.listaLavoratoriModuliValidator(listaExcel,implementaPianoFormBean.getId(), implementaPianoFormBean.getModulo1());
-								listaLavoratori2 = ExcelValidator.listaLavoratoriModuliValidator(listaExcel,implementaPianoFormBean.getId(), implementaPianoFormBean.getModulo2());
+								listaLavoratori1 = ExcelValidator.listaLavoratoriModuliValidator(listaExcel,implementaPianoFormBean.getId(), implementaPianoFormBean.getModulo1(), myProperties);
+								listaLavoratori2 = ExcelValidator.listaLavoratoriModuliValidator(listaExcel,implementaPianoFormBean.getId(), implementaPianoFormBean.getModulo2(), myProperties);
 							}catch(Exception e){
 								modelWiev.addObject("errorMessage", myProperties.getProperty("errore.file.excel",implementaPianoFormBean.fileData2.getName()));
 								throw e;
@@ -1203,7 +1212,7 @@ public class FbaController {
 							fileBean.setFileData(implementaPianoFormBean.fileData3);
 							listaExcel = importService.importFile(fileBean);
 							try{
-								listaRendicontazione = ExcelValidator.listaRendicontazioneValidator(listaExcel, implementaPianoFormBean.getId());
+								listaRendicontazione = ExcelValidator.listaRendicontazioneValidator(listaExcel, implementaPianoFormBean.getId(), myProperties);
 							}catch(Exception e){
 								modelWiev.addObject("errorMessage", myProperties.getProperty("errore.file.excel",implementaPianoFormBean.fileData3.getName()));
 								throw e;
@@ -1286,7 +1295,7 @@ public class FbaController {
 							AttuatoriDao attuatoriDao= (AttuatoriDao) context.getBean("AttuatoreDaoImpl");
 							boolean esiste = attuatoriDao.esisteAttuatore(attuatoreBean);
 							if(esiste){
-								modelWiev.addObject("attuatore", "L'operazione aggiornerà gli allegati della partita IVA");
+								modelWiev.addObject("attuatore", "L'operazione sostituirà tutti gli allegati della partita IVA");
 							}
 						}else{
 							PianiFormazioneDao pianiFormazioneDao = (PianiFormazioneDao) context.getBean("PianiFormazioneDaoImpl");
@@ -1330,13 +1339,13 @@ public class FbaController {
 					ApplicationContext context=null;
 					try {
 						ImportServiceExcel service = new ImportServiceExcel();
+						validator.attuatoriValidator(implementaPianoFormBean, bindingResult, myProperties);
 						attuatoreBean = service.importaCertificati(implementaPianoFormBean);
 						context = new ClassPathXmlApplicationContext("spring\\spring-jpa.xml","spring\\spring-utils.xml");
 						PianiFormazioneDao pianiFormazioneDao = (PianiFormazioneDao) context.getBean("PianiFormazioneDaoImpl");
 						AttuatoriDao attuatoriDao= (AttuatoriDao) context.getBean("AttuatoreDaoImpl");
 						attuatoreBean.setAttuatorePIVA(implementaPianoFormBean.getAttuatorePIVA());
 						attuatoreBean.setUsername(request.getUserPrincipal().getName());
-						validator.attuatoriValidator(attuatoreBean, bindingResult, myProperties);
 						if (!bindingResult.hasErrors()){
 							boolean esiste = attuatoriDao.esisteAttuatore(attuatoreBean);
 							if (!esiste){
@@ -1355,6 +1364,13 @@ public class FbaController {
 							}
 							listaPiani = pianiFormazioneDao.getAllPiani(request.getUserPrincipal().getName());
 						}else{
+							String errori=" ";
+							for (ObjectError errore : bindingResult.getAllErrors() ){
+								errori = errori.concat(errore.getDefaultMessage());
+								errori= errori.concat("<br>");
+							
+							}
+							modelWiev.addObject("errorMessage", errori);
 							modelWiev.addObject("implementaPianoFormBean", implementaPianoFormBean);
 							modelWiev.setViewName("attuatoreUpload");
 							return modelWiev;
@@ -1795,6 +1811,134 @@ public class FbaController {
 					
 						
 					}
+				
+				//Vaidazione progetto
+				@RequestMapping(value ={ "/adminValidaPiano","/userValidaPiano"}, method = RequestMethod.POST)
+				public ModelAndView validaPiano(HttpServletRequest request, ModelMap model, @ModelAttribute("pianoFormazioneForm") PianoDIformazioneBean pianoFormazione) {
+					ModelAndView modelWiev = new ModelAndView();
+					ApplicationContext context =null;
+					
+					String username = request.getUserPrincipal().getName();
+					AttuatoreBean attuatoreBean = new AttuatoreBean();
+					ArrayList<CalendarioBean> listaCalendari = new ArrayList<>();
+					ArrayList<LavoratoriBean> listaLavoratori = new ArrayList<>();
+					ArrayList<RendicontazioneBean> listaRendicontazione = new ArrayList<>();
+					ArrayList<ErroreProgettoBean> listaErroriProgetto = new ArrayList<>();
+					ArrayList<String> listaFileLavoratori = new ArrayList<>();
+					ArrayList<String> listaFileRendicontazione = new ArrayList<>();
+					try {
+					    
+						context = new ClassPathXmlApplicationContext("spring\\spring-jpa.xml","spring\\spring-utils.xml");
+						PianiFormazioneDao pianiFormazioneDao = (PianiFormazioneDao) context.getBean("PianiFormazioneDaoImpl");
+						PianoDIformazioneBean pianoDIformazioneBean= pianiFormazioneDao.findPianiFormazione(pianoFormazione);
+						//validazione piano
+						listaErroriProgetto = ValidaProgetto.validaProgettoTop(pianoDIformazioneBean, myProperties);
+						
+						//validazione file attuatore
+						if (!(Utils.eliminaSpazi(pianoDIformazioneBean.getAttuatorePIVA()).isEmpty())&&
+								!pianoDIformazioneBean.getAttuatorePIVA().equalsIgnoreCase(myProperties.getProperty("assente"))){	
+									attuatoreBean.setAttuatorePIVA(pianoDIformazioneBean.getAttuatorePIVA());
+									attuatoreBean.setUsername(username);
+									AttuatoriDao attuatoriDao= (AttuatoriDao) context.getBean("AttuatoreDaoImpl");
+									AttuatoreBean attuatoreResult = attuatoriDao.leggiNomiAllegati(attuatoreBean);
+									listaErroriProgetto = ValidaProgetto.validaFileAttuatore(pianoDIformazioneBean, attuatoreBean, listaErroriProgetto, myProperties);
+									
+									
+						}
+						
+						
+						// validazione calendario
+						if (!(pianoDIformazioneBean.getModulo1()==null&&pianoDIformazioneBean.getModulo2()==null&&
+							 pianoDIformazioneBean.getModulo1().isEmpty()&&pianoDIformazioneBean.getModulo2().isEmpty())){
+							CalendarioDao calendarioDao = (CalendarioDao) context.getBean("CalendarioDaoImpl");
+							listaCalendari = calendarioDao.getCalendari(pianoDIformazioneBean);
+							listaErroriProgetto = ValidaProgetto.validaCalendari(listaCalendari,pianoDIformazioneBean, listaErroriProgetto, myProperties);
+						
+						
+						// validazione lavoratori
+					
+							LavoratoriDao lavoratoriDao = (LavoratoriDao) context.getBean("LavoratoriDaoImpl");
+							listaLavoratori = lavoratoriDao.esistonoLavoratori(pianoDIformazioneBean);
+							listaFileLavoratori = lavoratoriDao.leggiNomiAllegati(username);
+							listaErroriProgetto = ValidaProgetto.validaLavoratori(listaLavoratori, pianoDIformazioneBean, listaErroriProgetto, myProperties);
+							 
+							// chiamo il metodo di validazione dei file lavoratori
+							listaErroriProgetto = ValidaProgetto.validaFileLavoratori(pianoDIformazioneBean.getId(), listaLavoratori, listaFileLavoratori, listaErroriProgetto, myProperties);
+							
+						//valida rendicontazione
+							RendicontazioneDao rendicontazioneDao = (RendicontazioneDao) context.getBean("RendicontazioneDaoImpl");
+							listaRendicontazione = rendicontazioneDao.getAllrendicontazione(pianoDIformazioneBean);
+							listaErroriProgetto = ValidaProgetto.validaRendicontazione(listaRendicontazione, pianoDIformazioneBean, listaErroriProgetto, myProperties);
+							
+							// chiamo il metodo di validazione dei file
+							listaFileRendicontazione = rendicontazioneDao.leggiNomiAllegati(username);
+							listaErroriProgetto = ValidaProgetto.validaFileRendicontazione(pianoDIformazioneBean.getId(), listaRendicontazione, listaFileRendicontazione, listaErroriProgetto, myProperties);
+						
+						//	aggiorno lo stato del progetto
+							if (listaErroriProgetto!=null&&!listaErroriProgetto.isEmpty()){
+								pianoDIformazioneBean.setEnabled(myProperties.getProperty("enabled.no"));
+							}else{
+								pianoDIformazioneBean.setEnabled(myProperties.getProperty("enabled.si"));
+							}
+							
+							pianiFormazioneDao.updateStatoPianoDiFormazione(pianoDIformazioneBean);
+							
+						// aggiorno la lista errori del progetto
+							ErroriProgettoDao erroriProgettoDao = (ErroriProgettoDao) context.getBean("ErroriProgettoDaoImpl");
+							erroriProgettoDao.deleteErroriProgett(pianoDIformazioneBean.getId());
+							if (listaErroriProgetto != null &&!listaErroriProgetto.isEmpty()){
+								erroriProgettoDao.salvaErroriProgetto(listaErroriProgetto);
+							}
+							listaErroriProgetto = erroriProgettoDao.getErroriProgetto(pianoDIformazioneBean.getId());
+					     }
+					
+					} catch (Exception e) {
+						// TODO: handle exception
+						e.printStackTrace();
+						logger.error(e.getMessage());
+						throw new CustomGenericException(new Date(), myProperties.getProperty("errore.generale"));
+					}
+						
+					 
+						modelWiev.addObject("title", "Riassunto Errori Progetto");
+					    modelWiev.addObject("listaErroriProgetto", listaErroriProgetto);
+						modelWiev.addObject("message", myProperties.getProperty("errori.riassunto"));
+						modelWiev.setViewName("erroriProgetto");
+				
+					return modelWiev;
+					
+						
+					}
+				
+
+				//Carica gli erorri del progetto
+				@RequestMapping(value ={ "/adminErroriPiano","/userErroriPiano"}, method = RequestMethod.POST)
+				public ModelAndView erroriPiano( ModelMap model, @ModelAttribute("pianoFormazioneForm") PianoDIformazioneBean pianoFormazione) {
+					ModelAndView modelWiev = new ModelAndView();
+					ApplicationContext context =null;
+					PianoDIformazioneBean pianoFormazioneBean = new PianoDIformazioneBean();
+					ArrayList<ErroreProgettoBean> listaErroriProgetto = new ArrayList<>();
+					try {
+						context = new ClassPathXmlApplicationContext("spring\\spring-jpa.xml","spring\\spring-utils.xml");
+						PianiFormazioneDao pianiFormazioneDao = (PianiFormazioneDao) context.getBean("PianiFormazioneDaoImpl");
+						ErroriProgettoDao erroriProgettoDao = (ErroriProgettoDao) context.getBean("ErroriProgettoDaoImpl");
+						listaErroriProgetto = erroriProgettoDao.getErroriProgetto(pianoFormazione.getId());
+						pianoFormazioneBean = pianiFormazioneDao.findPianiFormazione(pianoFormazione);
+					} catch (Exception e) {
+						// TODO: handle exception
+						e.printStackTrace();
+						logger.error(e.getMessage());
+						throw new CustomGenericException(new Date(), myProperties.getProperty("errore.generale"));
+					}
+				
+				
+					modelWiev.addObject("title", "Riassunto Errori Progetto");
+				    modelWiev.addObject("listaErroriProgetto", listaErroriProgetto);
+					modelWiev.addObject("message", myProperties.getProperty("errori.riassunto")+pianoFormazioneBean.getNuemroProtocollo());
+					modelWiev.setViewName("erroriProgetto");
+			
+				return modelWiev;
+				}
 				
 				
 			

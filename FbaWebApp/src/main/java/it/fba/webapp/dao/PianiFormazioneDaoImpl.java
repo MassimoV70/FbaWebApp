@@ -37,7 +37,9 @@ public class PianiFormazioneDaoImpl implements PianiFormazioneDao{
 	private final String queryAggAttuatori = "Update PianoDIformazioneBean p set p.nomeAllegato1= :nomeAllegato1Str, p.nomeAllegato2= :nomeAllegato2Str, "
 			                               + "p.nomeAllegato3= :nomeAllegato3Str, p.nomeAllegato4= :nomeAllegato4Str where p.attuatorePIVA= :attuatorePIVAStr";								
 		
-			
+
+	private final String queryUpdateStatoPiano = "Update PianoDIformazioneBean p set p.enabled= :enabledStr"
+												+ " where p.id= :idStr and p.username= :usernameStr";
 	
 
 	@Override
@@ -119,6 +121,17 @@ public class PianiFormazioneDaoImpl implements PianiFormazioneDao{
 		Query query = entityManager.createQuery(queryAggAttuatori);
 	int i = query.setParameter("nomeAllegato1Str", pianoDiFormazione.getNomeAllegato1()).setParameter("nomeAllegato2Str", pianoDiFormazione.getNomeAllegato2()).setParameter("nomeAllegato3Str", pianoDiFormazione.getNomeAllegato3())
 		     .setParameter("nomeAllegato4Str", pianoDiFormazione.getNomeAllegato4()).setParameter("attuatorePIVAStr", pianoDiFormazione.getAttuatorePIVA()).executeUpdate();
+		
+	}
+
+	@Override
+	public void updateStatoPianoDiFormazione(PianoDIformazioneBean pianoDiFormazioneBean) throws SQLException {
+		// TODO Auto-generated method stub
+		Query query = entityManager.createQuery(queryUpdateStatoPiano);
+		
+		
+		   int i= query.setParameter("enabledStr", pianoDiFormazioneBean.getEnabled())
+		         .setParameter("usernameStr", pianoDiFormazioneBean.getUsername()).setParameter("idStr",pianoDiFormazioneBean.getId()).executeUpdate();
 		
 	}
 	

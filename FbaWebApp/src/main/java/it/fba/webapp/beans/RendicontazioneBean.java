@@ -51,15 +51,15 @@ public class RendicontazioneBean {
 	@Column(name="fornitorenominativo")
 	String fornitoreNominativo;
 	
-	@Size(min=2, max=100)
+	@Size(min=4)
 	@Column(name="valorecomplessivo")
 	String valoreComplessivo;
 	
-	@Size(min=2, max=100)
+	@Size(min=4)
 	@Column(name="contributofba")
 	String contributoFBA;
 	
-	@Size(min=2, max=100)
+	@Size(min=4)
 	@Column(name="contributoprivato")
 	String contributoPrivato;
 	
