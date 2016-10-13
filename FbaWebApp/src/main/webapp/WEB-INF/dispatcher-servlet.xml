@@ -62,4 +62,12 @@ http://www.springframework.org/schema/context/spring-context-4.0.xsd">
 			<value>properties/messages</value>
 		</property>
 	</bean>
+	
+	<!-- <bean id="metadataGeneratorFilter" class="org.springframework.security.saml.metadata.MetadataGeneratorFilter">
+	<constructor-arg>
+		<bean class="org.springframework.security.saml.metadata.MetadataGenerator">
+			<property name="includeDiscoveryExtension" value="true"/>
+		</bean>
+	</constructor-arg>
+   </bean> -->
 </beans>

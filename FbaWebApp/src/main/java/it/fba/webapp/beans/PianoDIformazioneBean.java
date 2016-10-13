@@ -122,7 +122,7 @@ public class PianoDIformazioneBean {
 	String formeAiuti;
 	
 	// categorie svantaggiate
-	@Size(min=1, max=1)
+	@Size(min=1, max=7)
 	@Column(name="categsvantagg")
 	String categSvantagg;
 

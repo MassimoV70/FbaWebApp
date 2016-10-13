@@ -49,7 +49,7 @@ public class LavoratoriDaoImpl implements LavoratoriDao{
 		// TODO Auto-generated method stub
 		for(LavoratoriBean lavoratore:listaLavoratori){
 			entityManager.persist(lavoratore);
-			entityManager.clear();
+			
 		}
 		
 	}

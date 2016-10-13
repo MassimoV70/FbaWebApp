@@ -33,8 +33,9 @@
  	        <h3> ${lavoratori}</h3>
  	         <form:hidden path="nomeModulo"/>
  	         <form:hidden path="idPiano"/>
+ 	          <form:hidden path="modalitaFormatvia" id="idModalita"/>
  	          <P>Vai alla sezione lavoratori caricati</P>
-        		<input type="button"  onclick="mostraLavoratori();" value="Visualizza lavoratori associati" >
+        		<input type="button"  onclick="mostraLavoratori('${disabled}');" value="Visualizza lavoratori associati" >
         	 <br>
 	 	     
 		</div>	
@@ -55,7 +56,13 @@
 				
 			}
 			
-			function mostraLavoratori(){
+			function mostraLavoratori(fad){
+				$('#idModalita').val('aula');
+				
+				if(fad==true){
+					
+					$('#idModalita').val('fad');	
+				}
 				 
 				$("#lavoratoriForm").attr('action','/FbaWebApp/adminMostraLavoratori');
 		   	 	$("#lavoratoriForm").submit();
@@ -77,7 +84,13 @@
 				
 			}
 			
-			function mostraLavoratori(){
+			function mostraLavoratori(fad){
+				$('#idModalita').val('aula');
+				
+				if(fad==true){
+					
+					$('#idModalita').val('fad');	
+				}
 				 
 				$("#lavoratoriForm").attr('action','/FbaWebApp/userMostraLavoratori');
 		   	 	$("#lavoratoriForm").submit();

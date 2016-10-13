@@ -26,40 +26,40 @@ public class CalendarioBean {
 	@GeneratedValue(strategy=GenerationType.AUTO)
 	@NotNull
 	@Column(name="id")
-	int id;
+	private int id;
 	@NotNull
 	@Column(name="idPiano")
-	int idPiano;
+	private int idPiano;
 	
 	@Size(min=2, max=100)
 	@Column(name="nomemodulo")
-	String nomeModulo;
+	private String nomeModulo;
 	
 	@DateTimeFormat(pattern="dd/mm/yyyy")
 	@Column(name="data")
-	Date data;
+	private Date data;
 	
 	@Transient
 	@NotNull
 	@Size(min=10, max=10)
-	String dataStr;
+	private String dataStr;
 	
 	
 	@Column(name="iniziomattina")
-	String inizioMattina;
+	private String inizioMattina;
 	
 	@Column(name="finemattina")
-	String fineMattina;
+	private String fineMattina;
 	
 	@Column(name="iniziopomeriggio")
-	String inizioPomeriggio;
+	private String inizioPomeriggio;
 	
 	@Column(name="finepomeriggio")
-	String finePomeriggio;
+	private String finePomeriggio;
 	
 	@NotNull
 	@Column(name="stato")
-	String stato;
+	private String stato;
 	
 	@Transient
 	public CommonsMultipartFile fileData;

@@ -12,6 +12,9 @@
 		
 		<intercept-url pattern="/admin**" access="hasRole('ROLE_ADMIN')" />
 		<intercept-url pattern="/user**" access="hasRole('ROLE_USER')" />
+		<intercept-url pattern="/login**" access="isAnonymous()" />
+		<intercept-url pattern="/resources/**" access="permitAll" />
+        <intercept-url pattern="/**" access="isAuthenticated()"/>
 		
 		<!-- access denied page -->
 		<access-denied-handler error-page="/403" />
@@ -28,6 +31,11 @@
 		<!-- enable csrf protection -->
 		<csrf/>
 		
+		 <session-management invalid-session-url="/login?error=sessione"  >
+        	<concurrency-control max-sessions="1" expired-url="/login?error=sessione" />
+    	 </session-management>
+		  
+		 
 		
 	</http>
 	
@@ -41,6 +49,7 @@
 		    "select username, role from users where username =?  " />
 	  </authentication-provider>
 	</authentication-manager>
+	
 	
 	
 

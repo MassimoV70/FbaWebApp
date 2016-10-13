@@ -155,6 +155,7 @@ public class Utils {
    public static Map<String, String> getListaFadSiNo(Properties myProperty) {
 		
 		Map<String, String> listaSelezioneFad = new LinkedHashMap<String, String>();
+		listaSelezioneFad.put(myProperty.getProperty("assente"), "assente");
 		listaSelezioneFad.put(myProperty.getProperty("fad.si"), "FAD");
 		listaSelezioneFad.put(myProperty.getProperty("fad.no"), "AULA");
 		return listaSelezioneFad;

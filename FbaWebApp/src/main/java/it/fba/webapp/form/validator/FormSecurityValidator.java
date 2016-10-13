@@ -71,20 +71,22 @@ public class FormSecurityValidator implements Validator{
 		// TODO Auto-generated method stub
 		PianoDIformazioneBean form = (PianoDIformazioneBean)pianoFormazione;
 		
-		 if (form.getModulo1().equalsIgnoreCase(form.getModulo2())){
-			 errors.rejectValue("modulo1", "errors",myProperties.getProperty("Valori.diversi"));
-			 errors.rejectValue("modulo2", "errors", myProperties.getProperty("Valori.diversi"));
-		 }
+//		 if (form.getModulo1().equalsIgnoreCase(form.getModulo2())){
+//			 errors.rejectValue("modulo1", "errors",myProperties.getProperty("Valori.diversi"));
+//			 errors.rejectValue("modulo2", "errors", myProperties.getProperty("Valori.diversi"));
+//		 }
 		 
 		 if (!isNumber(form.getNumeroPartecipanti())){
 			 errors.rejectValue("numeroPartecipanti", "errors",myProperties.getProperty("NumberFormat.pianoFormazioneForm.numPartecipanti"));
 		 }
 		 
-		if (!isOreMin(form.getDurataModulo1())){
+		if (!form.getDurataModulo1().equalsIgnoreCase(myProperties.getProperty("assente"))
+			&&!isOreMin(form.getDurataModulo1())){
 			errors.rejectValue("durataModulo1", "errors",myProperties.getProperty("Not.time"));
 		}
 		
-		if (!isOreMin(form.getDurataModulo2())){
+		if (!form.getDurataModulo2().equalsIgnoreCase(myProperties.getProperty("assente"))
+			&&!isOreMin(form.getDurataModulo2())){
 			errors.rejectValue("durataModulo2", "errors",myProperties.getProperty("Not.time"));
 		}
 		
@@ -298,7 +300,7 @@ public static  void rendicontazioneValidator(Object rendicontazioneBean, Errors 
 		
 		RendicontazioneBean rendicontazione = (RendicontazioneBean ) rendicontazioneBean;
 		try {
-            
+			
 			if(rendicontazione.getValoreComplessivo()!=null&&!rendicontazione.getValoreComplessivo().isEmpty()&&(rendicontazione.getValoreComplessivo().length()>3)){
 				if (!isCifra(rendicontazione.getValoreComplessivo())){
 					errors.rejectValue("valoreComplessivo", "errors", myProperties.getProperty("Not.budget")); 
@@ -314,6 +316,8 @@ public static  void rendicontazioneValidator(Object rendicontazioneBean, Errors 
 					errors.rejectValue("contributoPrivato", "errors", myProperties.getProperty("Not.budget")); 
 				}
 			}
+			
+			
 			
 		} catch (Exception e) {
 			// TODO: handle exception

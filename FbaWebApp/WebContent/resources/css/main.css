@@ -120,6 +120,41 @@ input[type=submit] {
     
 }
 
+#radioDiv {
+    width: 73px;
+    height: 10px;
+    background-color: #0000ff;
+    color: white;
+    padding-top: 5px;
+    padding-left: 15px;
+    padding-right: 5px;
+    padding-bottom: 15px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+   
+}
+
+#radioDivChecked {
+    width: auto;
+    height: 35px;
+    background-color: #00ff00;
+    color: white;
+    padding-top: 5px;
+    padding-left: 20px;
+    padding-right: 10px;
+    padding-bottom: 5px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin: auto
+}
+
+
+
+
+
+
 select {
     width: auto;
     padding: 10px 10px;

@@ -25,7 +25,13 @@
 					<tbody>
 							<c:forEach var="listValue" items="${listaPiani}">
 							  <tr>
-							    <td>${listValue.nuemroProtocollo}</td>
+							    <td>${listValue.nuemroProtocollo}
+							    <%-- <c:if test="${listValue.enabled==1}">
+								    <div id="radioDiv" onclick="trasmetti('${listValue.id}')">
+								        <label>Trasmetti</label>
+	                                 </div> 
+							    </c:if> --%>
+							    </td>
 								<td>${listValue.nomeProgetto}</td>
 								<td>${listValue.tipoCorsoPiano}</td>
 								<td>${listValue.tematicaFormativa}</td>
@@ -111,14 +117,14 @@
 								<td>
 									
 									<div id="stato">
-										  	<%-- <input type="image"  onclick="elaboraPiano('${listValue.id}','','','valida','','');" value="Valida piano" src= "resources/images/refresh.png" alt="Valida piano" title="Valida piano"> --%>
+										  	<input type="image"  onclick="elaboraPiano('${listValue.id}','','','valida','','');" value="Valida piano" src= "resources/images/refresh.png" alt="Valida piano" title="Valida piano">
 										
 										
 											<c:choose>
 										    	<c:when test="${listValue.enabled==1}"><img src= "resources/images/ok.png" alt="inviabile" title="inviabile"/></c:when>
 												<c:otherwise> 
-															<%-- <input type="image"  onclick="elaboraPiano('${listValue.id}','','','erroriProgetto','','');" value="Mostra errori progetto" src= "resources/images/notOK.png" alt="Mostra errori progetto" title="Mostra errori progetto"> --%>
-															<input type="image"  value="Mostra errori progetto" src= "resources/images/notOK.png" alt="Mostra errori progetto" title="Mostra errori progetto">
+															<input type="image"  onclick="elaboraPiano('${listValue.id}','','','erroriProgetto','','');" value="Mostra errori progetto" src= "resources/images/notOK.png" alt="Mostra errori progetto" title="Mostra errori progetto">
+															
 												</c:otherwise>
 											</c:choose>
 										
@@ -293,7 +299,12 @@
 				}	
 			
 			});
+			
+			
 		})
+		
+		
+		
 		
 		
 		function nascondi(id){

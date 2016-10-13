@@ -16,6 +16,8 @@ import it.fba.webapp.utils.Utils;
 
 public class ExcelValidator {
 	
+	
+	
 	public static ArrayList<PianoDIformazioneBean> listaPianiFormazioneValidator(ArrayList<HashMap<String, String>> listaExcel,  String username, Properties myProperties)throws Exception {
 		// TODO Auto-generated method stub
 		ArrayList<PianoDIformazioneBean> listaPiani = new ArrayList<>();
@@ -54,7 +56,8 @@ public class ExcelValidator {
 					pianoFormazione.setTematicaFormativa(myProperties.getProperty("assente"));
 					
 				}
-				if(FormSecurityValidator.isNumber(Utils.eliminaSpazi(map.get("5")))){
+				
+				if(!Utils.eliminaSpazi(map.get("5")).equalsIgnoreCase("")&&FormSecurityValidator.isNumber(Utils.eliminaSpazi(map.get("5")))){
 					pianoFormazione.setNumeroPartecipanti(Utils.eliminaSpazi(map.get("5")));
 				}else{
 					pianoFormazione.setNumeroPartecipanti(myProperties.getProperty("assente"));
@@ -256,7 +259,10 @@ public class ExcelValidator {
 					calendario.setDataStr(Utils.eliminaSpazi(map.get("2")));
 					calendario.setData(Utils.dataDBFormatter(calendario.getDataStr()));
 				}else{
+					calendario.setDataStr(Utils.eliminaSpazi(myProperties.getProperty("data.errore")));
+					calendario.setData(Utils.dataDBFormatter(calendario.getDataStr()));
 					calendario.setStato("0");
+					
 				}
 				
 				if(map.get("3")!=null&&!Utils.eliminaSpazi(map.get("3")).equals("")&&FormSecurityValidator.isTime(Utils.eliminaSpazi(map.get("3")))){
@@ -377,13 +383,13 @@ public class ExcelValidator {
 					lavoratore.setOrePresenza(myProperties.getProperty("assente"));
 					lavoratore.setStato("0");
 				}
-				if (map.get("4")!=null&&Utils.eliminaSpazi(map.get("4")).isEmpty()){
+				if (map.get("4")!=null&&!Utils.eliminaSpazi(map.get("4")).isEmpty()){
 					lavoratore.setEsitoTest(Utils.eliminaSpazi(map.get("4")));
 				}else{
 					lavoratore.setEsitoTest(myProperties.getProperty("assente"));
 					lavoratore.setStato("0");
 				}
-				if (map.get("5")!=null&&Utils.eliminaSpazi(map.get("5")).isEmpty()){
+				if (map.get("5")!=null&&!Utils.eliminaSpazi(map.get("5")).isEmpty()){
 					lavoratore.setNomeAllegato(Utils.eliminaSpazi(map.get("5")));
 				}else{
 					lavoratore.setNomeAllegato(myProperties.getProperty("assente"));
@@ -418,29 +424,30 @@ public class ExcelValidator {
             RendicontazioneBean rendicontazione = new RendicontazioneBean();
             rendicontazione.setIdPiano(idPiano);
             rendicontazione.setStato("1");
-            if (!(map.get("1")==null&&Utils.eliminaSpazi(map.get("1")).equalsIgnoreCase(""))){
+            if (map.get("1")!=null&&!Utils.eliminaSpazi(map.get("1")).equalsIgnoreCase("")){
             	rendicontazione.setTipologiaGiustificativo(Utils.eliminaSpazi(map.get("1")));
             }else{
             	rendicontazione.setTipologiaGiustificativo(myProperties.getProperty("assente"));
             	rendicontazione.setStato("0");
             }
             
-            if (!(map.get("2")==null&&Utils.eliminaSpazi(map.get("2")).equalsIgnoreCase(""))){
+            if (map.get("2")!=null&&!Utils.eliminaSpazi(map.get("2")).equalsIgnoreCase("")){
             	rendicontazione.setCodice(Utils.eliminaSpazi(map.get("2")));
             }else{
             	rendicontazione.setCodice(myProperties.getProperty("assente"));
             	rendicontazione.setStato("0");
             }
             
-            if (!(map.get("3")==null&&Utils.eliminaSpazi(map.get("3")).equalsIgnoreCase(""))){
+            if (map.get("3")!=null&&!Utils.eliminaSpazi(map.get("3")).equalsIgnoreCase("")){
             	rendicontazione.setDataGiustificativoStr(Utils.eliminaSpazi(map.get("3")));
             	rendicontazione.setDataGiustificativo(Utils.dataDBFormatter(rendicontazione.getDataGiustificativoStr()));
             }else{
-            	rendicontazione.setDataGiustificativo(null);
+            	rendicontazione.setDataGiustificativoStr(Utils.eliminaSpazi(myProperties.getProperty("data.errore")));
+            	rendicontazione.setDataGiustificativo(Utils.dataDBFormatter(rendicontazione.getDataGiustificativoStr()));
             	rendicontazione.setStato("0");
             }
             
-            if (!(map.get("4")==null&&Utils.eliminaSpazi(map.get("4")).equalsIgnoreCase(""))){
+            if (map.get("4")!=null&&!Utils.eliminaSpazi(map.get("4")).equalsIgnoreCase("")){
             	 rendicontazione.setFornitoreNominativo(Utils.eliminaSpazi(map.get("4")));
             }else{
             	rendicontazione.setFornitoreNominativo(myProperties.getProperty("assente"));
@@ -471,7 +478,7 @@ public class ExcelValidator {
             	rendicontazione.setStato("0");
             }
             
-            if (!(map.get("8")==null&&Utils.eliminaSpazi(map.get("8")).equalsIgnoreCase(""))){
+            if (map.get("8")!=null&&!Utils.eliminaSpazi(map.get("8")).equalsIgnoreCase("")){
            	 	rendicontazione.setNomeAllegato(Utils.eliminaSpazi(map.get("8")));
             }else{
             	rendicontazione.setNomeAllegato(myProperties.getProperty("assente"));

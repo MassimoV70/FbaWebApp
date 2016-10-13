@@ -1,11 +1,14 @@
 package it.fba.webapp.beans;
 
+
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
@@ -17,42 +20,47 @@ import org.springframework.web.multipart.commons.CommonsMultipartFile;
 @Table(name="lavoratori_modulo")
 public class LavoratoriBean {
 	
+	
 	@Id
 	@NotNull
 	@GeneratedValue(strategy=GenerationType.AUTO)
 	@Column(name="id")
-	int id;
+	private int id;
 	
 	@NotNull
 	@Column(name="idpiano")
-	int idPiano;
+	private int idPiano;
 	
 	@Size(min=2, max=100)
 	@Column(name="nomemodulo")
-	String nomeModulo;
+	private String nomeModulo;
+	
+	@Transient
+	private String modalitaFormatvia;
 	
 	@Size(min=2, max=100)
 	@Column(name="matricola")
-	String matricola;
+	private String matricola;
 	
 	@Size(min=1, max=100)
 	@Column(name="orepresenza")
-	String orePresenza;
+	private String orePresenza;
 	
 	@Size(min=1, max=100)
 	@Column(name="esitotest")
-	String esitoTest;
+	private String esitoTest;
 	
 	@Size(min=4, max=100)
 	@Column(name="nomeallegato")
-	String nomeAllegato;
+	private String nomeAllegato;
 	
 	@NotNull
 	@Column(name="stato")
-	String stato;
+	private String stato;
 	
 	@Column(name="allegato")
     CommonsMultipartFile fileData;
+	
 
 	public int getId() {
 		return id;
@@ -124,6 +132,14 @@ public class LavoratoriBean {
 
 	public void setEsitoTest(String esitoTest) {
 		this.esitoTest = esitoTest;
+	}
+
+	public String getModalitaFormatvia() {
+		return modalitaFormatvia;
+	}
+
+	public void setModalitaFormatvia(String modalitaFormatvia) {
+		this.modalitaFormatvia = modalitaFormatvia;
 	}
 	
 	

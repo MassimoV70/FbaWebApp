@@ -18,8 +18,9 @@
 	</c:when>
 	<c:otherwise>
 			  <div id="formDiv">
-			  	<p align="center">Non ci sono errori da visualizzare</p>
-			  	<img src= "resources/images/ok.png" alt="piano validato" title="piano validato"/>
+			  	<p align="center">Non ci sono errori da visualizzare <br>
+			  	 <img src= "resources/images/ok.png" alt="piano validato" title="piano validato" />
+			    </p>
 			  </div>
 	</c:otherwise>
 </c:choose>

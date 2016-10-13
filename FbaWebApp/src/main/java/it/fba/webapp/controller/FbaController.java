@@ -3,6 +3,7 @@ package it.fba.webapp.controller;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
 
@@ -14,6 +15,7 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.MessageSource;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -48,7 +50,6 @@ import it.fba.webapp.dao.CalendarioDao;
 import it.fba.webapp.dao.ErroriProgettoDao;
 import it.fba.webapp.dao.LavoratoriDao;
 import it.fba.webapp.dao.PianiFormazioneDao;
-import it.fba.webapp.dao.PianiFormazioneDaoImpl;
 import it.fba.webapp.dao.RendicontazioneDao;
 import it.fba.webapp.dao.UsersDao;
 import it.fba.webapp.exception.CustomGenericException;
@@ -69,6 +70,7 @@ public class FbaController {
 	
 	@Autowired
 	FormSecurityValidator validator;
+	
 	
 	
 
@@ -101,9 +103,13 @@ public class FbaController {
 		@RequestParam(value = "logout", required = false) String logout) {
         
 		ModelAndView model = new ModelAndView();
-
-		if (error != null) {
+		
+		if (error != null&&!error.equalsIgnoreCase("sessione")) {
 			model.addObject("error", myProperties.getProperty("username.password"));
+		}
+		
+		if (error != null&&error.equalsIgnoreCase("sessione")) {
+			model.addObject("error", myProperties.getProperty("errore.sessione"));
 		}
 
 		if (logout != null) {
@@ -372,8 +378,14 @@ public class FbaController {
 						// TODO: handle exception
 						e.printStackTrace();
 						logger.error(e.getMessage());
-						
-						modelWiev.addObject("errorMessage", myProperties.getProperty("errore.file.excel"));
+						String messaggio="";
+						if (!fileBean.getFileData().getOriginalFilename().endsWith("xls")&&!fileBean.getFileData().getOriginalFilename().endsWith("xlsx")){
+							 messaggio =fileBean.getFileData().getOriginalFilename()+" "+ myProperties.getProperty("no.xls.xlsx");
+							 messaggio= context.getMessage("no.pdf", new Object[]{fileBean.getFileData().getOriginalFilename()}, Locale.ITALY);
+						}else{
+							 messaggio = myProperties.getProperty("errore.file.excel")+" "+fileBean.getFileData().getOriginalFilename();
+						}
+						modelWiev.addObject("errorMessage",messaggio);
 					    fileBean = new FileBean();
 					    modelWiev.addObject("title", "Upload Piani Di Formazione");
 					    modelWiev.addObject("message", "Pagina per il caricamento dei piani di formazione");
@@ -662,6 +674,7 @@ public class FbaController {
 					}
 					lavoratoriBean.setIdPiano(pianoDiFormazione.getId());
 					lavoratoriBean.setNomeModulo(pianoDiFormazione.getModulo1());
+					lavoratoriBean.setModalitaFormatvia(pianoDiFormazione.getFadMod1());
 					if (pianoDiFormazione.getFadMod1().equalsIgnoreCase("fad")){
 						model.addObject("disabled", true);
 					}else{
@@ -670,7 +683,7 @@ public class FbaController {
 					model.addObject("calendarioModuloBean", calendarioModuloBean);
 					model.addObject("lavoratoriBean", lavoratoriBean);
 					model.addObject("title", "Modulo "+calendarioModuloBean.getNomeModulo()+" Modalità Di Formazione "+pianoDiFormazione.getFadMod1());
-					model.addObject("message", "pagina di gestione del modulo associato al piano");
+					model.addObject("message", "pagina di gestione del modulo associato al progetto");
 					model.addObject("calendario", "Sezione Calendario");
 					model.addObject("lavoratori", "Sezione Lavoratori");
 					model.setViewName("visualizzaModulo");
@@ -937,6 +950,8 @@ public class FbaController {
 					PianoDIformazioneBean pianoFormazioneForm = new PianoDIformazioneBean();
 					pianoFormazioneForm.setId(lavoratoriBean.getIdPiano());
 					pianoFormazioneForm.setModulo1(lavoratoriBean.getNomeModulo());
+					// risetto la modalità formativa del modulo selezionato per disabilitare in caso di fad il tasto visualizzacalendario
+					pianoFormazioneForm.setFadMod1(lavoratoriBean.getModalitaFormatvia());
 					modelWiev.addObject("title", "Tabella Lavoratori Modulo "+nomeModulo);
 					modelWiev.addObject("message", myProperties.getProperty("lavoratori.elenco"));
 					modelWiev.addObject("listaLavoratori", listaLavoratori);
@@ -952,7 +967,8 @@ public class FbaController {
 				public ModelAndView mostraLavoratori( @ModelAttribute("lavoratoriBean") LavoratoriBean lavoratoriBean) {
 					ModelAndView modelWiev = new ModelAndView();
 					ArrayList<LavoratoriBean> listaLavoratori = new ArrayList<>();
-					String nomeModulo ="";
+
+
 					ApplicationContext context=null;
 					try {
 						context = new ClassPathXmlApplicationContext("spring\\spring-jpa.xml","spring\\spring-utils.xml");
@@ -970,16 +986,15 @@ public class FbaController {
 							((ConfigurableApplicationContext)context).close();
 						}
 					}	
-					if(listaLavoratori!= null&!listaLavoratori.isEmpty()){
-						nomeModulo=listaLavoratori.get(0).getNomeModulo();
-					}
+					
   					PianoDIformazioneBean pianoDIformazioneBean = new PianoDIformazioneBean();
  					pianoDIformazioneBean.setId(lavoratoriBean.getIdPiano());
  					pianoDIformazioneBean.setModulo1(lavoratoriBean.getNomeModulo());
+ 					pianoDIformazioneBean.setFadMod1(lavoratoriBean.getModalitaFormatvia());
+ 					
 					
-					
-					modelWiev.addObject("title", "Tabella Lavoratori Modulo "+nomeModulo);
-					modelWiev.addObject("message", myProperties.getProperty("calendario.elenco"));
+					modelWiev.addObject("title", "Tabella Lavoratori Modulo "+lavoratoriBean.getNomeModulo());
+					modelWiev.addObject("message", myProperties.getProperty("lavoratori.elenco"));
 					modelWiev.addObject("lavoratoreBeanForm", lavoratoriBean);
 					modelWiev.addObject("listaLavoratori",listaLavoratori);
 					modelWiev.addObject("pianoFormazioneForm", pianoDIformazioneBean);
@@ -1182,12 +1197,18 @@ public class FbaController {
 						if(implementaPianoFormBean.getFileData1()!=null&&!implementaPianoFormBean.getFileData1().isEmpty()){
 							// carico i calendari per i due moduli
 							fileBean.setFileData(implementaPianoFormBean.fileData1);
-							listaExcel = importService.importFile(fileBean);
+							
 							try{
+								listaExcel = importService.importFile(fileBean);
 								listaCalendario1 = ExcelValidator.listaCalendariModuliValidator(listaExcel, implementaPianoFormBean.getId(), implementaPianoFormBean.getModulo1(), myProperties);
 								listaCalendario2 = ExcelValidator.listaCalendariModuliValidator(listaExcel, implementaPianoFormBean.getId(), implementaPianoFormBean.getModulo2(), myProperties);
 							}catch(Exception e){
-								modelWiev.addObject("errorMessage", myProperties.getProperty("errore.file.excel",implementaPianoFormBean.fileData1.getName()));
+								if (!implementaPianoFormBean.getFileData1().getOriginalFilename().endsWith("xls")&&!implementaPianoFormBean.getFileData1().getOriginalFilename().endsWith("xlsx")){
+									modelWiev.addObject("errorMessage",implementaPianoFormBean.getFileData1().getOriginalFilename()+" "+ myProperties.getProperty("no.xls.xlsx",implementaPianoFormBean.fileData1.getName()));
+								}else{
+									modelWiev.addObject("errorMessage", myProperties.getProperty("errore.file.excel",implementaPianoFormBean.fileData1.getName())+" "+implementaPianoFormBean.getFileData1().getOriginalFilename());
+								}
+								
 								throw e;
 							}
 						}
@@ -1196,12 +1217,17 @@ public class FbaController {
 						if(implementaPianoFormBean.getFileData2()!=null&&!implementaPianoFormBean.getFileData2().isEmpty()){
 							// carico i lavortori per i due moduli
 							fileBean.setFileData(implementaPianoFormBean.fileData2);
-							listaExcel = importService.importFile(fileBean);
+							
 							try{
+								listaExcel = importService.importFile(fileBean);
 								listaLavoratori1 = ExcelValidator.listaLavoratoriModuliValidator(listaExcel,implementaPianoFormBean.getId(), implementaPianoFormBean.getModulo1(), myProperties);
 								listaLavoratori2 = ExcelValidator.listaLavoratoriModuliValidator(listaExcel,implementaPianoFormBean.getId(), implementaPianoFormBean.getModulo2(), myProperties);
 							}catch(Exception e){
-								modelWiev.addObject("errorMessage", myProperties.getProperty("errore.file.excel",implementaPianoFormBean.fileData2.getName()));
+								if (!implementaPianoFormBean.getFileData2().getOriginalFilename().endsWith("xls")&&!implementaPianoFormBean.getFileData2().getOriginalFilename().endsWith("xlsx")){
+									modelWiev.addObject("errorMessage",implementaPianoFormBean.getFileData2().getOriginalFilename()+" "+ myProperties.getProperty("no.xls.xlsx",implementaPianoFormBean.fileData1.getName()));
+								}else{
+									modelWiev.addObject("errorMessage", myProperties.getProperty("errore.file.excel",implementaPianoFormBean.fileData1.getName())+" "+implementaPianoFormBean.getFileData2().getOriginalFilename());
+								}
 								throw e;
 							}
 						}
@@ -1210,11 +1236,16 @@ public class FbaController {
 						if(implementaPianoFormBean.getFileData3()!=null&&!implementaPianoFormBean.getFileData3().isEmpty()){
 							// carico i lavortori per i due moduli
 							fileBean.setFileData(implementaPianoFormBean.fileData3);
-							listaExcel = importService.importFile(fileBean);
+							
 							try{
+								listaExcel = importService.importFile(fileBean);
 								listaRendicontazione = ExcelValidator.listaRendicontazioneValidator(listaExcel, implementaPianoFormBean.getId(), myProperties);
 							}catch(Exception e){
-								modelWiev.addObject("errorMessage", myProperties.getProperty("errore.file.excel",implementaPianoFormBean.fileData3.getName()));
+								if (!implementaPianoFormBean.getFileData3().getOriginalFilename().endsWith("xls")&&!implementaPianoFormBean.getFileData3().getOriginalFilename().endsWith("xlsx")){
+									modelWiev.addObject("errorMessage",implementaPianoFormBean.getFileData3().getOriginalFilename()+" "+ myProperties.getProperty("no.xls.xlsx",implementaPianoFormBean.fileData1.getName()));
+								}else{
+									modelWiev.addObject("errorMessage", myProperties.getProperty("errore.file.excel",implementaPianoFormBean.fileData1.getName())+" "+implementaPianoFormBean.getFileData3().getOriginalFilename());
+								}
 								throw e;
 							}
 							
@@ -1464,6 +1495,7 @@ public class FbaController {
 					
 						
 						PianoDIformazioneBean pianoDIformazioneBean = new PianoDIformazioneBean();
+						pianoDIformazioneBean.setId(rendicontazioneBeanForm.getIdPiano());
 						modelWiev.addObject("title", "Pagina di modifica soggetto rendicontato");
 						modelWiev.addObject("message", myProperties.getProperty("rendicontazione.modifica"));
 						modelWiev.addObject("pianoFormazioneForm", pianoDIformazioneBean);
@@ -1486,6 +1518,7 @@ public class FbaController {
 							 context = new ClassPathXmlApplicationContext("spring\\spring-jpa.xml","spring\\spring-utils.xml");
 							 RendicontazioneDao rendicontazioneDao = (RendicontazioneDao) context.getBean("RendicontazioneDaoImpl");
 							 rendicontazioneBeanForm.setDataGiustificativo(Utils.dataDBFormatter(rendicontazioneBeanForm.getDataGiustificativoStr()));
+							 rendicontazioneBeanForm.setStato(myProperties.getProperty("enabled.si"));
 							 rendicontazioneDao.updateRendicontazione(rendicontazioneBeanForm);
 							 rendicontazioneBeanForm = rendicontazioneDao.findRendicontazioneById(rendicontazioneBeanForm);
 							 rendicontazioneBeanForm.setDataGiustificativoStr(Utils.formattaData(rendicontazioneBeanForm.getDataGiustificativo()));
@@ -1819,6 +1852,7 @@ public class FbaController {
 					ApplicationContext context =null;
 					
 					String username = request.getUserPrincipal().getName();
+					PianoDIformazioneBean pianoDIformazioneBean = new PianoDIformazioneBean();
 					AttuatoreBean attuatoreBean = new AttuatoreBean();
 					ArrayList<CalendarioBean> listaCalendari = new ArrayList<>();
 					ArrayList<LavoratoriBean> listaLavoratori = new ArrayList<>();
@@ -1830,7 +1864,7 @@ public class FbaController {
 					    
 						context = new ClassPathXmlApplicationContext("spring\\spring-jpa.xml","spring\\spring-utils.xml");
 						PianiFormazioneDao pianiFormazioneDao = (PianiFormazioneDao) context.getBean("PianiFormazioneDaoImpl");
-						PianoDIformazioneBean pianoDIformazioneBean= pianiFormazioneDao.findPianiFormazione(pianoFormazione);
+						pianoDIformazioneBean= pianiFormazioneDao.findPianiFormazione(pianoFormazione);
 						//validazione piano
 						listaErroriProgetto = ValidaProgetto.validaProgettoTop(pianoDIformazioneBean, myProperties);
 						
@@ -1872,6 +1906,7 @@ public class FbaController {
 							
 							// chiamo il metodo di validazione dei file
 							listaFileRendicontazione = rendicontazioneDao.leggiNomiAllegati(username);
+							
 							listaErroriProgetto = ValidaProgetto.validaFileRendicontazione(pianoDIformazioneBean.getId(), listaRendicontazione, listaFileRendicontazione, listaErroriProgetto, myProperties);
 						
 						//	aggiorno lo stato del progetto
@@ -1902,7 +1937,7 @@ public class FbaController {
 					 
 						modelWiev.addObject("title", "Riassunto Errori Progetto");
 					    modelWiev.addObject("listaErroriProgetto", listaErroriProgetto);
-						modelWiev.addObject("message", myProperties.getProperty("errori.riassunto"));
+						modelWiev.addObject("message", myProperties.getProperty("errori.riassunto")+pianoDIformazioneBean.getNuemroProtocollo());
 						modelWiev.setViewName("erroriProgetto");
 				
 					return modelWiev;
