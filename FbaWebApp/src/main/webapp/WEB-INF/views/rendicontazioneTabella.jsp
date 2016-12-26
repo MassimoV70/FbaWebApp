@@ -37,8 +37,8 @@
 							</td>					
 							<td>
 								
-								<input type="image"  onclick="elaboraRendicontazione('${listValue.id}','${listValue.idPiano}','modifica');" value="modifica" src= "resources/images/settings.png" alt="Modificia giorno" title="Modificia giorno">
-								<input type="image"  onclick="elaboraRendicontazione('${listValue.id}','${listValue.idPiano}','cancella');" value="cancella" src= "resources/images/elimina.png"  alt="Elimina giorno" title="Elimina giorno">
+								<input type="image"  onclick="elaboraRendicontazione('${listValue.id}','${listValue.idPiano}','modifica');" value="modifica" src= "resources/images/settings.png" alt="Modificia giustificativo" title="Modificia giustificativo">
+								<input type="image"  onclick="elaboraRendicontazione('${listValue.id}','${listValue.idPiano}','cancella');" value="cancella" src= "resources/images/elimina.png"  alt="Elimina giustificativo" title="Elimina giustificativo">
 						
 							</td>
 						   </tr>

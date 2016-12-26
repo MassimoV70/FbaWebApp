@@ -28,23 +28,23 @@ public class PianoDIformazioneBean {
 	int id;
 	
 	// numero protocollo
-	@Size(min=2, max=50)
+	@Size(min=1, max=50)
 	@Column(name="nuemroprotocollo")
 	String nuemroProtocollo;
 
 	
 	// nome progetto
-	@Size(min=2, max=50)
+	@Size(min=1, max=50)
 	@Column(name="nomeprogetto")
 	String nomeProgetto;
 	
 	// tipologia corso
-	@Size(min=2, max=100)
+	@Size(min=1, max=100)
 	@Column(name="tipocorsopiano")
 	String tipoCorsoPiano;
 	
 	// tematica formativa
-	@Size(min=2, max=100)
+	@Size(min=1, max=100)
 	@Column(name="tematicaformativa")
 	String tematicaFormativa;
 	
@@ -54,7 +54,7 @@ public class PianoDIformazioneBean {
 	String numeroPartecipanti;
 	
 	// titolo modulo 2
-	@Size(min=2, max=50)
+	@Size(min=1, max=50)
 	@Column(name="modulo1")
 	String modulo1;
 	
@@ -70,7 +70,7 @@ public class PianoDIformazioneBean {
 	String durataModulo1;
 
 	// titolo modulo2
-	@Size(min=2, max=50)
+	@Size(min=1, max=50)
 	@Column(name="modulo2")
 	String modulo2;
 	
@@ -117,7 +117,7 @@ public class PianoDIformazioneBean {
 	String username;
 	
 	// forme di aiuti
-	@Size(min=2, max=50)
+	@Size(min=1, max=50)
 	@Column(name="formeaiuti")
 	String formeAiuti;
 	

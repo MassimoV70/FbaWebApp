@@ -33,7 +33,7 @@ public class ExcelValidator {
 				pianoFormazione.setUsername(username);
 				
 				if(!Utils.eliminaSpazi(map.get("1")).equalsIgnoreCase("")){
-				      pianoFormazione.setNuemroProtocollo(Utils.eliminaSpazi(map.get("1")));
+				      pianoFormazione.setNuemroProtocollo(Utils.eliminaSpaziTot(map.get("1")));
 				}else{
 					 pianoFormazione.setNuemroProtocollo(myProperties.getProperty("assente"));
 				}
@@ -57,8 +57,8 @@ public class ExcelValidator {
 					
 				}
 				
-				if(!Utils.eliminaSpazi(map.get("5")).equalsIgnoreCase("")&&FormSecurityValidator.isNumber(Utils.eliminaSpazi(map.get("5")))){
-					pianoFormazione.setNumeroPartecipanti(Utils.eliminaSpazi(map.get("5")));
+				if(!Utils.eliminaSpaziTot(map.get("5")).equalsIgnoreCase("")&&FormSecurityValidator.isNumber(Utils.eliminaSpaziTot(map.get("5")))){
+					pianoFormazione.setNumeroPartecipanti(Utils.eliminaSpaziTot(map.get("5")));
 				}else{
 					pianoFormazione.setNumeroPartecipanti(myProperties.getProperty("assente"));
 				}
@@ -77,8 +77,8 @@ public class ExcelValidator {
 					pianoFormazione.setFadMod1(myProperties.getProperty("assente"));
 				}
 				
-				if(FormSecurityValidator.isOreMin(Utils.eliminaSpazi(map.get("8")))){
-					pianoFormazione.setDurataModulo1(Utils.eliminaSpazi(map.get("8")));
+				if(FormSecurityValidator.isOreMin(Utils.eliminaSpaziTot(map.get("8")))){
+					pianoFormazione.setDurataModulo1(Utils.eliminaSpaziTot(map.get("8")));
 				}else{
 					pianoFormazione.setDurataModulo1(myProperties.getProperty("assente"));
 				}
@@ -97,8 +97,8 @@ public class ExcelValidator {
 					pianoFormazione.setFadMod2(myProperties.getProperty("assente"));
 				}
 				
-				if(FormSecurityValidator.isOreMin(Utils.eliminaSpazi(map.get("11")))){
-					pianoFormazione.setDurataModulo2(Utils.eliminaSpazi(map.get("11")));
+				if(FormSecurityValidator.isOreMin(Utils.eliminaSpaziTot(map.get("11")))){
+					pianoFormazione.setDurataModulo2(Utils.eliminaSpaziTot(map.get("11")));
 				}else{
 					pianoFormazione.setDurataModulo2(myProperties.getProperty("assente"));
 				}
@@ -120,7 +120,7 @@ public class ExcelValidator {
 				
 				if (map.get("14")!=null){
 					if(!Utils.eliminaSpazi(map.get("14")).equalsIgnoreCase("")){
-						pianoFormazione.setAttuatorePIVA(Utils.eliminaSpazi(map.get("14")));
+						pianoFormazione.setAttuatorePIVA(Utils.eliminaSpaziTot(map.get("14")));
 					}else{
 						pianoFormazione.setAttuatorePIVA(myProperties.getProperty("assente"));
 					}
@@ -171,13 +171,13 @@ public class ExcelValidator {
 			calendario.setIdPiano(calendarioBean.getIdPiano());
 			calendario.setStato("1");
 			calendario.setNomeModulo(calendarioBean.getNomeModulo());
-			calendario.setDataStr(Utils.eliminaSpazi(Utils.eliminaSpazi(map.get("1"))));
+			calendario.setDataStr(Utils.eliminaSpazi(Utils.eliminaSpaziTot(map.get("1"))));
 			calendario.setData(Utils.dataDBFormatter(calendario.getDataStr()));
-			calendario.setInizioMattina(Utils.eliminaSpazi(map.get("2")));
-			calendario.setFineMattina(Utils.eliminaSpazi(map.get("3")));
-			calendario.setInizioPomeriggio(Utils.eliminaSpazi(map.get("4")));
+			calendario.setInizioMattina(Utils.eliminaSpaziTot(map.get("2")));
+			calendario.setFineMattina(Utils.eliminaSpaziTot(map.get("3")));
+			calendario.setInizioPomeriggio(Utils.eliminaSpaziTot(map.get("4")));
 			if (map.get("5")!=null){
-					calendario.setFinePomeriggio(Utils.eliminaSpazi(map.get("5")));
+					calendario.setFinePomeriggio(Utils.eliminaSpaziTot(map.get("5")));
 			}else{
 				calendario.setStato("0");
 			}
@@ -211,9 +211,9 @@ public class ExcelValidator {
 			lavoratore.setIdPiano(lavoratoriBean.getIdPiano());
 			lavoratore.setStato("1");
 			lavoratore.setNomeModulo(lavoratoriBean.getNomeModulo());
-			lavoratore.setMatricola(Utils.eliminaSpazi(map.get("1")));
-			if(FormSecurityValidator.isNumber(Utils.eliminaSpazi(map.get("2")))){
-				lavoratore.setOrePresenza(Utils.eliminaSpazi(map.get("2")));
+			lavoratore.setMatricola(Utils.eliminaSpaziTot(map.get("1")));
+			if(FormSecurityValidator.isNumber(Utils.eliminaSpaziTot(map.get("2")))){
+				lavoratore.setOrePresenza(Utils.eliminaSpaziTot(map.get("2")));
 			}else{
 				lavoratore.setOrePresenza("0");
 				lavoratore.setStato("0");
@@ -255,36 +255,68 @@ public class ExcelValidator {
 			calendario.setStato("1");
 			if(Utils.eliminaSpazi(map.get("1")).equalsIgnoreCase(nomeModulo)){
 				calendario.setNomeModulo(nomeModulo);
-				if(map.get("2")!=null&&!Utils.eliminaSpazi(map.get("2")).equals("")){
-					calendario.setDataStr(Utils.eliminaSpazi(map.get("2")));
+				if(map.get("2")!=null&&!Utils.eliminaSpaziTot(map.get("2")).equals("")){
+					calendario.setDataStr(Utils.eliminaSpaziTot(map.get("2")));
 					calendario.setData(Utils.dataDBFormatter(calendario.getDataStr()));
 				}else{
-					calendario.setDataStr(Utils.eliminaSpazi(myProperties.getProperty("data.errore")));
+					calendario.setDataStr(myProperties.getProperty("data.errore"));
 					calendario.setData(Utils.dataDBFormatter(calendario.getDataStr()));
 					calendario.setStato("0");
 					
 				}
 				
-				if(map.get("3")!=null&&!Utils.eliminaSpazi(map.get("3")).equals("")&&FormSecurityValidator.isTime(Utils.eliminaSpazi(map.get("3")))){
-					calendario.setInizioMattina(Utils.eliminaSpazi(map.get("3")));
+				if(map.get("3")!=null&&!Utils.eliminaSpaziTot(map.get("3")).equals("")){
+					if (Utils.eliminaSpaziTot(map.get("3")).equalsIgnoreCase(myProperties.getProperty("assente"))){
+						calendario.setInizioMattina(myProperties.getProperty("assente"));
+					}
+					else if (FormSecurityValidator.isTime(Utils.eliminaSpaziTot(map.get("3")))){
+						calendario.setInizioMattina(Utils.eliminaSpaziTot(map.get("3")));
+					}
+					else{
+						calendario.setInizioMattina(myProperties.getProperty("assente"));
+					}
 				}else{
 					calendario.setInizioMattina(myProperties.getProperty("assente"));
 					calendario.setStato("0");
 				}
-				if(map.get("4")!=null&&!Utils.eliminaSpazi(map.get("4")).equals("")&&FormSecurityValidator.isTime(Utils.eliminaSpazi(map.get("4")))){
-					calendario.setFineMattina(Utils.eliminaSpazi(map.get("4")));
+				if(map.get("4")!=null&&!Utils.eliminaSpaziTot(map.get("4")).equals("")){
+					if (Utils.eliminaSpaziTot(map.get("4")).equalsIgnoreCase(myProperties.getProperty("assente"))){
+						calendario.setFineMattina(myProperties.getProperty("assente"));
+					}
+					else if (FormSecurityValidator.isTime(Utils.eliminaSpaziTot(map.get("4")))){
+						calendario.setFineMattina(Utils.eliminaSpaziTot(map.get("4")));
+					}
+					else{
+						calendario.setFineMattina(myProperties.getProperty("assente"));
+					}
 				}else{
 					calendario.setFineMattina(myProperties.getProperty("assente"));
 					calendario.setStato("0");
 				}
-				if(map.get("5")!=null&&!Utils.eliminaSpazi(map.get("5")).equals("")&&FormSecurityValidator.isTime(Utils.eliminaSpazi(map.get("5")))){
-					calendario.setInizioPomeriggio(Utils.eliminaSpazi(map.get("5")));
+				if(map.get("5")!=null&&!Utils.eliminaSpaziTot(map.get("5")).equals("")){
+					if (Utils.eliminaSpaziTot(map.get("5")).equalsIgnoreCase(myProperties.getProperty("assente"))){
+						calendario.setInizioPomeriggio(myProperties.getProperty("assente"));
+					}
+					else if (FormSecurityValidator.isTime(Utils.eliminaSpaziTot(map.get("5")))){
+						calendario.setInizioPomeriggio(Utils.eliminaSpaziTot(map.get("5")));
+					}
+					else{
+						calendario.setInizioPomeriggio(myProperties.getProperty("assente"));
+					}
 				}else{
 					calendario.setInizioPomeriggio(myProperties.getProperty("assente"));
 					calendario.setStato("0");
 				}
-				if(map.get("6")!=null&&!Utils.eliminaSpazi(map.get("6")).equals("")&&FormSecurityValidator.isTime(Utils.eliminaSpazi(map.get("6")))){
-					calendario.setFinePomeriggio(Utils.eliminaSpazi(map.get("6")));
+				if(map.get("6")!=null&&!Utils.eliminaSpaziTot(map.get("6")).equals("")){
+					if (Utils.eliminaSpaziTot(map.get("6")).equalsIgnoreCase(myProperties.getProperty("assente"))){
+						calendario.setFinePomeriggio(myProperties.getProperty("assente"));
+					}
+					else if (FormSecurityValidator.isTime(Utils.eliminaSpaziTot(map.get("6")))){
+						calendario.setFinePomeriggio(Utils.eliminaSpaziTot(map.get("6")));
+					}
+					else{
+						calendario.setFinePomeriggio(myProperties.getProperty("assente"));
+					}
 				}else{
 					calendario.setFinePomeriggio(myProperties.getProperty("assente"));
 					calendario.setStato("0");
@@ -370,15 +402,15 @@ public class ExcelValidator {
 			lavoratore.setNomeModulo(nomeModulo);
 			if(map.get("1")!=null&&Utils.eliminaSpazi(map.get("1")).equalsIgnoreCase(nomeModulo)){
 				lavoratore.setNomeModulo(nomeModulo);
-				if(map.get("2")!=null&&!Utils.eliminaSpazi(map.get("2")).isEmpty()){
-					lavoratore.setMatricola(Utils.eliminaSpazi(map.get("2")));
+				if(map.get("2")!=null&&!Utils.eliminaSpaziTot(map.get("2")).isEmpty()){
+					lavoratore.setMatricola(Utils.eliminaSpaziTot(map.get("2")));
 				}else{
 					lavoratore.setMatricola(myProperties.getProperty("assente"));
 					lavoratore.setStato("0");
 				}
-				if(map.get("3")!=null&&!Utils.eliminaSpazi(map.get("3")).isEmpty()
-					&&FormSecurityValidator.isOreMin(Utils.eliminaSpazi(map.get("3")))){
-					lavoratore.setOrePresenza(Utils.eliminaSpazi(map.get("3")));
+				if(map.get("3")!=null&&!Utils.eliminaSpaziTot(map.get("3")).isEmpty()
+					&&FormSecurityValidator.isOreMin(Utils.eliminaSpaziTot(map.get("3")))){
+					lavoratore.setOrePresenza(Utils.eliminaSpaziTot(map.get("3")));
 				}else{
 					lavoratore.setOrePresenza(myProperties.getProperty("assente"));
 					lavoratore.setStato("0");
@@ -387,7 +419,6 @@ public class ExcelValidator {
 					lavoratore.setEsitoTest(Utils.eliminaSpazi(map.get("4")));
 				}else{
 					lavoratore.setEsitoTest(myProperties.getProperty("assente"));
-					lavoratore.setStato("0");
 				}
 				if (map.get("5")!=null&&!Utils.eliminaSpazi(map.get("5")).isEmpty()){
 					lavoratore.setNomeAllegato(Utils.eliminaSpazi(map.get("5")));
@@ -395,7 +426,7 @@ public class ExcelValidator {
 					lavoratore.setNomeAllegato(myProperties.getProperty("assente"));
 					lavoratore.setStato("0");
 				}
-				if (map.get("5")!=null){
+				if (map.get("6")!=null){
 					lavoratore.setStato("0");
 				}
 				//validazione bean per vedere se i dati inseriti nel file sono corretti.
@@ -431,18 +462,18 @@ public class ExcelValidator {
             	rendicontazione.setStato("0");
             }
             
-            if (map.get("2")!=null&&!Utils.eliminaSpazi(map.get("2")).equalsIgnoreCase("")){
-            	rendicontazione.setCodice(Utils.eliminaSpazi(map.get("2")));
+            if (map.get("2")!=null&&!Utils.eliminaSpaziTot(map.get("2")).equalsIgnoreCase("")){
+            	rendicontazione.setCodice(Utils.eliminaSpaziTot(map.get("2")));
             }else{
             	rendicontazione.setCodice(myProperties.getProperty("assente"));
             	rendicontazione.setStato("0");
             }
             
-            if (map.get("3")!=null&&!Utils.eliminaSpazi(map.get("3")).equalsIgnoreCase("")){
-            	rendicontazione.setDataGiustificativoStr(Utils.eliminaSpazi(map.get("3")));
+            if (map.get("3")!=null&&!Utils.eliminaSpaziTot(map.get("3")).equalsIgnoreCase("")){
+            	rendicontazione.setDataGiustificativoStr(Utils.eliminaSpaziTot(map.get("3")));
             	rendicontazione.setDataGiustificativo(Utils.dataDBFormatter(rendicontazione.getDataGiustificativoStr()));
             }else{
-            	rendicontazione.setDataGiustificativoStr(Utils.eliminaSpazi(myProperties.getProperty("data.errore")));
+            	rendicontazione.setDataGiustificativoStr(myProperties.getProperty("data.errore"));
             	rendicontazione.setDataGiustificativo(Utils.dataDBFormatter(rendicontazione.getDataGiustificativoStr()));
             	rendicontazione.setStato("0");
             }
@@ -454,25 +485,25 @@ public class ExcelValidator {
             	rendicontazione.setStato("0");
             }
             
-            if ((map.get("5")!=null&&!Utils.eliminaSpazi(map.get("5")).equalsIgnoreCase(""))
+            if ((map.get("5")!=null&&!Utils.eliminaSpaziTot(map.get("5")).equalsIgnoreCase(""))
             		&&FormSecurityValidator.isCifra(map.get("5"))){
-           	 	rendicontazione.setValoreComplessivo(Utils.eliminaSpazi(map.get("5")));
+           	 	rendicontazione.setValoreComplessivo(Utils.eliminaSpaziTot(map.get("5")));
             }else{
             	rendicontazione.setValoreComplessivo(myProperties.getProperty("assente"));
             	rendicontazione.setStato("0");
             }
             
-            if ((map.get("6")!=null&&!Utils.eliminaSpazi(map.get("6")).equalsIgnoreCase(""))
+            if ((map.get("6")!=null&&!Utils.eliminaSpaziTot(map.get("6")).equalsIgnoreCase(""))
             		&&FormSecurityValidator.isCifra(map.get("6"))){
-           	 	rendicontazione.setContributoFBA(Utils.eliminaSpazi(map.get("6")));
+           	 	rendicontazione.setContributoFBA(Utils.eliminaSpaziTot(map.get("6")));
             }else{
             	rendicontazione.setContributoFBA(myProperties.getProperty("assente"));
             	rendicontazione.setStato("0");
             }
             
-            if (map.get("7")!=null&&!Utils.eliminaSpazi(map.get("7")).equalsIgnoreCase("")
+            if (map.get("7")!=null&&!Utils.eliminaSpaziTot(map.get("7")).equalsIgnoreCase("")
             		&&FormSecurityValidator.isCifra(map.get("7"))){
-           	 	rendicontazione.setContributoPrivato(Utils.eliminaSpazi(map.get("7")));
+           	 	rendicontazione.setContributoPrivato(Utils.eliminaSpaziTot(map.get("7")));
             }else{
             	rendicontazione.setContributoPrivato(myProperties.getProperty("assente"));
             	rendicontazione.setStato("0");

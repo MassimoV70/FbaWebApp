@@ -7,7 +7,7 @@
 				<thead>
 							<tr>
 								<td>Numero Protocollo</td>
-								<td>Nome Progetto</td>
+								<td>Nome Piano</td>
 								<td>Tipologia corso</td>
 								<td>Tematica formativa</td>
 								<td>N. part.</td>
@@ -56,7 +56,7 @@
 								</c:choose>
 								
 								<c:choose>
-									 <c:when test="${listValue.modulo2!='assente'}">
+									 <c:when test="${(listValue.modulo2!='assente')}">
 										<td>
 										    <p><b>Nome</b>
 												<a onclick="elaboraPiano('${listValue.id}','${listValue.modulo2}','${listValue.fadMod2}','modulo','','')" title="vai al modulo">${listValue.modulo2}</a>

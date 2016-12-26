@@ -76,6 +76,7 @@
 		<form:hidden path="id"  id="id" />
 		<form:hidden path="nomeModulo"  id="idModulo" />
 		<form:hidden path="idPiano"  id="idPiano"/>
+		<form:hidden path="modalitaFormatvia"  id="idTipoModulo" />
 	</form:form>
 	<script type="text/javascript">
 	

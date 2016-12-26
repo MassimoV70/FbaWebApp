@@ -17,9 +17,30 @@ import it.fba.webapp.utils.Utils;
 public class ValidaProgetto {
 	
 	
-	public static ArrayList<ErroreProgettoBean> validaProgettoTop (PianoDIformazioneBean pianoFormazione,Properties myProperties)throws Exception{
+	public static ArrayList<ErroreProgettoBean> validaProgettoTop (PianoDIformazioneBean pianoFormazione,ArrayList<LavoratoriBean> listaLavoratori,Properties myProperties)throws Exception{
 		ArrayList<ErroreProgettoBean> listaErroriProgetto = new ArrayList<ErroreProgettoBean>();
 		
+		// preparo la hashmap dei lavoratori che partecipano al piano
+		HashMap<String, String> lavoratori =new HashMap<>();
+		if (listaLavoratori!=null&&!listaLavoratori.isEmpty()){
+			for (LavoratoriBean lavoratore : listaLavoratori){
+				if (!(lavoratori.isEmpty()&&lavoratori.containsKey(lavoratore.getMatricola()))){
+					lavoratori.put(lavoratore.getMatricola(), lavoratore.getNomeModulo());
+				}
+			}
+			
+		}
+		
+		// preparo la hashmap dei lavoratori che partecipano ai moduli
+			HashMap<String, String> lavoratoriModuli =new HashMap<>();
+			if (listaLavoratori!=null&&!listaLavoratori.isEmpty()){
+				for (LavoratoriBean lavoratore : listaLavoratori){
+					if (!(lavoratoriModuli.isEmpty()&&lavoratoriModuli.containsKey(lavoratore.getNomeModulo()))){
+						lavoratoriModuli.put(lavoratore.getNomeModulo(),lavoratore.getMatricola());
+					}
+				}
+				
+			}
 		
 		// Numero protocollo
 		if(pianoFormazione.getNuemroProtocollo().equalsIgnoreCase(myProperties.getProperty("assente"))
@@ -58,10 +79,22 @@ public class ValidaProgetto {
 			
 		
 		// Numero partecipanti
-		if((Utils.eliminaSpazi(pianoFormazione.getNumeroPartecipanti()).isEmpty())||
+		if((Utils.eliminaSpaziTot(pianoFormazione.getNumeroPartecipanti()).isEmpty())||
 				pianoFormazione.getNumeroPartecipanti().equalsIgnoreCase(myProperties.getProperty("assente"))){
 			 
 			ErroreProgettoBean erroreProgetto = creaErrore(pianoFormazione.getId(),"Numero partecipanti", myProperties.getProperty("assente"));
+			listaErroriProgetto.add(erroreProgetto);
+		}else if(FormSecurityValidator.isNumber(pianoFormazione.getNumeroPartecipanti())) {
+			// verifico che il numero di partecipanti al piano siano uguali al numero di lavoratori iscritti
+			
+			if (!(Integer.parseInt(Utils.eliminaSpaziTot(pianoFormazione.getNumeroPartecipanti()))==lavoratori.size())){
+				ErroreProgettoBean erroreProgetto = creaErrore(pianoFormazione.getId(),"Numero partecipanti", myProperties.getProperty("numero.partecipanti"));
+				listaErroriProgetto.add(erroreProgetto);
+				
+			}
+			
+		}else {
+			ErroreProgettoBean erroreProgetto = creaErrore(pianoFormazione.getId(),"Numero partecipanti", myProperties.getProperty("NumberFormat.pianoFormazioneForm.numPartecipanti"));
 			listaErroriProgetto.add(erroreProgetto);
 		}
 		
@@ -83,6 +116,12 @@ public class ValidaProgetto {
 	
 				ErroreProgettoBean erroreProgetto = creaErrore(pianoFormazione.getId(),"Nome modulo 1", myProperties.getProperty("assente"));
 				listaErroriProgetto.add(erroreProgetto);    
+			}else{
+				if(!lavoratoriModuli.isEmpty()&&!lavoratoriModuli.containsKey(pianoFormazione.getModulo1())&&!pianoFormazione.getModulo1().equalsIgnoreCase(myProperties.getProperty("assente"))){
+					ErroreProgettoBean erroreProgetto = creaErrore(pianoFormazione.getId(),"Modulo "+pianoFormazione.getModulo1(), myProperties.getProperty("no.lavoratore.associato"));
+					listaErroriProgetto.add(erroreProgetto);    
+				}
+				
 			}
 			
 			if(((Utils.eliminaSpazi(pianoFormazione.getFadMod1()).isEmpty())||pianoFormazione.getFadMod1().equalsIgnoreCase(myProperties.getProperty("assente")))
@@ -112,6 +151,12 @@ public class ValidaProgetto {
 	
 				ErroreProgettoBean erroreProgetto = creaErrore(pianoFormazione.getId(),"Nome modulo 2", myProperties.getProperty("assente"));
 				listaErroriProgetto.add(erroreProgetto);    
+			}else{
+				if(!lavoratoriModuli.isEmpty()&&!lavoratoriModuli.containsKey(pianoFormazione.getModulo2())&&!pianoFormazione.getModulo2().equalsIgnoreCase(myProperties.getProperty("assente"))){
+					ErroreProgettoBean erroreProgetto = creaErrore(pianoFormazione.getId(),"Modulo "+pianoFormazione.getModulo2(), myProperties.getProperty("no.lavoratore.associato"));
+					listaErroriProgetto.add(erroreProgetto);    
+				}
+				
 			}
 			
 			if(((Utils.eliminaSpazi(pianoFormazione.getFadMod2()).isEmpty())||pianoFormazione.getFadMod2().equalsIgnoreCase(myProperties.getProperty("assente")))
@@ -203,13 +248,14 @@ public class ValidaProgetto {
 						if (nomeFileAttProg.equals(listaNomiFileCaricati.get(i))){
 							trovato=true;
 						}
+						i++;
 					}
 					
 					if (!trovato){
 						ErroreProgettoBean erroreProgetto = creaErrore(pianoFormazione.getId(),"File attuatore "+nomeFileAttProg, myProperties.getProperty("assente"));
 						listaErroriProgetto.add(erroreProgetto);
 					}
-					i++;
+				
 				}
 			}else{
 				ErroreProgettoBean erroreProgetto = creaErrore(pianoFormazione.getId(),"File attuatore ", myProperties.getProperty("file.assenti"));
@@ -245,7 +291,7 @@ public class ValidaProgetto {
 			}
 		}
 		
-		if(listacalendari.size()<nomiModuliMap.size()){
+		if(listacalendari.size()<nomiModuliMap.size()&&!nomiModuliMap.containsValue(true)){
 			ErroreProgettoBean erroreProgetto = creaErrore(pianoFormazione.getId(),"Calendari ", myProperties.getProperty("numero.calendari.err"));
 			listaErroriProgetto.add(erroreProgetto);
 		}
@@ -337,7 +383,7 @@ public class ValidaProgetto {
 				
 				
 				
-			}else{
+			}else if(nomiModuliMap.containsValue(false)){
 				ErroreProgettoBean erroreProgetto = creaErrore(pianoFormazione.getId(),"Calendari ", myProperties.getProperty("assenti"));
 				listaErroriProgetto.add(erroreProgetto);
 			}
@@ -394,7 +440,7 @@ public class ValidaProgetto {
 						}
 					}
 					
-					if(!(lavoratore.getEsitoTest()!=null&&!lavoratore.getEsitoTest().isEmpty()&&!lavoratore.getEsitoTest().equals("assente"))){
+					if(!(lavoratore.getEsitoTest()!=null&&!lavoratore.getEsitoTest().isEmpty())){
 						lavoratore.setEsitoTest(myProperties.getProperty("assente"));
 						
 						ErroreProgettoBean erroreProgetto = creaErrore(pianoFormazione.getId(),"Lavoratori modulo "+lavoratore.getNomeModulo()+" esito test", myProperties.getProperty("assente"));

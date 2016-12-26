@@ -14,6 +14,7 @@ import it.fba.webapp.beans.CalendarioBean;
 import it.fba.webapp.beans.LavoratoriBean;
 import it.fba.webapp.beans.LavoratoriFileBean;
 import it.fba.webapp.beans.PianoDIformazioneBean;
+import it.fba.webapp.beans.RendicontazioneBean;
 import it.fba.webapp.beans.RendicontazioneFileBean;
 
 @Repository("LavoratoriDaoImpl")
@@ -31,10 +32,12 @@ public class LavoratoriDaoImpl implements LavoratoriDao{
 						  + "where l.id= :idStr"; 
 	private final String queryDeleteLavoratori = "Delete from LavoratoriBean l where l.nomeModulo= :nomeModuloStr and l.idPiano= :idPianoStr";
 	private final String queryDeleteLavoratoriPiano = "Delete from LavoratoriBean l where  l.idPiano= :idPianoStr";
+	private final String trovaPianiLavoratori = "select l.idPiano  from LavoratoriBean l where l.nomeAllegato= :nomeAllegatoStr";
 	private final String trovaFile ="Select f.id from LavoratoriFileBean f where f.nomeAllegato= :nomeAllegatoStr and f.username = :usernameStr";
 	private final String elencoFileByUser ="Select f.id, f.nomeAllegato from LavoratoriFileBean f where f.username = :usernameStr";
 	private final String eliminaFile ="Delete from LavoratoriFileBean f where f.id = :idStr";
 	private final String queryNomi = " select l.nomeAllegato  from LavoratoriFileBean l  where l.username= :usernameStr";
+	private final String queryNomeByID = "select l.nomeAllegato  from LavoratoriFileBean l where l.id= :idStr and l.username= :usernameStr";
 
 	@Override
 	public LavoratoriBean findLavoratore(LavoratoriBean lavoratoriBean) throws SQLException {
@@ -160,18 +163,28 @@ public class LavoratoriDaoImpl implements LavoratoriDao{
 		
 				Query query = entityManager.createQuery(queryNomi);
 		        ArrayList<String> lavoratorFoleiList = (ArrayList<String>) query.setParameter("usernameStr", username).getResultList();
-//				if (lavoratoriList!=null&&!lavoratoriList.isEmpty()){
-//					
-//						Object[] oggetto = (Object[]) attuatoreList.get(0);
-//						
-//						attuatoreBean.setNomeAllegato1((String) oggetto[1]);
-//						attuatoreBean.setNomeAllegato2((String) oggetto[2]);
-//						attuatoreBean.setNomeAllegato3((String) oggetto[3]);
-//						attuatoreBean.setNomeAllegato4((String) oggetto[4]);
-//					
-//				}
+
 				return lavoratorFoleiList;
 	}
+	
+	@Override
+	public ArrayList<Integer> findLavoratoriByFile(String nomeFile) throws Exception {
+		// TODO Auto-generated method stub
+		ArrayList<RendicontazioneBean> listaFile = new ArrayList<>();
+		Query query= entityManager.createQuery(trovaPianiLavoratori);
+		ArrayList<Integer> listaRendicontazione = (ArrayList<Integer>) query.setParameter("nomeAllegatoStr", nomeFile).getResultList();
+
+		return listaRendicontazione;
+	}
+
+	@Override
+	public String getNomeFileByID(int id, String username) throws Exception {
+		// TODO Auto-generated method stub
+		Query query = entityManager.createQuery(queryNomeByID);
+		String nomefile =(String) query.setParameter("idStr", id).setParameter("usernameStr", username).getSingleResult();
+		return nomefile;
+	}
+	
 	
 	
 

@@ -28,11 +28,13 @@ public class RendicontazioneDaoImpl implements RendicontazioneDao {
 	
 	private final String queryRendicontazione = "Select r from RendicontazioneBean r where r.idPiano = :idPianoStr";
 	private final String queryDeleteRendicontazionePiano = "Delete from RendicontazioneBean r where  r.idPiano= :idPianoStr";
+	private final String trovaPianirendicon = "select r.idPiano  from RendicontazioneBean r where r.nomeAllegato= :nomeAllegatoStr";
 	private final String trovaFile ="Select f.id from RendicontazioneFileBean f where f.nomeAllegato= :nomeAllegatoStr and f.username = :usernameStr";
 	private final String elencoFileByUser ="Select f.id, f.nomeAllegato from RendicontazioneFileBean f where f.username = :usernameStr";
 	private final String eliminaFile ="Delete from RendicontazioneFileBean f where f.id = :idStr";
-	private final String esisteRendicontazione = "Select r from RendicontazioneBean r where r.idPiano= :idPianoStr";
 	private final String queryNomi = "select r.nomeAllegato  from RendicontazioneFileBean r  where r.username= :usernameStr";
+	private final String queryNomeByID = "select r.nomeAllegato  from RendicontazioneFileBean r  where r.id= :idStr and r.username= :usernameStr";
+	
 	
 	@Override
 	public RendicontazioneBean findRendicontazioneById(RendicontazioneBean rendicontazioneBean) throws Exception {
@@ -142,16 +144,6 @@ public class RendicontazioneDaoImpl implements RendicontazioneDao {
 		query.setParameter("idStr", rendicontazioneFileBean.getId()).executeUpdate();
 	}
 
-	@Override
-	public ArrayList<RendicontazioneBean> esisteRendicontazione(PianoDIformazioneBean pianoDIformazioneBean)
-			throws SQLException {
-		// TODO Auto-generated method stub
-				Query query = entityManager.createQuery(esisteRendicontazione);
-				@SuppressWarnings("unchecked")
-				
-				ArrayList<RendicontazioneBean> resultList = (ArrayList<RendicontazioneBean>)query.setParameter("idPianoStr", pianoDIformazioneBean.getId()).getResultList();
-				return resultList;
-	}
 
 	@Override
 	public ArrayList<String> leggiNomiAllegati(String username) throws Exception {
@@ -172,6 +164,25 @@ public class RendicontazioneDaoImpl implements RendicontazioneDao {
 		return rendicontazioneFileiList;
 		
 	}
+
+	@Override
+	public ArrayList<Integer> findRendicontazioneByFile(String nomeFile) throws Exception {
+		// TODO Auto-generated method stub
+		ArrayList<RendicontazioneBean> listaFile = new ArrayList<>();
+		Query query= entityManager.createQuery(trovaPianirendicon);
+		ArrayList<Integer> listaRendicontazione = (ArrayList<Integer>) query.setParameter("nomeAllegatoStr", nomeFile).getResultList();
+
+		return listaRendicontazione;
+	}
+
+	@Override
+	public String getNomeFileByID(int id, String username) throws Exception {
+		// TODO Auto-generated method stub
+		Query query = entityManager.createQuery(queryNomeByID);
+		String nomefile =(String) query.setParameter("idStr", id).setParameter("usernameStr", username).getSingleResult();
+		return nomefile;
+	}
+	
 	
 	
 	

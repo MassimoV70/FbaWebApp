@@ -16,6 +16,7 @@
 			 		<form:hidden path="id"  id="id" />
 			 		<form:hidden path="idPiano"  id="idPiano"/>
 		            <form:hidden path="nomeModulo"  id="idModulo" />
+		            <form:hidden path="modalitaFormatvia"  id="idTipoModulo" />
 		            <form:hidden path="stato"  id="stato" />
 		            
 					<label for="matricola">Matricola:</label>

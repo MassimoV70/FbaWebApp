@@ -35,7 +35,7 @@
  	         <form:hidden path="idPiano"/>
  	          <form:hidden path="modalitaFormatvia" id="idModalita"/>
  	          <P>Vai alla sezione lavoratori caricati</P>
-        		<input type="button"  onclick="mostraLavoratori('${disabled}');" value="Visualizza lavoratori associati" >
+        		<input type="button"  onclick="mostraLavoratori(${disabled});" value="Visualizza lavoratori associati" >
         	 <br>
 	 	     
 		</div>	
@@ -60,7 +60,6 @@
 				$('#idModalita').val('aula');
 				
 				if(fad==true){
-					
 					$('#idModalita').val('fad');	
 				}
 				 

@@ -38,7 +38,7 @@ public class LavoratoriBean {
 	@Transient
 	private String modalitaFormatvia;
 	
-	@Size(min=2, max=100)
+	@Size(min=1, max=100)
 	@Column(name="matricola")
 	private String matricola;
 	

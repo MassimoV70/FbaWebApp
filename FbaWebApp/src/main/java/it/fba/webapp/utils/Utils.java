@@ -12,6 +12,7 @@ import javax.annotation.Resource;
 import org.springframework.validation.Errors;
 
 import it.fba.webapp.beans.CalendarioBean;
+import it.fba.webapp.beans.LavoratoriBean;
 import it.fba.webapp.beans.PianoDIformazioneBean;
 import it.fba.webapp.beans.RendicontazioneBean;
 import it.fba.webapp.beans.UsersBean;
@@ -182,6 +183,8 @@ public class Utils {
 	   if (stringa!=null&&!stringa.isEmpty()){
 		   stringa=stringa.trim();
 		   stringa=stringa.replace("  ", " ");
+		   stringa=stringa.replace("<", " ");
+		   stringa=stringa.replace(">", " ");
 		   stringa=stringa.replace("\n", " ");
 	   }
 	   
@@ -215,5 +218,45 @@ public class Utils {
 		return listaRendicontazione;
 	}
    
+   public static String eliminaSpaziTot(String stringa){
+	   if (stringa!=null&&!stringa.isEmpty()){
+		   stringa=stringa.trim();
+		   stringa=stringa.replace(" ", "");
+		   stringa=stringa.replace("<", "");
+		   stringa=stringa.replace(">", "");
+		   stringa=stringa.replace("\n", "");
+	   }
+	   
+	   return stringa;
+	   
+	   
+   }
+   
+   public static PianoDIformazioneBean formattaPiano (PianoDIformazioneBean piano){
+	   piano.setAttuatorePIVA(eliminaSpaziTot(piano.getAttuatorePIVA()));
+	   piano.setNuemroProtocollo(eliminaSpaziTot(piano.getNuemroProtocollo()));
+	   piano.setNumeroPartecipanti(eliminaSpaziTot(piano.getNumeroPartecipanti()));
+	   piano.setDurataModulo1(eliminaSpaziTot(piano.getDurataModulo1()));
+	   piano.setDurataModulo2(eliminaSpaziTot(piano.getDurataModulo2()));
+	   return piano;
+   }
+   
+   public static LavoratoriBean formattaLavoratore (LavoratoriBean lavoratore){
+	   lavoratore.setMatricola(eliminaSpaziTot(lavoratore.getMatricola()));
+	   lavoratore.setOrePresenza(eliminaSpaziTot(lavoratore.getOrePresenza()));
+	   return lavoratore;
+   }
+   
+   
+   
+   public static RendicontazioneBean formattaRendicontazione (RendicontazioneBean rendicontazione){
+	   
+	   rendicontazione.setCodice(eliminaSpaziTot(rendicontazione.getCodice()));
+	   rendicontazione.setContributoFBA(eliminaSpaziTot(rendicontazione.getContributoFBA()));
+	   rendicontazione.setContributoPrivato(eliminaSpaziTot(rendicontazione.getContributoPrivato()));
+	   rendicontazione.setValoreComplessivo(eliminaSpaziTot(rendicontazione.getValoreComplessivo()));
+	   return rendicontazione;
+	   
+   }
 
 }

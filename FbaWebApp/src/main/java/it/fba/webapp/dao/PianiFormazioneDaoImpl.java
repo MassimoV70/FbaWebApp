@@ -30,7 +30,8 @@ public class PianiFormazioneDaoImpl implements PianiFormazioneDao{
 										  + " p.modulo1= :modulo1, p.fadMod1= :fadMod1Str, p.durataModulo1= :durataModulo1Str,"
 										  + " p.modulo2= :modulo2, p.fadMod2= :fadMod2Str, p.durataModulo2= :durataModulo2Str,"
 										  + " p.formeAiuti= :formeAiutiStr, p.categSvantagg= :categSvantaggStr ,p.attuatorePIVA= :pivaAtt,"
-										  + " p.nomeAllegato1= :nomeAllegatoStr1 ,p.nomeAllegato2= :nomeAllegatoStr2 ,p.nomeAllegato3= :nomeAllegatoStr3 ,p.nomeAllegato4= :nomeAllegatoStr4 "
+										  + " p.nomeAllegato1= :nomeAllegatoStr1 ,p.nomeAllegato2= :nomeAllegatoStr2 ,"
+										  + " p.nomeAllegato3= :nomeAllegatoStr3 ,p.nomeAllegato4= :nomeAllegatoStr4 ,p.enabled= :enabledStr "
 										  + " where id= :idStr and username= :usernameStr";
 	private final String queryDeletePiano = "Delete from PianoDIformazioneBean p  where id= :idStr";
 	
@@ -40,6 +41,12 @@ public class PianiFormazioneDaoImpl implements PianiFormazioneDao{
 
 	private final String queryUpdateStatoPiano = "Update PianoDIformazioneBean p set p.enabled= :enabledStr"
 												+ " where p.id= :idStr and p.username= :usernameStr";
+	private final String queryUpdateStatoPianiByElimFile = "Update PianoDIformazioneBean p set p.enabled= :enabledStr"
+			+ " where p.id= :idStr and username= :usernameStr";
+	
+	
+	
+	
 	
 
 	@Override
@@ -70,6 +77,7 @@ public class PianiFormazioneDaoImpl implements PianiFormazioneDao{
 	         .setParameter("pivaAtt", pianoDiFormazioneBean.getAttuatorePIVA())
 	         .setParameter("nomeAllegatoStr1", pianoDiFormazioneBean.getNomeAllegato1()).setParameter("nomeAllegatoStr2", pianoDiFormazioneBean.getNomeAllegato2())
 	         .setParameter("nomeAllegatoStr3", pianoDiFormazioneBean.getNomeAllegato3()).setParameter("nomeAllegatoStr4", pianoDiFormazioneBean.getNomeAllegato4())
+	         .setParameter("enabledStr", pianoDiFormazioneBean.getEnabled())
 	         .setParameter("usernameStr", pianoDiFormazioneBean.getUsername()).setParameter("idStr",pianoDiFormazioneBean.getId()).executeUpdate();
 		
 	}
@@ -134,6 +142,19 @@ public class PianiFormazioneDaoImpl implements PianiFormazioneDao{
 		         .setParameter("usernameStr", pianoDiFormazioneBean.getUsername()).setParameter("idStr",pianoDiFormazioneBean.getId()).executeUpdate();
 		
 	}
+
+	@Override
+	public void aggiornaStatoPianoByEliminazioneFile(ArrayList<Integer> listaIdPiani, String stato, String username) {
+		// TODO Auto-generated method stub
+        Query query = entityManager.createQuery(queryUpdateStatoPianiByElimFile);
+		for (Integer id : listaIdPiani){
+		
+			query.setParameter("enabledStr", stato).setParameter("idStr", id).setParameter("usernameStr", username).executeUpdate();
+		}
+		
+	}
+
+
 	
 
 } 

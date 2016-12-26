@@ -30,11 +30,11 @@ public class RendicontazioneBean {
 	int idPiano;
 	
 	
-	@Size(min=2, max=100)
+	@Size(min=1, max=100)
 	@Column(name="tipologiagiustificativo")
 	String tipologiaGiustificativo;
 	
-	@Size(min=2, max=100)
+	@Size(min=1, max=100)
 	@Column(name="codice")
 	String codice;
 	
@@ -47,23 +47,23 @@ public class RendicontazioneBean {
 	@Transient
 	String dataGiustificativoStr;
 	
-	@Size(min=2, max=100)
+	@Size(min=1, max=100)
 	@Column(name="fornitorenominativo")
 	String fornitoreNominativo;
 	
-	@Size(min=4)
+	@Size(min=3)
 	@Column(name="valorecomplessivo")
 	String valoreComplessivo;
 	
-	@Size(min=4)
+	@Size(min=3)
 	@Column(name="contributofba")
 	String contributoFBA;
 	
-	@Size(min=4)
+	@Size(min=3)
 	@Column(name="contributoprivato")
 	String contributoPrivato;
 	
-	@Size(min=2, max=100)
+	@Size(min=4, max=100)
 	@Column(name="nomeallegato")
 	String nomeAllegato;
 	

@@ -351,10 +351,11 @@ public class FbaController {
 						 PianiFormazioneDao pianiFormazioneDao = (PianiFormazioneDao) context.getBean("PianiFormazioneDaoImpl");
 						 AttuatoriDao attuatoriDao= (AttuatoriDao) context.getBean("AttuatoreDaoImpl");
 						 AttuatoreBean attuatoreResult = new AttuatoreBean();
-						 for(PianoDIformazioneBean singoloPiano :listaPiani){
+						  for(PianoDIformazioneBean singoloPiano :listaPiani){
 							    
 							    if (attuatoreResult==null||!(attuatoreResult.getAttuatorePIVA()!=null&&attuatoreBean.getAttuatorePIVA().equalsIgnoreCase(singoloPiano.getAttuatorePIVA()))){
 							    	    attuatoreBean.setAttuatorePIVA(singoloPiano.getAttuatorePIVA());
+							    	    attuatoreBean.setUsername(singoloPiano.getUsername());	
 							    		attuatoreResult = attuatoriDao.leggiNomiAllegati(attuatoreBean);
 							    }
 							    	
@@ -440,7 +441,7 @@ public class FbaController {
 						return modelWiev;
 					}
 				
-				// metodo modifica dati utentie
+				// metodo modifica dati utente
 				@RequestMapping(value ={"/adminModifyPianoForm","/userModifyPianoForm"} , method = RequestMethod.POST)
 				public ModelAndView modifyPianoForm(ModelMap model, @ModelAttribute("pianoFormazioneForm") PianoDIformazioneBean pianoFormazione) {
 		             
@@ -486,13 +487,16 @@ public class FbaController {
 					try{
 						validator.pianoFormazioneValidator(pianoDiFormazione, bindingResult, myProperties);
 						if(!bindingResult.hasErrors()){
+							pianoDiFormazione = Utils.formattaPiano(pianoDiFormazione);
+							pianoDiFormazione.setAttuatorePIVA(Utils.eliminaSpaziTot(pianoDiFormazione.getAttuatorePIVA()));
 							pianoDiFormazione.setEnabled("1");
 							context = new ClassPathXmlApplicationContext("spring\\spring-jpa.xml","spring\\spring-utils.xml");
 							PianiFormazioneDao pianiFormazioneDao = (PianiFormazioneDao) context.getBean("PianiFormazioneDaoImpl");
 							
 							//aggiorno i nomi degli allegati del piano.
 							AttuatoreBean attuatoreBean = new AttuatoreBean();
-						    attuatoreBean.setAttuatorePIVA(pianoDiFormazione.getAttuatorePIVA());		
+						    attuatoreBean.setAttuatorePIVA(pianoDiFormazione.getAttuatorePIVA());
+						    attuatoreBean.setUsername(pianoDiFormazione.getUsername());	
 							AttuatoriDao attuatoriDao= (AttuatoriDao) context.getBean("AttuatoreDaoImpl");
 							AttuatoreBean attuatoreResult = attuatoriDao.leggiNomiAllegati(attuatoreBean);
 							if (attuatoreResult!=null){
@@ -501,7 +505,10 @@ public class FbaController {
 								pianoDiFormazione.setNomeAllegato2(attuatoreResult.getNomeAllegato2());
 								pianoDiFormazione.setNomeAllegato3(attuatoreResult.getNomeAllegato3());
 								pianoDiFormazione.setNomeAllegato4(attuatoreResult.getNomeAllegato4());
+								
 							}
+								
+							pianoDiFormazione.setEnabled(myProperties.getProperty("enabled.no"));
 							pianiFormazioneDao.updatePianoDiFormazione(pianoDiFormazione);
 							
 						
@@ -866,7 +873,7 @@ public class FbaController {
 				
 				// cancellazione giornata calendario
 				@RequestMapping(value = {"/adminEliminaGiornoForm","/userEliminaGiornoForm"} , method = RequestMethod.POST)
-				public ModelAndView eliminaGiornoForm(ModelMap model, @ModelAttribute("calendarioBeanForm") CalendarioBean calendarioBean, BindingResult bindingResult) {
+				public ModelAndView eliminaGiornoForm(HttpServletRequest request, ModelMap model, @ModelAttribute("calendarioBeanForm") CalendarioBean calendarioBean, BindingResult bindingResult) {
 		             
 				ModelAndView modelWiev = new ModelAndView();
 				ArrayList<CalendarioBean> listaCalendario = new ArrayList<>();
@@ -879,7 +886,15 @@ public class FbaController {
 							 calendarioDao.deleteCalednario(calendarioBean);
 							 listaCalendario = calendarioDao.getAllCalednario(calendarioBean);
 							 listaCalendario = Utils.calendarioModuloFormSetting(listaCalendario);
-							 }   
+							 if (!(listaCalendario!=null&&!listaCalendario.isEmpty())){
+								 PianiFormazioneDao pianiFormazioneDao = (PianiFormazioneDao) context.getBean("PianiFormazioneDaoImpl");
+								 PianoDIformazioneBean pianoFormazione = new PianoDIformazioneBean();
+								 pianoFormazione.setId(calendarioBean.getIdPiano());
+								 pianoFormazione.setUsername(request.getUserPrincipal().getName());
+								 pianoFormazione.setEnabled(myProperties.getProperty("enabled.no"));
+								 pianiFormazioneDao.updateStatoPianoDiFormazione(pianoFormazione);
+							 }
+						}   
 					
 					}catch(Exception e){
 						e.printStackTrace();
@@ -1016,7 +1031,7 @@ public class FbaController {
 						context = new ClassPathXmlApplicationContext("spring\\spring-jpa.xml","spring\\spring-utils.xml");
 						LavoratoriDao lavoratoriDao = (LavoratoriDao) context.getBean("LavoratoriDaoImpl");
 						lavoratoriBeanForm = lavoratoriDao.findLavoratore(lavoratoriBean);
-						
+						lavoratoriBeanForm.setModalitaFormatvia(lavoratoriBean.getModalitaFormatvia());
 					((ConfigurableApplicationContext)context).close();
 					}catch(Exception e){
 						e.printStackTrace();
@@ -1048,6 +1063,7 @@ public class FbaController {
 					try{
 						validator.lavoratoriValidator(lavoratoriBean, bindingResult, myProperties);
 						if(!bindingResult.hasErrors()){
+							lavoratoriBean= Utils.formattaLavoratore(lavoratoriBean);
 							lavoratoriBean.setStato("1");
 							context = new ClassPathXmlApplicationContext("spring\\spring-jpa.xml","spring\\spring-utils.xml");
 							LavoratoriDao lavoratoriDao = (LavoratoriDao) context.getBean("LavoratoriDaoImpl");
@@ -1079,7 +1095,7 @@ public class FbaController {
 				
 				// cancellazione lavoratore
 				@RequestMapping(value = {"/adminEliminaLavoratore","/userEliminaLavoratore"} , method = RequestMethod.POST)
-				public ModelAndView eliminaLavoratore(ModelMap model, @ModelAttribute("lavoratoreBeanForm") LavoratoriBean lavoratoriBean, BindingResult bindingResult) {
+				public ModelAndView eliminaLavoratore(HttpServletRequest request,ModelMap model, @ModelAttribute("lavoratoreBeanForm") LavoratoriBean lavoratoriBean, BindingResult bindingResult) {
 		             
 				ModelAndView modelWiev = new ModelAndView();
 				ArrayList<LavoratoriBean> listaLavoratori = new ArrayList<>();
@@ -1092,8 +1108,16 @@ public class FbaController {
 							lavoratoriDao.deleteLavoratore(lavoratoriBean);
 							 
 							listaLavoratori = lavoratoriDao.getAllLavoratori(lavoratoriBean);
+							 if (!(listaLavoratori!=null&&!listaLavoratori.isEmpty())){
+								 PianiFormazioneDao pianiFormazioneDao = (PianiFormazioneDao) context.getBean("PianiFormazioneDaoImpl");
+								 PianoDIformazioneBean pianoFormazione = new PianoDIformazioneBean();
+								 pianoFormazione.setId(lavoratoriBean.getIdPiano());
+								 pianoFormazione.setUsername(request.getUserPrincipal().getName());
+								 pianoFormazione.setEnabled(myProperties.getProperty("enabled.no"));
+								 pianiFormazioneDao.updateStatoPianoDiFormazione(pianoFormazione);
+							 }
 							 
-							 }   
+						}   
 					
 					}catch(Exception e){
 						e.printStackTrace();
@@ -1110,6 +1134,7 @@ public class FbaController {
   					PianoDIformazioneBean pianoDIformazioneBean = new PianoDIformazioneBean();
  					pianoDIformazioneBean.setId(lavoratoriBean.getIdPiano());
  					pianoDIformazioneBean.setModulo1(lavoratoriBean.getNomeModulo());
+ 					pianoDIformazioneBean.setFadMod1(lavoratoriBean.getModalitaFormatvia());
 					
 					
 					modelWiev.addObject("title", "Modifica dati lavoratore "+nomeModulo);
@@ -1143,7 +1168,7 @@ public class FbaController {
 							RendicontazioneDao rendicontazioneDao = (RendicontazioneDao) context.getBean("RendicontazioneDaoImpl");
 							listaCalendario = calendarioDao.esisteCalendario(pianoFormazione);
 							listaLavoratori = lavoratoriDao.esistonoLavoratori(pianoFormazione);
-							listaRendicontazione = rendicontazioneDao.esisteRendicontazione(pianoFormazione);
+							listaRendicontazione = rendicontazioneDao.getAllrendicontazione(pianoFormazione);
 							if (listaCalendario!=null&&!listaCalendario.isEmpty()){
 								modelWiev.addObject("calendario", myProperties.getProperty("calendari.esistono"));
 							}
@@ -1180,6 +1205,8 @@ public class FbaController {
 				public ModelAndView adminImplementaPiano (HttpServletRequest request,  @ModelAttribute("implementaPianoFormBean") ImplementaPianoFormBean implementaPianoFormBean,
 					@ModelAttribute("lavoratoriBean") LavoratoriBean lavoratoriBean	) {
 					ModelAndView modelWiev = new ModelAndView();
+					PianoDIformazioneBean pianoFormazione = new PianoDIformazioneBean();
+					pianoFormazione.setId(implementaPianoFormBean.getId());
 					ArrayList<HashMap<String, String>> listaExcel = new ArrayList<>();
 					ArrayList<PianoDIformazioneBean> listaPiani= new ArrayList<>();
 					ArrayList<CalendarioBean> listaCalendario1= new ArrayList<>();
@@ -1258,22 +1285,36 @@ public class FbaController {
 						RendicontazioneDao rendicontazioneDao = (RendicontazioneDao) context.getBean("RendicontazioneDaoImpl");
 						
 						try{
+							//costante che serve per aggiornare lo stato del piano nel caso di aggiornamento da excel.
+							boolean aggiornato =false;
 							if (listaCalendario1!=null&&!listaCalendario1.isEmpty()){
 								calendarioDao.caricaCalendari(listaCalendario1);
+								aggiornato=true;
 							}
 							if (listaCalendario2!=null&&!listaCalendario2.isEmpty()){
 								calendarioDao.caricaCalendari(listaCalendario2);
+								aggiornato=true;
 							}
 							
 							if (listaLavoratori1!=null&&!listaLavoratori1.isEmpty()){
 								lavoratoriDao.caricaLavoratori(listaLavoratori1);
+								aggiornato=true;
 								
 							}
 							if (listaLavoratori2!=null&&!listaLavoratori2.isEmpty()){
 								lavoratoriDao.caricaLavoratori(listaLavoratori2);
+								aggiornato=true;
 							}
 							if (listaRendicontazione!=null&&!listaRendicontazione.isEmpty()){
 								rendicontazioneDao.caricaRendicontazione(listaRendicontazione);
+								aggiornato=true;
+							}
+							
+							if (aggiornato){
+								pianoFormazione.setId(implementaPianoFormBean.getId());
+								pianoFormazione.setEnabled(myProperties.getProperty("enabled.no"));
+								pianoFormazione.setUsername(request.getUserPrincipal().getName());
+								pianiFormazioneDao.updateStatoPianoDiFormazione(pianoFormazione);
 							}
 						}catch(Exception e){
 							modelWiev.addObject("errorMessage", myProperties.getProperty("errore.scrittura.db"));
@@ -1285,6 +1326,31 @@ public class FbaController {
 						
 					} catch (Exception e) {
 						// TODO: handle exception
+						ArrayList<LavoratoriBean> listaLavoratori = new ArrayList<>();
+						ArrayList<CalendarioBean> listaCalendario = new ArrayList<>();
+						try{
+						
+								context = new ClassPathXmlApplicationContext("spring\\spring-jpa.xml","spring\\spring-utils.xml");
+								CalendarioDao calendarioDao = (CalendarioDao) context.getBean("CalendarioDaoImpl");
+								LavoratoriDao lavoratoriDao = (LavoratoriDao) context.getBean("LavoratoriDaoImpl");
+								RendicontazioneDao rendicontazioneDao = (RendicontazioneDao) context.getBean("RendicontazioneDaoImpl");
+								listaCalendario = calendarioDao.esisteCalendario(pianoFormazione);
+								listaLavoratori = lavoratoriDao.esistonoLavoratori(pianoFormazione);
+								listaRendicontazione = rendicontazioneDao.getAllrendicontazione(pianoFormazione);
+								if (listaCalendario!=null&&!listaCalendario.isEmpty()){
+									modelWiev.addObject("calendario", myProperties.getProperty("calendari.esistono"));
+								}
+								if (listaLavoratori!=null&&!listaLavoratori.isEmpty()){
+									modelWiev.addObject("lavoratori", myProperties.getProperty("lavoratori.esistono"));
+								}
+								if (listaRendicontazione!=null&&!listaRendicontazione.isEmpty()){
+									modelWiev.addObject("rendicontazione", myProperties.getProperty("rendicontazione.esiste"));
+								}
+						}catch(Exception b){
+							
+							logger.error(b.getMessage());
+							throw new CustomGenericException(new Date(), myProperties.getProperty("errore.generale"));
+						}
 						e.printStackTrace();
 						logger.error(e.getMessage());
 						modelWiev.setViewName("implementaProgetto");
@@ -1391,8 +1457,9 @@ public class FbaController {
 								pianoDiFormazione.setNomeAllegato2(attuatoreResult.getNomeAllegato2());
 								pianoDiFormazione.setNomeAllegato3(attuatoreResult.getNomeAllegato3());
 								pianoDiFormazione.setNomeAllegato4(attuatoreResult.getNomeAllegato4());
-								pianiFormazioneDao.updatePianoDiFormazioneAllegati(pianoDiFormazione);
+								
 							}
+							pianiFormazioneDao.updatePianoDiFormazioneAllegati(pianoDiFormazione);
 							listaPiani = pianiFormazioneDao.getAllPiani(request.getUserPrincipal().getName());
 						}else{
 							String errori=" ";
@@ -1551,7 +1618,7 @@ public class FbaController {
 				
 				// Elimina il soggetto rendicontato
 				@RequestMapping(value ={ "/adminEliminaSoggettoRend","/userEliminaSoggettoRend"}, method = RequestMethod.POST)
-				public ModelAndView eliminaSoggettoRend(@ModelAttribute("rendicontazioneBeanForm") RendicontazioneBean rendicontazioneBeanForm) {
+				public ModelAndView eliminaSoggettoRend(HttpServletRequest request, @ModelAttribute("rendicontazioneBeanForm") RendicontazioneBean rendicontazioneBeanForm) {
 					ModelAndView modelWiev = new ModelAndView();
 					ArrayList<RendicontazioneBean> listaRendicontazione = new ArrayList<>();
 					ApplicationContext context=null;
@@ -1563,6 +1630,12 @@ public class FbaController {
 						 rendicontazioneDao.eliminaSoggettoRendicontato(rendicontazioneBeanForm);
 						 listaRendicontazione = rendicontazioneDao.getAllrendicontazione(pianoFormazione);
 						 listaRendicontazione = Utils.rendicontazioneFormSetting(listaRendicontazione);
+						 if (!(listaRendicontazione!=null&&!listaRendicontazione.isEmpty())){
+							 PianiFormazioneDao pianiFormazioneDao = (PianiFormazioneDao) context.getBean("PianiFormazioneDaoImpl");
+							 pianoFormazione.setEnabled(myProperties.getProperty("enabled.no"));
+							 pianoFormazione.setUsername(request.getUserPrincipal().getName());
+							 pianiFormazioneDao.updateStatoPianoDiFormazione(pianoFormazione);
+						 }
 					
 					} catch (Exception e) {
 						// TODO: handle exception
@@ -1690,14 +1763,23 @@ public class FbaController {
 				@RequestMapping(value ={ "/adminCancellaRendiconFile","/userCancellaRendiconFile"}, method = RequestMethod.POST)
 				public ModelAndView cancellaRendiconFile (HttpServletRequest request,  @ModelAttribute("rendicontazioneBean") RendicontazioneFileBean rendicontazioneFileBean) {
 					ModelAndView modelWiev = new ModelAndView();
+					String username = request.getUserPrincipal().getName();
 					ApplicationContext context =null;
 					ArrayList<RendicontazioneFileBean> listaFileRendicontazione = new ArrayList<>();
-					String username = request.getUserPrincipal().getName();
 					try {
 					
 						context = new ClassPathXmlApplicationContext("spring\\spring-jpa.xml","spring\\spring-utils.xml");
 						RendicontazioneDao rendicontazioneDao = (RendicontazioneDao) context.getBean("RendicontazioneDaoImpl");
+						PianiFormazioneDao pianiFormazioneDao = (PianiFormazioneDao) context.getBean("PianiFormazioneDaoImpl");
+						String nomeFile = rendicontazioneDao.getNomeFileByID(rendicontazioneFileBean.getId(), username);
+						if(nomeFile!=null&&!nomeFile.isEmpty()){
+							ArrayList<Integer> listaIdPiani = rendicontazioneDao.findRendicontazioneByFile(nomeFile);
+							if (listaIdPiani!=null&&!listaIdPiani.isEmpty()){
+								pianiFormazioneDao.aggiornaStatoPianoByEliminazioneFile(listaIdPiani, myProperties.getProperty("enabled.no"),username);
+							}
+						}
 						rendicontazioneDao.eliminaFile(rendicontazioneFileBean);
+						
 						listaFileRendicontazione = rendicontazioneDao.getElencoFileRendicontazione(username);
 					
 					} catch (Exception e) {
@@ -1763,7 +1845,7 @@ public class FbaController {
 							DatiFIleUploadBean datiFile = new DatiFIleUploadBean();
 							datiFile.setNomeFile(fileItem.getOriginalFilename());
 							if(fileItem.getSize()!=0){
-								datiFile.setSizeFile(Long.toString(fileItem.getSize()/1000)+" MB");
+								datiFile.setSizeFile(Long.toString(fileItem.getSize()/1000)+" KB");
 								if(fileItem.getOriginalFilename().endsWith("pdf")){
 									lavoratoriFileBean.setUsername(username);
 									lavoratoriFileBean.setNomeAllegato(fileItem.getOriginalFilename());
@@ -1823,6 +1905,14 @@ public class FbaController {
 					
 						context = new ClassPathXmlApplicationContext("spring\\spring-jpa.xml","spring\\spring-utils.xml");
 						LavoratoriDao lavoratoriDao = (LavoratoriDao) context.getBean("LavoratoriDaoImpl");
+						PianiFormazioneDao pianiFormazioneDao = (PianiFormazioneDao) context.getBean("PianiFormazioneDaoImpl");
+						String nomeFile = lavoratoriDao.getNomeFileByID(lavoratoriFileBean.getId(), username);
+						if(nomeFile!=null&&!nomeFile.isEmpty()){
+							ArrayList<Integer> listaIdPiani = lavoratoriDao.findLavoratoriByFile(nomeFile);
+							if (listaIdPiani!=null&&!listaIdPiani.isEmpty()){
+								pianiFormazioneDao.aggiornaStatoPianoByEliminazioneFile(listaIdPiani, myProperties.getProperty("enabled.no"),username);
+							}
+						}
 						lavoratoriDao.eliminaFile(lavoratoriFileBean);
 						listaFileLavoratori = lavoratoriDao.getElencoFileLavoratori(username);
 					
@@ -1865,8 +1955,10 @@ public class FbaController {
 						context = new ClassPathXmlApplicationContext("spring\\spring-jpa.xml","spring\\spring-utils.xml");
 						PianiFormazioneDao pianiFormazioneDao = (PianiFormazioneDao) context.getBean("PianiFormazioneDaoImpl");
 						pianoDIformazioneBean= pianiFormazioneDao.findPianiFormazione(pianoFormazione);
+						LavoratoriDao lavoratoriDao = (LavoratoriDao) context.getBean("LavoratoriDaoImpl");
+						listaLavoratori = lavoratoriDao.esistonoLavoratori(pianoDIformazioneBean);
 						//validazione piano
-						listaErroriProgetto = ValidaProgetto.validaProgettoTop(pianoDIformazioneBean, myProperties);
+						listaErroriProgetto = ValidaProgetto.validaProgettoTop(pianoDIformazioneBean,listaLavoratori, myProperties);
 						
 						//validazione file attuatore
 						if (!(Utils.eliminaSpazi(pianoDIformazioneBean.getAttuatorePIVA()).isEmpty())&&
@@ -1875,7 +1967,7 @@ public class FbaController {
 									attuatoreBean.setUsername(username);
 									AttuatoriDao attuatoriDao= (AttuatoriDao) context.getBean("AttuatoreDaoImpl");
 									AttuatoreBean attuatoreResult = attuatoriDao.leggiNomiAllegati(attuatoreBean);
-									listaErroriProgetto = ValidaProgetto.validaFileAttuatore(pianoDIformazioneBean, attuatoreBean, listaErroriProgetto, myProperties);
+									listaErroriProgetto = ValidaProgetto.validaFileAttuatore(pianoDIformazioneBean, attuatoreResult, listaErroriProgetto, myProperties);
 									
 									
 						}
@@ -1891,8 +1983,6 @@ public class FbaController {
 						
 						// validazione lavoratori
 					
-							LavoratoriDao lavoratoriDao = (LavoratoriDao) context.getBean("LavoratoriDaoImpl");
-							listaLavoratori = lavoratoriDao.esistonoLavoratori(pianoDIformazioneBean);
 							listaFileLavoratori = lavoratoriDao.leggiNomiAllegati(username);
 							listaErroriProgetto = ValidaProgetto.validaLavoratori(listaLavoratori, pianoDIformazioneBean, listaErroriProgetto, myProperties);
 							 
@@ -1959,6 +2049,16 @@ public class FbaController {
 						ErroriProgettoDao erroriProgettoDao = (ErroriProgettoDao) context.getBean("ErroriProgettoDaoImpl");
 						listaErroriProgetto = erroriProgettoDao.getErroriProgetto(pianoFormazione.getId());
 						pianoFormazioneBean = pianiFormazioneDao.findPianiFormazione(pianoFormazione);
+						if (pianoFormazioneBean.getEnabled().equalsIgnoreCase(myProperties.getProperty("enabled.no"))){
+							if (!(listaErroriProgetto!=null&&!listaErroriProgetto.isEmpty())){
+								ErroreProgettoBean erroreProgetto = new ErroreProgettoBean();
+								erroreProgetto.setId(0);
+								erroreProgetto.setIdPiano(pianoFormazioneBean.getId());
+								erroreProgetto.setErrore(myProperties.getProperty("errore.progetto.messaggio"));
+								erroreProgetto.setOggettoErrore(myProperties.getProperty("errore.progetto"));
+								listaErroriProgetto.add(erroreProgetto);
+							}
+						}
 					} catch (Exception e) {
 						// TODO: handle exception
 						e.printStackTrace();
