@@ -1,5 +1,6 @@
 package it.fba.webapp.controller;
 
+import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -9,6 +10,8 @@ import java.util.Properties;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import javax.sql.DataSource;
+import javax.transaction.Transactional;
 import javax.validation.Valid;
 
 import org.apache.log4j.Logger;
@@ -36,6 +39,7 @@ import it.fba.webapp.beans.AttuatoreBean;
 import it.fba.webapp.beans.CalendarioBean;
 import it.fba.webapp.beans.DatiFIleUploadBean;
 import it.fba.webapp.beans.ErroreProgettoBean;
+import it.fba.webapp.beans.EttLoadStatusBean;
 import it.fba.webapp.beans.FileBean;
 import it.fba.webapp.beans.ImplementaPianoFormBean;
 import it.fba.webapp.beans.LavoratoriBean;
@@ -48,6 +52,7 @@ import it.fba.webapp.beans.UsersBean;
 import it.fba.webapp.dao.AttuatoriDao;
 import it.fba.webapp.dao.CalendarioDao;
 import it.fba.webapp.dao.ErroriProgettoDao;
+import it.fba.webapp.dao.EttLoadStatusDao;
 import it.fba.webapp.dao.LavoratoriDao;
 import it.fba.webapp.dao.PianiFormazioneDao;
 import it.fba.webapp.dao.RendicontazioneDao;
@@ -57,6 +62,7 @@ import it.fba.webapp.fileInputOutput.ImportServiceExcel;
 import it.fba.webapp.form.validator.ExcelValidator;
 import it.fba.webapp.form.validator.FormSecurityValidator;
 import it.fba.webapp.form.validator.ValidaProgetto;
+import it.fba.webapp.trasmissione.FbaExtractor;
 import it.fba.webapp.utils.Utils;
 
 
@@ -418,7 +424,6 @@ public class FbaController {
 						 context = new ClassPathXmlApplicationContext("spring\\spring-jpa.xml","spring\\spring-utils.xml");
 						 PianiFormazioneDao pianiFormazioneDao = (PianiFormazioneDao) context.getBean("PianiFormazioneDaoImpl");
 						 listaPiani = pianiFormazioneDao.getAllPiani(user.getUsername());
-						
 					
 					} catch (Exception e) {
 						// TODO: handle exception
@@ -441,7 +446,7 @@ public class FbaController {
 						return modelWiev;
 					}
 				
-				// metodo modifica dati utente
+				// carica la pagina di modifica piano formazione
 				@RequestMapping(value ={"/adminModifyPianoForm","/userModifyPianoForm"} , method = RequestMethod.POST)
 				public ModelAndView modifyPianoForm(ModelMap model, @ModelAttribute("pianoFormazioneForm") PianoDIformazioneBean pianoFormazione) {
 		             
@@ -489,7 +494,6 @@ public class FbaController {
 						if(!bindingResult.hasErrors()){
 							pianoDiFormazione = Utils.formattaPiano(pianoDiFormazione);
 							pianoDiFormazione.setAttuatorePIVA(Utils.eliminaSpaziTot(pianoDiFormazione.getAttuatorePIVA()));
-							pianoDiFormazione.setEnabled("1");
 							context = new ClassPathXmlApplicationContext("spring\\spring-jpa.xml","spring\\spring-utils.xml");
 							PianiFormazioneDao pianiFormazioneDao = (PianiFormazioneDao) context.getBean("PianiFormazioneDaoImpl");
 							
@@ -507,8 +511,9 @@ public class FbaController {
 								pianoDiFormazione.setNomeAllegato4(attuatoreResult.getNomeAllegato4());
 								
 							}
-								
-							pianoDiFormazione.setEnabled(myProperties.getProperty("enabled.no"));
+							if(!pianoDiFormazione.getEnabled().equalsIgnoreCase(myProperties.getProperty("trasmissione.ko"))){	
+								pianoDiFormazione.setEnabled(myProperties.getProperty("enabled.no"));
+							}
 							pianiFormazioneDao.updatePianoDiFormazione(pianoDiFormazione);
 							
 						
@@ -1680,7 +1685,11 @@ public class FbaController {
 						e.printStackTrace();
 						logger.error(e.getMessage());
 						throw new CustomGenericException(new Date(), myProperties.getProperty("errore.generale"));
-					}
+					}finally{
+						if(context!=null){
+							((ConfigurableApplicationContext)context).close();
+						}
+					}	
 					RendicontazioneFileBean rendicontazioneBean = new RendicontazioneFileBean();
 						modelWiev.addObject("title", "Upload File Rendicontazione");
 						modelWiev.addObject("rendicontazioneBean", rendicontazioneBean);
@@ -1750,7 +1759,11 @@ public class FbaController {
 						e.printStackTrace();
 						logger.error(e.getMessage());
 						throw new CustomGenericException(new Date(), myProperties.getProperty("errore.generale"));
-					}
+					}finally{
+						if(context!=null){
+							((ConfigurableApplicationContext)context).close();
+						}
+					}	
 						modelWiev.addObject("title", " Riepilogo Upload File Rendicontazione");
 						modelWiev.addObject("message", myProperties.getProperty("riepilogo.upload"));
 						modelWiev.addObject("listaDatiFiles", listaDatiFiles);
@@ -1786,7 +1799,11 @@ public class FbaController {
 						// TODO: handle exception
 						e.printStackTrace();
 						logger.error(e.getMessage());
-					}
+					}finally{
+						if(context!=null){
+							((ConfigurableApplicationContext)context).close();
+						}
+					}	
 					RendicontazioneFileBean rendicontazioneBean = new RendicontazioneFileBean();
 						modelWiev.addObject("title", "Upload File Rendicontazione");
 						modelWiev.addObject("rendicontazioneBean", rendicontazioneBean);
@@ -1815,7 +1832,11 @@ public class FbaController {
 						e.printStackTrace();
 						logger.error(e.getMessage());
 						throw new CustomGenericException(new Date(), myProperties.getProperty("errore.generale"));
-					}
+					}finally{
+						if(context!=null){
+							((ConfigurableApplicationContext)context).close();
+						}
+					}	
 					 LavoratoriFileBean lavoratoriFileBean = new LavoratoriFileBean();
 						modelWiev.addObject("title", "Upload File Lavoratori");
 						modelWiev.addObject("lavoratoriFileBean", lavoratoriFileBean);
@@ -1885,7 +1906,11 @@ public class FbaController {
 						e.printStackTrace();
 						logger.error(e.getMessage());
 						throw new CustomGenericException(new Date(), myProperties.getProperty("errore.generale"));
-					}
+					}finally{
+						if(context!=null){
+							((ConfigurableApplicationContext)context).close();
+						}
+					}	
 						modelWiev.addObject("title", " Riepilogo Upload File Lavoratori");
 						modelWiev.addObject("message", myProperties.getProperty("riepilogo.upload"));
 						modelWiev.addObject("listaDatiFiles", listaDatiFiles);
@@ -1921,7 +1946,11 @@ public class FbaController {
 						e.printStackTrace();
 						logger.error(e.getMessage());
 						throw new CustomGenericException(new Date(), myProperties.getProperty("errore.generale"));
-					}
+					}finally{
+						if(context!=null){
+							((ConfigurableApplicationContext)context).close();
+						}
+					}	
 						
 					  LavoratoriFileBean lavoratoriFileBeanForm = new LavoratoriFileBean();
 						modelWiev.addObject("title", "Upload File Lavoratori");
@@ -1936,6 +1965,7 @@ public class FbaController {
 					}
 				
 				//Vaidazione progetto
+				@Transactional
 				@RequestMapping(value ={ "/adminValidaPiano","/userValidaPiano"}, method = RequestMethod.POST)
 				public ModelAndView validaPiano(HttpServletRequest request, ModelMap model, @ModelAttribute("pianoFormazioneForm") PianoDIformazioneBean pianoFormazione) {
 					ModelAndView modelWiev = new ModelAndView();
@@ -1954,6 +1984,8 @@ public class FbaController {
 					    
 						context = new ClassPathXmlApplicationContext("spring\\spring-jpa.xml","spring\\spring-utils.xml");
 						PianiFormazioneDao pianiFormazioneDao = (PianiFormazioneDao) context.getBean("PianiFormazioneDaoImpl");
+						EttLoadStatusDao ettLoadStatusDao = (EttLoadStatusDao) context.getBean("EttLoadStatusDaoImpl");
+						ettLoadStatusDao.deletePianoTrasmesso(pianoFormazione.getId());
 						pianoDIformazioneBean= pianiFormazioneDao.findPianiFormazione(pianoFormazione);
 						LavoratoriDao lavoratoriDao = (LavoratoriDao) context.getBean("LavoratoriDaoImpl");
 						listaLavoratori = lavoratoriDao.esistonoLavoratori(pianoDIformazioneBean);
@@ -2022,7 +2054,11 @@ public class FbaController {
 						e.printStackTrace();
 						logger.error(e.getMessage());
 						throw new CustomGenericException(new Date(), myProperties.getProperty("errore.generale"));
-					}
+					}finally{
+						if(context!=null){
+							((ConfigurableApplicationContext)context).close();
+						}
+					}	
 						
 					 
 						modelWiev.addObject("title", "Riassunto Errori Progetto");
@@ -2062,18 +2098,134 @@ public class FbaController {
 					} catch (Exception e) {
 						// TODO: handle exception
 						e.printStackTrace();
+						logger.error(pianoFormazione.getId());
 						logger.error(e.getMessage());
 						throw new CustomGenericException(new Date(), myProperties.getProperty("errore.generale"));
-					}
+					}finally{
+						if(context!=null){
+							((ConfigurableApplicationContext)context).close();
+						}
+					}	
 				
 				
-					modelWiev.addObject("title", "Riassunto Errori Progetto");
+					modelWiev.addObject("title", "Riassunto Errori Piano");
 				    modelWiev.addObject("listaErroriProgetto", listaErroriProgetto);
 					modelWiev.addObject("message", myProperties.getProperty("errori.riassunto")+pianoFormazioneBean.getNuemroProtocollo());
 					modelWiev.setViewName("erroriProgetto");
 			
 				return modelWiev;
 				}
+				
+				//Generazione dei file per la trasmissione
+				@Transactional
+				@RequestMapping(value ={ "/adminTrasmettiPiani","/userTrasmettiPiani"}, method = RequestMethod.POST)
+				public ModelAndView trasmettiPiano(HttpServletRequest request, ModelMap model, @ModelAttribute("pianoFormazioneForm") PianoDIformazioneBean pianoFormazione) {
+					ModelAndView modelWiev = new ModelAndView();
+					Connection connection= null;
+					ApplicationContext context =null;
+					ArrayList<PianoDIformazioneBean> listaPiani= null;
+					try {
+						context = new ClassPathXmlApplicationContext("spring\\spring-jpa.xml","spring\\spring-utils.xml");
+						FbaExtractor fbaExtractor = new FbaExtractor();
+						connection = fbaExtractor.openConnection();
+						fbaExtractor.firstStep(connection);
+						fbaExtractor.closeConnection(connection);
+						
+						PianiFormazioneDao pianiFormazioneDao = (PianiFormazioneDao) context.getBean("PianiFormazioneDaoImpl");
+						listaPiani = pianiFormazioneDao.getAllPiani(request.getUserPrincipal().getName());
+					
+					} catch (Exception e) {
+						// TODO: handle exception
+						
+						logger.error(e.getMessage());
+						throw new CustomGenericException(new Date(), myProperties.getProperty("errore.generale"));
+					}finally{
+						if(context!=null){
+							((ConfigurableApplicationContext)context).close();
+						}
+					}	
+					
+						PianoDIformazioneBean piano = new PianoDIformazioneBean();
+						modelWiev.addObject("title", "Tabella Piani Di Formazione");
+						modelWiev.addObject("message", myProperties.getProperty("piani.formazione.elenco"));
+						modelWiev.addObject("listaPiani", listaPiani);
+						modelWiev.addObject("pianoFormazioneForm",piano);
+						modelWiev.setViewName("pianiDiFormazioneTabella");
+					
+						return modelWiev;
+					}
+				
+				
+				//Carica gli erorri del progetto
+				@Transactional
+				@RequestMapping(value ={ "/adminErroriTrasm","/userErroriTrasm"}, method = RequestMethod.POST)
+				public ModelAndView erroriTrasmissine( ModelMap model, @ModelAttribute("pianoFormazioneForm") PianoDIformazioneBean pianoFormazione) {
+					ModelAndView modelWiev = new ModelAndView();
+					ApplicationContext context =null;
+					PianoDIformazioneBean pianoFormazioneBean = new PianoDIformazioneBean();
+					ArrayList<EttLoadStatusBean> listaErroriProgetto = new ArrayList<>();
+					try {
+						context = new ClassPathXmlApplicationContext("spring\\spring-jpa.xml","spring\\spring-utils.xml");
+						PianiFormazioneDao pianiFormazioneDao = (PianiFormazioneDao) context.getBean("PianiFormazioneDaoImpl");
+						EttLoadStatusDao ettLoadStatusDao = (EttLoadStatusDao) context.getBean("EttLoadStatusDaoImpl");
+						 listaErroriProgetto = ettLoadStatusDao.getErroriTrasmPiano(pianoFormazione.getId());
+						pianoFormazioneBean = pianiFormazioneDao.findPianiFormazione(pianoFormazione);
+						
+					} catch (Exception e) {
+						// TODO: handle exception
+						e.printStackTrace();
+						logger.error(e.getMessage());
+						throw new CustomGenericException(new Date(), myProperties.getProperty("errore.generale"));
+					}finally{
+						if(context!=null){
+							((ConfigurableApplicationContext)context).close();
+						}
+					}	
+				
+				
+					modelWiev.addObject("title", "Riassunto Errori Trasmissione Piano");
+				    modelWiev.addObject("listaErroriProgetto", listaErroriProgetto);
+					modelWiev.addObject("message", myProperties.getProperty("errori.riassunto")+pianoFormazioneBean.getNuemroProtocollo());
+					modelWiev.setViewName("erroriTrasmissionePiano");
+			
+				return modelWiev;
+				}
+				
+				//Carica gli erorri del progetto
+				@RequestMapping(value ={ "/adminSbloccaPiano","/userSbloccaPiano"}, method = RequestMethod.POST)
+				public ModelAndView sbloccaPiano( HttpServletRequest request,ModelMap model, @ModelAttribute("pianoFormazioneForm") PianoDIformazioneBean pianoFormazione) {
+					ModelAndView modelWiev = new ModelAndView();
+					ApplicationContext context =null;
+					pianoFormazione.setEnabled(myProperties.getProperty("enabled.si"));
+					ArrayList<PianoDIformazioneBean> listaPiani = new ArrayList<>();
+					String username = request.getUserPrincipal().getName();
+					try {
+						context = new ClassPathXmlApplicationContext("spring\\spring-jpa.xml","spring\\spring-utils.xml");
+						PianiFormazioneDao pianiFormazioneDao = (PianiFormazioneDao) context.getBean("PianiFormazioneDaoImpl");
+						pianiFormazioneDao.updateStatoPianoDiFormazione(pianoFormazione);
+						listaPiani = pianiFormazioneDao.getAllPiani(username);
+							
+					} catch (Exception e) {
+						// TODO: handle exception
+						e.printStackTrace();
+						logger.error(e.getMessage());
+						throw new CustomGenericException(new Date(), myProperties.getProperty("errore.generale"));
+					}finally{
+						if(context!=null){
+							((ConfigurableApplicationContext)context).close();
+						}
+					}	
+					
+						PianoDIformazioneBean piano = new PianoDIformazioneBean();
+						modelWiev.addObject("title", "Tabella Piani Di Formazione");
+						modelWiev.addObject("message", myProperties.getProperty("piani.formazione.elenco"));
+						modelWiev.addObject("listaPiani", listaPiani);
+						modelWiev.addObject("pianoFormazioneForm",piano);
+						modelWiev.setViewName("pianiDiFormazioneTabella");
+					
+						return modelWiev;
+					}
+				
 				
 				
 			

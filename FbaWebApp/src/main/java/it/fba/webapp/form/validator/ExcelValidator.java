@@ -133,7 +133,7 @@ public class ExcelValidator {
 			}
 		}catch (Exception e) {
 			// TODO: handle exception
-			e.printStackTrace();
+			
 			throw e;
 		}
 		return listaPiani;
@@ -191,7 +191,7 @@ public class ExcelValidator {
 			
 		}
 	}catch(Exception e){
-		e.printStackTrace();
+		
 		throw e;
 	}
 		return listaCalendario;
@@ -233,7 +233,7 @@ public class ExcelValidator {
 			
 		}
 	}catch(Exception e){
-		e.printStackTrace();
+		
 		throw e;
 	}
 		return listaLavoratori;
@@ -436,7 +436,7 @@ public class ExcelValidator {
 			}
 		}
 	}catch(Exception e){
-		e.printStackTrace();
+		
 		throw e;
 	}
 		return listaLavoratori;
@@ -527,7 +527,7 @@ public class ExcelValidator {
 			
 		}
 	}catch(Exception e){
-		e.printStackTrace();
+		
 		throw e;
 	}
 		return listaRendicontazione;

@@ -67,7 +67,7 @@
 				  <input type="button"  onclick="location.href='/FbaWebApp/welcome'" value="Annulla" >
 				</c:if>
 		</div>
-		</div>	
+		
           <script type="text/javascript">
 	           function cancellaForm(){
 	        	   $('#nome').val("");
