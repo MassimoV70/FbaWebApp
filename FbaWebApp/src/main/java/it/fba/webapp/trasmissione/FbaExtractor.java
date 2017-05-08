@@ -291,6 +291,8 @@ public class FbaExtractor {
                   fw.newLine();
                   fw.write("DROP function IF EXISTS `ett_load_progetto`;");
                   fw.newLine();
+                  fw.close(); 
+                  fos.close();
              }
              
           }catch(Exception e){
