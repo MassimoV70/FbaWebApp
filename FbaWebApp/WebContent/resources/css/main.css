@@ -7,8 +7,12 @@
 @import url('dataTables.jqueryui.css');
 @import url('jquery.dataTables.css');
 
-
-
+caption{
+	color: #000033;
+	 font-family: "Times New Roman", Times, serif;
+	 font-weight: bold;
+	 font-size: large;
+}
 
 h1{
 	color: #000033;
@@ -29,6 +33,14 @@ p{
 	color: #000033;
 	font-style: italic;
 	font-family: "Times New Roman", Times, serif;
+}
+
+.label1{
+	color: #000033;
+	font-style: italic;
+	font-family: "Times New Roman", Times, serif;
+	font-weight: bold;
+	font-size: large;
 }
 
 a {

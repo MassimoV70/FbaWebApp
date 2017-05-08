@@ -39,6 +39,7 @@ public class LavoratoriDaoImpl implements LavoratoriDao{
 	private final String queryNomi = " select l.nomeAllegato  from LavoratoriFileBean l  where l.username= :usernameStr";
 	private final String queryNomeByID = "select l.nomeAllegato  from LavoratoriFileBean l where l.id= :idStr and l.username= :usernameStr";
 
+	
 	@Override
 	public LavoratoriBean findLavoratore(LavoratoriBean lavoratoriBean) throws SQLException {
 		// TODO Auto-generated method stub
@@ -184,6 +185,7 @@ public class LavoratoriDaoImpl implements LavoratoriDao{
 		String nomefile =(String) query.setParameter("idStr", id).setParameter("usernameStr", username).getSingleResult();
 		return nomefile;
 	}
+
 	
 	
 	

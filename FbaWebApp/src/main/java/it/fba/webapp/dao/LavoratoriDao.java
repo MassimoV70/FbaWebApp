@@ -39,8 +39,9 @@ public interface LavoratoriDao {
 	
 	public ArrayList<String> leggiNomiAllegati (String username) throws Exception;
 	
-   public ArrayList<Integer> findLavoratoriByFile (String nomeFile) throws Exception;
+    public ArrayList<Integer> findLavoratoriByFile (String nomeFile) throws Exception;
 	
 	public String getNomeFileByID (int id,String username) throws Exception;
+	
 
 }

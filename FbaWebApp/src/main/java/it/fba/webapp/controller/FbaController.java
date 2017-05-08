@@ -2191,7 +2191,7 @@ public class FbaController {
 				return modelWiev;
 				}
 				
-				//Carica gli erorri del progetto
+				//Sblocca i piani in trasmissione per le modifiche
 				@RequestMapping(value ={ "/adminSbloccaPiano","/userSbloccaPiano"}, method = RequestMethod.POST)
 				public ModelAndView sbloccaPiano( HttpServletRequest request,ModelMap model, @ModelAttribute("pianoFormazioneForm") PianoDIformazioneBean pianoFormazione) {
 					ModelAndView modelWiev = new ModelAndView();
@@ -2225,6 +2225,80 @@ public class FbaController {
 					
 						return modelWiev;
 					}
+				
+				// Riassunto dati piano di formazione trasmesso
+				@RequestMapping(value ={"/adminriassuntoPiano","/userriassuntoPiano"} , method = RequestMethod.POST)
+				public ModelAndView riassuntoPiano(ModelMap model, @ModelAttribute("pianoFormazioneForm") PianoDIformazioneBean pianoFormazione) {
+		             
+					ModelAndView modelWiev = new ModelAndView();
+					ApplicationContext context=null;
+					PianoDIformazioneBean pianoDIformazioneBean = new PianoDIformazioneBean();
+					ArrayList<CalendarioBean> listaCalendario1 = new ArrayList<>();
+					ArrayList<CalendarioBean> listaCalendario2 = new ArrayList<>();
+					CalendarioBean calendarioBean = new CalendarioBean();
+					LavoratoriBean lavoratoriBean = new LavoratoriBean();
+					ArrayList<LavoratoriBean> listaLavoratori1 = new ArrayList<>();
+					ArrayList<LavoratoriBean> listaLavoratori2 = new ArrayList<>();
+					ArrayList<RendicontazioneBean> listaRendicontazione = new ArrayList<>();
+					try{
+						context = new ClassPathXmlApplicationContext("spring\\spring-jpa.xml","spring\\spring-utils.xml");
+						PianiFormazioneDao pianiFormazioneDao = (PianiFormazioneDao) context.getBean("PianiFormazioneDaoImpl");
+						pianoDIformazioneBean= pianiFormazioneDao.findPianiFormazione(pianoFormazione);
+		
+						CalendarioDao calendarioDao = (CalendarioDao) context.getBean("CalendarioDaoImpl");
+						LavoratoriDao lavoratoriDao = (LavoratoriDao) context.getBean("LavoratoriDaoImpl");
+						calendarioBean.setIdPiano(pianoDIformazioneBean.getId());
+						lavoratoriBean.setIdPiano(pianoDIformazioneBean.getId());
+						if (pianoDIformazioneBean.getModulo1()!=null&&!pianoDIformazioneBean.getModulo1().isEmpty()){
+							if (pianoDIformazioneBean.getFadMod1().equalsIgnoreCase(myProperties.getProperty("fad.no"))){
+								calendarioBean.setNomeModulo(pianoDIformazioneBean.getModulo1());
+								listaCalendario1 = calendarioDao.getAllCalednario(calendarioBean);
+								listaCalendario1 = Utils.calendarioModuloFormSetting(listaCalendario1);
+							}
+							lavoratoriBean.setNomeModulo(pianoDIformazioneBean.getModulo1());
+							listaLavoratori1 = lavoratoriDao.getAllLavoratori(lavoratoriBean);
+						}
+						
+						if (pianoDIformazioneBean.getModulo2()!=null&&!pianoDIformazioneBean.getModulo2().isEmpty()){
+							if (pianoDIformazioneBean.getFadMod2().equalsIgnoreCase(myProperties.getProperty("fad.no"))){
+								calendarioBean.setNomeModulo(pianoDIformazioneBean.getModulo2());
+								listaCalendario2 = calendarioDao.getAllCalednario(calendarioBean);
+								listaCalendario2 = Utils.calendarioModuloFormSetting(listaCalendario2);
+							}
+							lavoratoriBean.setNomeModulo(pianoDIformazioneBean.getModulo2());
+							listaLavoratori2 = lavoratoriDao.getAllLavoratori(lavoratoriBean);
+						}
+						
+							
+						RendicontazioneDao rendicontazioneDao = (RendicontazioneDao) context.getBean("RendicontazioneDaoImpl");
+						listaRendicontazione = rendicontazioneDao.getAllrendicontazione(pianoFormazione);
+						listaRendicontazione = Utils.rendicontazioneFormSetting(listaRendicontazione);
+					
+					}catch(Exception e){
+						e.printStackTrace();
+						logger.error(e.getMessage());
+						throw new CustomGenericException(new Date(), myProperties.getProperty("errore.generale"));
+					}finally{
+						if(context!=null){
+							((ConfigurableApplicationContext)context).close();
+						}
+					}	
+					
+				
+					modelWiev.addObject("title", "Ripeilogo Piano Di Formazione Trasmesso");
+					modelWiev.addObject("message", myProperties.getProperty("riassunto.piano.formazione"+pianoDIformazioneBean.getNuemroProtocollo()));
+					Map<String, String> listaSelezione = Utils.getListaSiNo(myProperties);
+					modelWiev.addObject("listaSelezione", listaSelezione);
+					modelWiev.addObject("pianoFormazioneForm", pianoDIformazioneBean);
+					modelWiev.addObject("listaCalendario1", listaCalendario1);
+					modelWiev.addObject("listaCalendario2", listaCalendario2);
+					modelWiev.addObject("listaLavoratori1", listaLavoratori1);
+					modelWiev.addObject("listaLavoratori2", listaLavoratori2);
+					modelWiev.addObject("listaRendicontazione", listaRendicontazione);
+					modelWiev.setViewName("riepilogoPiano");
+				 return modelWiev;
+
+				}
 				
 				
 				

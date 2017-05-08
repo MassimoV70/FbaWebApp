@@ -145,9 +145,9 @@ public class FbaExtractor {
                   // Blocco gestione Errori
                   sb.append("DECLARE EXIT HANDLER FOR SQLEXCEPTION, SQLWARNING\r\n");
                   sb.append("BEGIN\r\n");
-  		sb.append("\tGET DIAGNOSTICS CONDITION 1 @sqlstate = RETURNED_SQLSTATE, @errno = MYSQL_ERRNO, @text = MESSAGE_TEXT;\r\n");
-  		sb.append("\tSET @full_error = CONCAT('ERROR ', @errno, ' (', @sqlstate, '): ', @text);\r\n");
-
+  		//sb.append("\tGET DIAGNOSTICS CONDITION 1 @sqlstate = RETURNED_SQLSTATE, @errno = MYSQL_ERRNO, @text = MESSAGE_TEXT;\r\n");
+  		//sb.append("\tSET @full_error = CONCAT('ERROR ', @errno, ' (', @sqlstate, '): ', @text);\r\n");
+                  sb.append("\tSET @full_error = 'Si è verificato un errore SQL.';\r\n" );
   		sb.append("\tcall ett_write_log("+idpiano_client+", @idPiano ,@errno, @full_error);\r\n");
   		sb.append("\tROLLBACK;\r\n");
                   sb.append("END;\r\n");
@@ -159,7 +159,7 @@ public class FbaExtractor {
                   fw.write("set @idAttuatore=84034;");
                   fw.newLine();
                   
-                  checkContributi(connection, fw, idpiano_client);
+                 // checkContributi(connection, fw, idpiano_client);
                   
                   attuatoreFiles(connection, fw, idpiano_client);
                   
@@ -727,7 +727,7 @@ public class FbaExtractor {
                   //String RealFileName = resultSet.getString("nomeallegato");
                   Timestamp timestamp = new Timestamp(System.currentTimeMillis());
                   String RealFileName = "ETT" + timestamp.getTime() + "-" + resultSet.getString("nomeallegato");
-                  String query = "select nomeallegato from lavoratorifile where nomeallegato = '"+resultSet.getString("nomeallegato")+ "'";
+                  String query = "select allegatofile from lavoratorifile where nomeallegato = '"+resultSet.getString("nomeallegato")+ "'";
                   getPDFData(connection, query, RealFileName, false);
                   fw.write("-- salvataggio allegato : " + resultSet.getString("nomeallegato"));
                   fw.newLine();
@@ -882,23 +882,34 @@ public class FbaExtractor {
       
       
       private static void getPDFData(Connection conn, String query, String realName, boolean isAttuatoreFile)throws Exception {
-          byte[] fileBytes;
-          
+          byte[] fileBytes=null;
+          ResultSet rs=null;
+          OutputStream targetFile=null;
           String currPath = myPath;
           if (isAttuatoreFile){
               currPath = basePath;
           }
           try {
               Statement state = conn.createStatement();
-              ResultSet rs = state.executeQuery(query);
+               rs = state.executeQuery(query);
               if (rs.next()) {
                   fileBytes = rs.getBytes(1);
-                  OutputStream targetFile = new FileOutputStream(currPath + "/"+realName+".pdf");
+                  targetFile = new FileOutputStream(currPath + "/"+realName+".pdf");
                   targetFile.write(fileBytes);
-                  targetFile.close();
+                 
               }
           } catch (Exception e) {
                throw e;
+          }
+          finally{
+        	  if (rs!=null){
+        		  rs.close();
+        	  }
+        	  if(targetFile!=null){
+        		  targetFile.flush();
+        		  targetFile.close();
+        	  }
+        	  
           }
       }
 

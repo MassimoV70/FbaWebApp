@@ -151,6 +151,7 @@
 												</c:when>
 												<c:when test="${listValue.enabled==4}">
 													<img   src= "resources/images/trasmissioneOk.png" alt="Piano trasmesso con successo" title="Piano trasmesso con successo">
+												     <input type="image"  onclick="elaboraPiano('${listValue.id}','','','riassunto','','');" value="Riepilogo" src= "resources/images/riassunto.png"  alt="Riepilogo piano" title="Riepilogo piano">
 												</c:when>
 										    	<c:otherwise> 
 															<input type="image"  onclick="elaboraPiano('${listValue.id}','','','erroriProgetto','','');" value="Mostra errori progetto" src= "resources/images/notOK.png" alt="Mostra errori progetto" title="Mostra errori progetto">
@@ -281,6 +282,9 @@
 				$("#modificaPianoForm").submit();
 			}else if(operazione=='sblocca'){
 				sbloccaPiano();
+			}else if(operazione=='riassunto'){
+				$("#modificaPianoForm").attr('action','/FbaWebApp/adminriassuntoPiano');
+				$("#modificaPianoForm").submit();
 			}else{
 				$("#modificaPianoForm").attr('action','/FbaWebApp/adminImplementaPianoForm');
 				$("#modificaPianoForm").submit();
@@ -378,6 +382,9 @@
 			$("#modificaPianoForm").submit();
 		}else if(operazione=='sblocca'){
 			sbloccaPiano();
+		}else if(operazione=='riassunto'){
+			$("#modificaPianoForm").attr('action','/FbaWebApp/userriassuntoPiano');
+			$("#modificaPianoForm").submit();
 		}else{
 			$("#modificaPianoForm").attr('action','/FbaWebApp/userImplementaPianoForm');
 			$("#modificaPianoForm").submit();
