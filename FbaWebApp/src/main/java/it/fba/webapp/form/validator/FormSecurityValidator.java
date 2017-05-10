@@ -90,6 +90,11 @@ public class FormSecurityValidator implements Validator{
 			errors.rejectValue("durataModulo2", "errors",myProperties.getProperty("Not.time"));
 		}
 		
+		if (form.getModulo1().equalsIgnoreCase(form.getModulo2())){
+			   errors.rejectValue("modulo1", "errors",myProperties.getProperty("Valori.diversi"));
+			   errors.rejectValue("modulo2", "errors",myProperties.getProperty("Valori.diversi"));
+			}
+		
 		
        
 	}

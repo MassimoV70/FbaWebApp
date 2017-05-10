@@ -1,5 +1,6 @@
 package it.fba.webapp.form.validator;
 
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Properties;
@@ -20,7 +21,7 @@ public class ValidaProgetto {
 	public static ArrayList<ErroreProgettoBean> validaProgettoTop (PianoDIformazioneBean pianoFormazione,ArrayList<LavoratoriBean> listaLavoratori,Properties myProperties)throws Exception{
 		ArrayList<ErroreProgettoBean> listaErroriProgetto = new ArrayList<ErroreProgettoBean>();
 		
-		// preparo la hashmap dei lavoratori che partecipano al piano
+		// prepara la hashmap dei lavoratori che partecipano al piano
 		HashMap<String, String> lavoratori =new HashMap<>();
 		if (listaLavoratori!=null&&!listaLavoratori.isEmpty()){
 			for (LavoratoriBean lavoratore : listaLavoratori){
@@ -31,7 +32,7 @@ public class ValidaProgetto {
 			
 		}
 		
-		// preparo la hashmap dei lavoratori che partecipano ai moduli
+		// prepara la hashmap dei lavoratori che partecipano ai moduli
 			HashMap<String, String> lavoratoriModuli =new HashMap<>();
 			if (listaLavoratori!=null&&!listaLavoratori.isEmpty()){
 				for (LavoratoriBean lavoratore : listaLavoratori){
@@ -85,7 +86,7 @@ public class ValidaProgetto {
 			ErroreProgettoBean erroreProgetto = creaErrore(pianoFormazione.getId(),"Numero partecipanti", myProperties.getProperty("assente"));
 			listaErroriProgetto.add(erroreProgetto);
 		}else if(FormSecurityValidator.isNumber(pianoFormazione.getNumeroPartecipanti())) {
-			// verifico che il numero di partecipanti al piano siano uguali al numero di lavoratori iscritti
+			// verifica che il numero di partecipanti al piano siano uguali al numero di lavoratori iscritti
 			
 			if (!(Integer.parseInt(Utils.eliminaSpaziTot(pianoFormazione.getNumeroPartecipanti()))==lavoratori.size())){
 				ErroreProgettoBean erroreProgetto = creaErrore(pianoFormazione.getId(),"Numero partecipanti", myProperties.getProperty("numero.partecipanti"));
@@ -98,13 +99,19 @@ public class ValidaProgetto {
 			listaErroriProgetto.add(erroreProgetto);
 		}
 		
-		
+		// verifica che almeno uno dei moduli sia presente
 		if(((Utils.eliminaSpazi(pianoFormazione.getModulo1()).isEmpty())||pianoFormazione.getModulo1().equalsIgnoreCase(myProperties.getProperty("assente")))
 				&&((Utils.eliminaSpazi(pianoFormazione.getModulo2()).isEmpty())||pianoFormazione.getModulo2().equalsIgnoreCase(myProperties.getProperty("assente")))){
 			
 			ErroreProgettoBean erroreProgetto = creaErrore(pianoFormazione.getId(),"Moduli", myProperties.getProperty("moduli.assenti"));
 			listaErroriProgetto.add(erroreProgetto);    
 			    
+		// verifica che i nomi moduli siano diversi	
+		}else if(pianoFormazione.getModulo1().equalsIgnoreCase(pianoFormazione.getModulo2())){
+			
+			ErroreProgettoBean erroreProgetto = creaErrore(pianoFormazione.getId(),"Moduli", myProperties.getProperty("nomi.moduli.uguali"));
+			listaErroriProgetto.add(erroreProgetto);    
+			
 			
 		}else{
 		
@@ -274,118 +281,237 @@ public class ValidaProgetto {
 	
 	public static ArrayList<ErroreProgettoBean> validaCalendari (ArrayList<CalendarioBean> listacalendari,PianoDIformazioneBean pianoFormazione, ArrayList<ErroreProgettoBean> listaErroriProgetto,
 			Properties myProperties)throws Exception{
-		
-		HashMap<String,Boolean> nomiModuliMap = new HashMap<>();
-		if (pianoFormazione.getModulo1()!=null&&!pianoFormazione.getModulo1().isEmpty()){
-			if(pianoFormazione.getFadMod1()!=null&&pianoFormazione.getFadMod1().equalsIgnoreCase(myProperties.getProperty("fad.no"))){
-				nomiModuliMap.put(pianoFormazione.getModulo1(), false);
-			}else{
-				nomiModuliMap.put(pianoFormazione.getModulo1(), true);
+		if(pianoFormazione.getModulo1()!=null&&!pianoFormazione.getModulo1().isEmpty()&&!pianoFormazione.getModulo1().equalsIgnoreCase(myProperties.getProperty("assente"))
+		   &&pianoFormazione.getModulo2()!=null&&!pianoFormazione.getModulo2().isEmpty()&&!pianoFormazione.getModulo2().equalsIgnoreCase(myProperties.getProperty("assente"))){
+			HashMap<String,Boolean> nomiModuliMap = new HashMap<>();
+			HashMap<String,Boolean> nomiModuliGiornateMap = new HashMap<>();
+			HashMap<String,Integer> nomiModuliOreCalendarioMap = new HashMap<>();
+			
+			// controllo se il modulo 1 è un modulo fad o no ed inizializzo la hashmap dei nomi moduli e quella delle ore calendario totali se è aula.
+			if (pianoFormazione.getModulo1()!=null&&!pianoFormazione.getModulo1().isEmpty()&&!pianoFormazione.getModulo1().equalsIgnoreCase(myProperties.getProperty("assente"))){
+				if(pianoFormazione.getFadMod1()!=null&&pianoFormazione.getFadMod1().equalsIgnoreCase(myProperties.getProperty("fad.si"))){
+					nomiModuliMap.put(pianoFormazione.getModulo1(), false);
+				}else{
+					nomiModuliMap.put(pianoFormazione.getModulo1(), true);
+					nomiModuliOreCalendarioMap.put(pianoFormazione.getModulo1(),0);
+				}
 			}
-		}
-		if (pianoFormazione.getModulo2()!=null&&!pianoFormazione.getModulo2().isEmpty()){
-			if(pianoFormazione.getFadMod2()!=null&&pianoFormazione.getFadMod2().equalsIgnoreCase(myProperties.getProperty("fad.no"))){
-				nomiModuliMap.put(pianoFormazione.getModulo2(), false);
-			}else{
-				nomiModuliMap.put(pianoFormazione.getModulo2(), true);
+			
+			// controllo se il modulo 1 è un modulo fad o no ed inizializzo la hashmap dei nomi moduli e quella delle ore calendario totali se è aula.
+			if (pianoFormazione.getModulo2()!=null&&!pianoFormazione.getModulo2().isEmpty()&&!pianoFormazione.getModulo2().equalsIgnoreCase(myProperties.getProperty("assente"))){
+				if(pianoFormazione.getFadMod2()!=null&&pianoFormazione.getFadMod2().equalsIgnoreCase(myProperties.getProperty("fad.si"))){
+					nomiModuliMap.put(pianoFormazione.getModulo2(), false);
+				}else{
+					nomiModuliMap.put(pianoFormazione.getModulo2(), true);
+					nomiModuliOreCalendarioMap.put(pianoFormazione.getModulo2(),0);
+				}
 			}
-		}
-		
-		if(listacalendari.size()<nomiModuliMap.size()&&!nomiModuliMap.containsValue(true)){
-			ErroreProgettoBean erroreProgetto = creaErrore(pianoFormazione.getId(),"Calendari ", myProperties.getProperty("numero.calendari.err"));
-			listaErroriProgetto.add(erroreProgetto);
-		}
-		if(nomiModuliMap.size()!=0){
-			if (listacalendari!=null&&!listacalendari.isEmpty()){
-				int i=1;
-				for(CalendarioBean calendario : listacalendari){
-					
-					if(calendario.getNomeModulo()==null||(Utils.eliminaSpazi(calendario.getNomeModulo()).equals(""))){
-						ErroreProgettoBean erroreProgetto = creaErrore(calendario.getIdPiano(),"Calendario "+i+ " nome modulo ", myProperties.getProperty("assente"));
-					
-						listaErroriProgetto.add(erroreProgetto);
-					}else{
-						if(nomiModuliMap.containsKey(calendario.getNomeModulo())){
-							nomiModuliMap.put(calendario.getNomeModulo(), true);
-						}
-					}
-					if(!(calendario.getData()!=null&&!Utils.formattaData(calendario.getData()).equals(myProperties.getProperty("data.errore")))){
-						ErroreProgettoBean erroreProgetto = creaErrore(calendario.getIdPiano(),"Calendario "+i+ " data giorno ", myProperties.getProperty("assente"));
-						
-						listaErroriProgetto.add(erroreProgetto);
-					}
-					
-					
-					if (calendario.getInizioMattina().trim().equalsIgnoreCase(myProperties.getProperty("assente"))&&
-							!calendario.getFineMattina().trim().equalsIgnoreCase(myProperties.getProperty("assente"))||
-							!calendario.getInizioMattina().trim().equalsIgnoreCase(myProperties.getProperty("assente"))&&
-							 calendario.getFineMattina().trim().equalsIgnoreCase(myProperties.getProperty("assente"))){
-						
-							ErroreProgettoBean erroreProgetto = creaErrore(calendario.getIdPiano(),"Calendario "+i+ " intervallo tempo mattina ", myProperties.getProperty("Not.interval"));
-							
-							listaErroriProgetto.add(erroreProgetto);
-								 
-						}else{
-							 if (!calendario.getInizioMattina().equalsIgnoreCase(myProperties.getProperty("assente"))){
-								 if (!FormSecurityValidator.isTime(calendario.getInizioMattina())){
-									 ErroreProgettoBean erroreProgetto = creaErrore(calendario.getIdPiano(),"Calendario "+i+ " inizio mattina ", myProperties.getProperty("Not.time"));
-										
-										listaErroriProgetto.add(erroreProgetto);
-								 }
-								 
-							 }
-							 if (!calendario.getFineMattina().equalsIgnoreCase(myProperties.getProperty("assente"))){
-								 if (!FormSecurityValidator.isTime(calendario.getFineMattina())){
-									 ErroreProgettoBean erroreProgetto = creaErrore(calendario.getIdPiano(),"Calendario "+i+ " fine mattina ", myProperties.getProperty("Not.time"));
-										
-										listaErroriProgetto.add(erroreProgetto);
-								 }
-								 
-							 }
-						}
-						
-						if (calendario.getInizioPomeriggio().trim().equalsIgnoreCase(myProperties.getProperty("assente"))&&
-								!calendario.getFinePomeriggio().trim().equalsIgnoreCase(myProperties.getProperty("assente"))||
-								!calendario.getInizioPomeriggio().trim().equalsIgnoreCase(myProperties.getProperty("assente"))&&
-								calendario.getFinePomeriggio().trim().equalsIgnoreCase(myProperties.getProperty("assente"))){
-								
-								ErroreProgettoBean erroreProgetto = creaErrore(calendario.getIdPiano(),"Calendario "+i+ " intervallo tempo pomeriggio ", myProperties.getProperty("Not.interval"));
-								
-								listaErroriProgetto.add(erroreProgetto);
-									 
-						}else{
-						
-								 if (!calendario.getInizioPomeriggio().equalsIgnoreCase(myProperties.getProperty("assente"))){
-									 if (!FormSecurityValidator.isTime(calendario.getInizioPomeriggio())){
-										 ErroreProgettoBean erroreProgetto = creaErrore(calendario.getIdPiano(),"Calendario "+i+ " inizio pomeriggio ", myProperties.getProperty("Not.time"));
-										
-										 listaErroriProgetto.add(erroreProgetto);
-									 }
-									 
-								 }
-								 if (!calendario.getFinePomeriggio().equalsIgnoreCase(myProperties.getProperty("assente"))){
-									 if (!FormSecurityValidator.isTime(calendario.getFinePomeriggio())){
-										 ErroreProgettoBean erroreProgetto = creaErrore(calendario.getIdPiano(),"Calendario "+i+ " fine pomeriggio ", myProperties.getProperty("Not.time"));
-										
-										 listaErroriProgetto.add(erroreProgetto);
-									 }
-									 
-								 }
-						}
-						
-						if(calendario.getStato()!=null&&calendario.getStato().equalsIgnoreCase(myProperties.getProperty("enabled.no"))){
-							ErroreProgettoBean erroreProgetto = creaErrore(calendario.getIdPiano(),"Calendario "+i, myProperties.getProperty("errore.lettura.excel"));
-							
-							listaErroriProgetto.add(erroreProgetto);
-						}
-					
+			
+			// controllo se sono presenti delle giornate salavate nel caso esiste uno o più calendari con modalità formativa aula
+			if(listacalendari.size()==0&&nomiModuliMap.containsValue(true)){
+				ErroreProgettoBean erroreProgetto = creaErrore(pianoFormazione.getId(),"Calendari ", myProperties.getProperty("numero.calendari.err"));
+				listaErroriProgetto.add(erroreProgetto);
+			}
+			
+			// Izializzo la mappa in modo che se viene trovata una corrispondenza di una giornata viene a messa a true il nome modulo aula
+				if (pianoFormazione.getModulo1()!=null&&!pianoFormazione.getModulo1().isEmpty()){
+					nomiModuliGiornateMap.put(pianoFormazione.getModulo1(), false);
+				}
+				if (pianoFormazione.getModulo2()!=null&&!pianoFormazione.getModulo2().isEmpty()){
+					nomiModuliGiornateMap.put(pianoFormazione.getModulo2(), false);
 				}
 				
-				
-				
-			}else if(nomiModuliMap.containsValue(false)){
-				ErroreProgettoBean erroreProgetto = creaErrore(pianoFormazione.getId(),"Calendari ", myProperties.getProperty("assenti"));
-				listaErroriProgetto.add(erroreProgetto);
+			// verifica se è presente almeno un modulo con modalità formativa aula
+		   if(nomiModuliMap.containsValue(true)){  
+			        // verifica se esistono dei calendari associati al piano
+			   		if (listacalendari!=null&&!listacalendari.isEmpty()){
+					
+					String nomeModulo="";
+					for(CalendarioBean calendario : listacalendari){
+						
+						//test per vedere se la giornata corrisponde ad un modulo
+						if(calendario.getNomeModulo()==null||(Utils.eliminaSpazi(calendario.getNomeModulo()).equals(""))){
+							ErroreProgettoBean erroreProgetto = creaErrore(calendario.getIdPiano(),"Calendario nome modulo ", myProperties.getProperty("assente"));
+							calendario.setStato(myProperties.getProperty("enabled.no"));
+							listaErroriProgetto.add(erroreProgetto);
+						}else{
+							if(nomiModuliMap.containsKey(calendario.getNomeModulo())){
+								nomiModuliGiornateMap.put(calendario.getNomeModulo(), true);
+								nomeModulo=calendario.getNomeModulo();
+							}
+						}
+						
+						//test sulla validità della data della giornata
+						if(!(calendario.getData()!=null&&!Utils.formattaData(calendario.getData()).equals(myProperties.getProperty("data.errore")))){
+							ErroreProgettoBean erroreProgetto = creaErrore(calendario.getIdPiano(),"Calendario "+nomeModulo+ " data giorno ", myProperties.getProperty("assente"));
+							calendario.setStato(myProperties.getProperty("enabled.no"));
+							listaErroriProgetto.add(erroreProgetto);
+						}
+						
+						// test sulla corretta compilazione dell'orario della lezione di mattina
+						if (calendario.getInizioMattina().trim().equalsIgnoreCase(myProperties.getProperty("assente"))&&
+								!calendario.getFineMattina().trim().equalsIgnoreCase(myProperties.getProperty("assente"))||
+								!calendario.getInizioMattina().trim().equalsIgnoreCase(myProperties.getProperty("assente"))&&
+								 calendario.getFineMattina().trim().equalsIgnoreCase(myProperties.getProperty("assente"))){
+							
+								ErroreProgettoBean erroreProgetto = creaErrore(calendario.getIdPiano(),"Calendario "+nomeModulo+ " intervallo tempo mattina ", myProperties.getProperty("Not.interval"));
+								calendario.setStato(myProperties.getProperty("enabled.no"));
+								listaErroriProgetto.add(erroreProgetto);
+									 
+							}else{
+								 if (!calendario.getInizioMattina().equalsIgnoreCase(myProperties.getProperty("assente"))){
+									 if (!FormSecurityValidator.isTime(calendario.getInizioMattina())){
+										 ErroreProgettoBean erroreProgetto = creaErrore(calendario.getIdPiano(),"Calendario "+nomeModulo+ " inizio mattina ", myProperties.getProperty("Not.time"));
+										 calendario.setStato(myProperties.getProperty("enabled.no"));	
+										 listaErroriProgetto.add(erroreProgetto);
+									 }
+									 
+								 }
+								 if (!calendario.getFineMattina().equalsIgnoreCase(myProperties.getProperty("assente"))){
+									 if (!FormSecurityValidator.isTime(calendario.getFineMattina())){
+										 ErroreProgettoBean erroreProgetto = creaErrore(calendario.getIdPiano(),"Calendario "+nomeModulo+ " fine mattina ", myProperties.getProperty("Not.time"));
+										 calendario.setStato(myProperties.getProperty("enabled.no"));	
+										 listaErroriProgetto.add(erroreProgetto);
+									 }
+									 
+								 }
+							}
+							
+						// test sulla corretta compilazione dell'orario della lezione di pomeriggio
+							if (calendario.getInizioPomeriggio().trim().equalsIgnoreCase(myProperties.getProperty("assente"))&&
+									!calendario.getFinePomeriggio().trim().equalsIgnoreCase(myProperties.getProperty("assente"))||
+									!calendario.getInizioPomeriggio().trim().equalsIgnoreCase(myProperties.getProperty("assente"))&&
+									calendario.getFinePomeriggio().trim().equalsIgnoreCase(myProperties.getProperty("assente"))){
+									
+									ErroreProgettoBean erroreProgetto = creaErrore(calendario.getIdPiano(),"Calendario "+nomeModulo+ " intervallo tempo pomeriggio ", myProperties.getProperty("Not.interval"));
+									calendario.setStato(myProperties.getProperty("enabled.no"));
+									listaErroriProgetto.add(erroreProgetto);
+										 
+							}else{
+							
+									 if (!calendario.getInizioPomeriggio().equalsIgnoreCase(myProperties.getProperty("assente"))){
+										 if (!FormSecurityValidator.isTime(calendario.getInizioPomeriggio())){
+											 ErroreProgettoBean erroreProgetto = creaErrore(calendario.getIdPiano(),"Calendario "+nomeModulo+ " inizio pomeriggio ", myProperties.getProperty("Not.time"));
+											 calendario.setStato(myProperties.getProperty("enabled.no"));
+											 listaErroriProgetto.add(erroreProgetto);
+										 }
+										 
+									 }
+									 if (!calendario.getFinePomeriggio().equalsIgnoreCase(myProperties.getProperty("assente"))){
+										 if (!FormSecurityValidator.isTime(calendario.getFinePomeriggio())){
+											 ErroreProgettoBean erroreProgetto = creaErrore(calendario.getIdPiano(),"Calendario "+nomeModulo+ " fine pomeriggio ", myProperties.getProperty("Not.time"));
+											 calendario.setStato(myProperties.getProperty("enabled.no"));
+											 listaErroriProgetto.add(erroreProgetto);
+										 }
+										 
+									 }
+							}
+							
+							// aggiornamento del totale ore calendario con l'aggiunta della giornata esaminata (se la giornata ha errori non si effettua alcun aggiornamento)
+							if(calendario.getStato()!=null&&calendario.getStato().equalsIgnoreCase(myProperties.getProperty("enabled.si"))){
+								
+								int totaleMinuti = 0;
+								int oreCorso = 0;
+								// verifica se il nome modulo corrisponde con quello del piano
+								if (nomiModuliOreCalendarioMap.containsKey(calendario.getNomeModulo())){
+									totaleMinuti= nomiModuliOreCalendarioMap.get(calendario.getNomeModulo());
+									
+									// verifica che l'orario della lezione di mattina sia valorizzato ed aggiorno il totale ore
+									if(!(calendario.getInizioMattina().trim().equalsIgnoreCase(myProperties.getProperty("assente"))
+											&&(calendario.getFineMattina().trim().equalsIgnoreCase(myProperties.getProperty("assente"))))){
+										    oreCorso = Utils.calcolaIntervalloTempo(calendario.getInizioMattina(),calendario.getFineMattina());
+										    if (oreCorso>=0){
+										    	totaleMinuti= totaleMinuti+oreCorso;
+										    }else{
+										    	ErroreProgettoBean erroreProgetto = creaErrore(calendario.getIdPiano(),"Calendario "+nomeModulo+ " intervallo tempo mattina ", myProperties.getProperty("Not.interval"));
+												calendario.setStato(myProperties.getProperty("enabled.no"));
+												listaErroriProgetto.add(erroreProgetto);
+										    }
+									}
+									
+									// verifica che l'orario della lezione di pomeriggio sia valorizzato ed aggiorno il totale ore
+									if(!(calendario.getInizioPomeriggio().trim().equalsIgnoreCase(myProperties.getProperty("assente"))
+											&&(calendario.getFinePomeriggio().trim().equalsIgnoreCase(myProperties.getProperty("assente"))))){
+											oreCorso = Utils.calcolaIntervalloTempo(calendario.getInizioPomeriggio(),calendario.getFinePomeriggio());
+											if (oreCorso>=0){
+											    totaleMinuti= totaleMinuti+oreCorso;
+											}else{
+											    ErroreProgettoBean erroreProgetto = creaErrore(calendario.getIdPiano(),"Calendario "+nomeModulo+ " intervallo tempo pomeriggio ", myProperties.getProperty("Not.interval"));
+												calendario.setStato(myProperties.getProperty("enabled.no"));
+												listaErroriProgetto.add(erroreProgetto);
+											}
+												
+									}	
+								     
+									nomiModuliOreCalendarioMap.put(calendario.getNomeModulo(), totaleMinuti) ;
+								}
+							}
+						
+					}
+					
+					// se il primo modulo è aula allora viene effettuato il confronto delle ore tra durata modulo e calendario associato.
+					if (nomiModuliMap.get(pianoFormazione.getModulo1())){
+							int minutiTotModulo = Utils.stringToMinutes(pianoFormazione.getDurataModulo1());
+							if (minutiTotModulo>0){
+								if(nomiModuliOreCalendarioMap.containsKey(pianoFormazione.getModulo1())){
+									int totale = nomiModuliOreCalendarioMap.get(pianoFormazione.getModulo1()) - minutiTotModulo;
+									if(totale!=0){
+										String segno="";
+										 if(totale>0){
+											 segno="+";
+										 }
+										 ErroreProgettoBean erroreProgetto = creaErrore(pianoFormazione.getId(),"Calendario "+pianoFormazione.getModulo1()+" "+segno+totale+" min", myProperties.getProperty("differenza.ore.modulo.calendario"));
+										 listaErroriProgetto.add(erroreProgetto);
+										
+									}
+								}
+							}
+					}
+					
+					// se il secondo modulo è aula allora viene effettuato il confronto delle ore tra durata modulo e calendario associato.
+					if (nomiModuliMap.get(pianoFormazione.getModulo2())){
+							int minutiTotModulo = Utils.stringToMinutes(pianoFormazione.getDurataModulo2());
+							if (minutiTotModulo>0){
+								if(nomiModuliOreCalendarioMap.containsKey(pianoFormazione.getModulo2())){
+									int totale = nomiModuliOreCalendarioMap.get(pianoFormazione.getModulo2()) - minutiTotModulo;
+									if(totale!=0){
+										String segno="";
+										 if(totale>0){
+											 segno="+";
+										 }
+										 ErroreProgettoBean erroreProgetto = creaErrore(pianoFormazione.getId(),"Calendario "+pianoFormazione.getModulo2()+" "+segno+totale+" min", myProperties.getProperty("differenza.ore.modulo.calendario"));
+										 if(totale>0)
+										 listaErroriProgetto.add(erroreProgetto);
+										
+									}
+								}
+							}
+					}
+					
+					// verifica che se il modulo 1 è aula questo abbia un calendario associato
+					if(nomiModuliMap.containsKey(pianoFormazione.getModulo1())){
+						if (nomiModuliMap.get(pianoFormazione.getModulo1())==true
+								&&!(nomiModuliMap.get(pianoFormazione.getModulo1())==nomiModuliGiornateMap.get(pianoFormazione.getModulo1()))){
+							ErroreProgettoBean erroreProgetto = creaErrore(pianoFormazione.getId(), pianoFormazione.getModulo1(), myProperties.getProperty("calendario.non.associato"));
+							listaErroriProgetto.add(erroreProgetto);
+						}
+					}
+					
+					// verifica che se il modulo 2 è aula questo abbia un calendario associato
+					if(nomiModuliMap.containsKey(pianoFormazione.getModulo2())){
+						if (nomiModuliMap.get(pianoFormazione.getModulo2())==true
+								&&!(nomiModuliMap.get(pianoFormazione.getModulo2())==nomiModuliGiornateMap.get(pianoFormazione.getModulo2()))){
+							ErroreProgettoBean erroreProgetto = creaErrore(pianoFormazione.getId(), pianoFormazione.getModulo2(), myProperties.getProperty("calendario.non.associato"));
+							listaErroriProgetto.add(erroreProgetto);
+						}
+					}
+					
+					
+					
+				}else{
+					ErroreProgettoBean erroreProgetto = creaErrore(pianoFormazione.getId(),"Calendari ", myProperties.getProperty("assenti"));
+					listaErroriProgetto.add(erroreProgetto);
+				}
 			}
 		}
 		return listaErroriProgetto;
@@ -478,7 +604,8 @@ public class ValidaProgetto {
 		
 	}
 	
-	public static ArrayList<ErroreProgettoBean> validaFileLavoratori (int idPiano, ArrayList<LavoratoriBean> listaLavoratori, ArrayList<String> listaNomiFileLavoratori, 
+	
+ public static ArrayList<ErroreProgettoBean> validaFileLavoratori (int idPiano, ArrayList<LavoratoriBean> listaLavoratori, ArrayList<String> listaNomiFileLavoratori, 
 		 ArrayList<ErroreProgettoBean> listaErroriProgetto, Properties myProperties)throws Exception{
 		
 		 boolean trovato = false;
@@ -669,5 +796,8 @@ public class ValidaProgetto {
 		}
 		return trovato;
 	}
+	
+	
+	
 
 }

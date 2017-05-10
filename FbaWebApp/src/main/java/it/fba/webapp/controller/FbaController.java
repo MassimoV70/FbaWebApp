@@ -1205,7 +1205,7 @@ public class FbaController {
 				
 				
 
-				// metodo che elabora il file excel dei lavoratori
+				// metodo che elabora il file excel calendario, lavoratori, rendicontazione
 				@RequestMapping(value ={ "/adminImplementaPiano","/userImplementaPiano"}, method = RequestMethod.POST)
 				public ModelAndView adminImplementaPiano (HttpServletRequest request,  @ModelAttribute("implementaPianoFormBean") ImplementaPianoFormBean implementaPianoFormBean,
 					@ModelAttribute("lavoratoriBean") LavoratoriBean lavoratoriBean	) {

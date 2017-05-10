@@ -9,6 +9,7 @@ import java.util.Properties;
 
 import javax.annotation.Resource;
 
+import org.springframework.http.converter.FormHttpMessageConverter;
 import org.springframework.validation.Errors;
 
 import it.fba.webapp.beans.CalendarioBean;
@@ -16,6 +17,7 @@ import it.fba.webapp.beans.LavoratoriBean;
 import it.fba.webapp.beans.PianoDIformazioneBean;
 import it.fba.webapp.beans.RendicontazioneBean;
 import it.fba.webapp.beans.UsersBean;
+import it.fba.webapp.form.validator.FormSecurityValidator;
 
 
 public class Utils {
@@ -257,6 +259,42 @@ public class Utils {
 	   rendicontazione.setValoreComplessivo(eliminaSpaziTot(rendicontazione.getValoreComplessivo()));
 	   return rendicontazione;
 	   
+   }
+   
+   public static int calcolaIntervalloTempo (String oraInizio,String oraFine)throws Exception{
+	   int differenza = 0; 
+	   if (FormSecurityValidator.isTime(oraInizio)&&FormSecurityValidator.isTime(oraFine)){
+		    int indiceOraInizio = oraInizio.indexOf(":");
+		    int indiceOraFine = oraFine.indexOf(":");
+			int ora1 = Integer.parseInt(oraInizio.substring(0, indiceOraInizio));
+			int minuti1 = Integer.parseInt(oraInizio.substring(indiceOraInizio+1));
+			int ora2 = Integer.parseInt(oraFine.substring(0, indiceOraFine));
+			int minuti2 = Integer.parseInt(oraFine.substring(indiceOraFine+1));
+			differenza = 0;
+			if (ora1>ora2){
+				differenza=-1;
+			}else{
+				differenza = (ora2*60 + minuti2)-(ora1*60 + minuti1);
+			}
+	   }
+			else{
+				differenza=-1;
+			}
+		
+		return differenza;
+	}
+   
+   public static int stringToMinutes (String oreMin)throws Exception{
+	   int minutiTotali=0;
+	   if ( FormSecurityValidator.isTime(oreMin)){
+		   int indiceOraInizio = oreMin.indexOf(":");
+		   int ora = Integer.parseInt(oreMin.substring(0, indiceOraInizio));
+		   int minuti = Integer.parseInt(oreMin.substring(indiceOraInizio+1));
+		   minutiTotali =  ora*60+minuti;
+	   }else{
+		   minutiTotali=-1; 
+	   }
+	   return minutiTotali;
    }
 
 }
