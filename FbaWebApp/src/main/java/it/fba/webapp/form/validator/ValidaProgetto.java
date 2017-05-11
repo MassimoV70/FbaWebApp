@@ -431,13 +431,27 @@ public class ValidaProgetto {
 								
 								int totaleMinuti = 0;
 								int oreCorso = 0;
+								int testSovrapposizione = 0;
 								// verifica se il nome modulo corrisponde con quello del piano
 								if (nomiModuliOreCalendarioMap.containsKey(calendario.getNomeModulo())){
 									totaleMinuti= nomiModuliOreCalendarioMap.get(calendario.getNomeModulo());
 									
+									// controllo sovrapposizione lezioni
+									if(!(calendario.getFineMattina().trim().equalsIgnoreCase(myProperties.getProperty("assente"))
+											||(calendario.getInizioPomeriggio().trim().equalsIgnoreCase(myProperties.getProperty("assente"))))){
+											testSovrapposizione = Utils.calcolaIntervalloTempo(calendario.getFineMattina(),calendario.getInizioPomeriggio());
+										    if (testSovrapposizione<0){
+										    	ErroreProgettoBean erroreProgetto = creaErrore(calendario.getIdPiano(),"Calendario "+nomeModulo, myProperties.getProperty("lezioni.sovrapposte"));
+												calendario.setStato(myProperties.getProperty("enabled.no"));
+												listaErroriProgetto.add(erroreProgetto);
+										    	
+										    }
+									}
+									
 									// verifica che l'orario della lezione di mattina sia valorizzato ed aggiorno il totale ore
 									if(!(calendario.getInizioMattina().trim().equalsIgnoreCase(myProperties.getProperty("assente"))
-											||(calendario.getFineMattina().trim().equalsIgnoreCase(myProperties.getProperty("assente"))))){
+											||(calendario.getFineMattina().trim().equalsIgnoreCase(myProperties.getProperty("assente"))))
+											&&(calendario.getStato().equalsIgnoreCase(myProperties.getProperty("enabled.si")))){
 										    oreCorso = Utils.calcolaIntervalloTempo(calendario.getInizioMattina(),calendario.getFineMattina());
 										    if (oreCorso>=0){
 										    	totaleMinuti= totaleMinuti+oreCorso;

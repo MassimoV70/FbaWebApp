@@ -14,6 +14,7 @@ import org.springframework.validation.Validator;
 
 import it.fba.webapp.beans.AttuatoreBean;
 import it.fba.webapp.beans.CalendarioBean;
+import it.fba.webapp.beans.ErroreProgettoBean;
 import it.fba.webapp.beans.ImplementaPianoFormBean;
 import it.fba.webapp.beans.LavoratoriBean;
 import it.fba.webapp.beans.PianoDIformazioneBean;
@@ -198,6 +199,16 @@ public class FormSecurityValidator implements Validator{
 			if (calendario.getInizioMattina().equalsIgnoreCase(calendario.getInizioPomeriggio())&&!calendario.getInizioMattina().equals(myProperties.get("assente"))){
 				errors.rejectValue("inizioMattina", "errors", myProperties.getProperty("lezione.duplicata")); 
 				errors.rejectValue("inizioPomeriggio", "errors",  myProperties.getProperty("lezione.duplicata")); 
+			}
+			
+			if(!(calendario.getFineMattina().trim().equalsIgnoreCase(myProperties.getProperty("assente"))
+					||(calendario.getInizioPomeriggio().trim().equalsIgnoreCase(myProperties.getProperty("assente"))))){
+				int	testSovrapposizione = Utils.calcolaIntervalloTempo(calendario.getFineMattina(),calendario.getInizioPomeriggio());
+				    if (testSovrapposizione<0){
+				    	errors.rejectValue("fineMattina", "errors", myProperties.getProperty("lezioni.sovrapposte")); 
+						errors.rejectValue("inizioPomeriggio", "errors",  myProperties.getProperty("lezioni.sovrapposte")); 
+				    	
+				    }
 			}
 					
 		}catch(Exception e){
