@@ -2011,26 +2011,35 @@ public class FbaController {
 							CalendarioDao calendarioDao = (CalendarioDao) context.getBean("CalendarioDaoImpl");
 							listaCalendari = calendarioDao.getCalendari(pianoDIformazioneBean);
 							listaErroriProgetto = ValidaProgetto.validaCalendari(listaCalendari,pianoDIformazioneBean, listaErroriProgetto, myProperties);
-						
+						    // aggiorno la le giornate con lo stato della validazione
+							for(CalendarioBean calendario : listaCalendari){
+						    	calendarioDao.updateCalednario(calendario);
+						    }
 						
 						// validazione lavoratori
 					
 							listaFileLavoratori = lavoratoriDao.leggiNomiAllegati(username);
 							listaErroriProgetto = ValidaProgetto.validaLavoratori(listaLavoratori, pianoDIformazioneBean, listaErroriProgetto, myProperties);
-							 
 							// chiamo il metodo di validazione dei file lavoratori
 							listaErroriProgetto = ValidaProgetto.validaFileLavoratori(pianoDIformazioneBean.getId(), listaLavoratori, listaFileLavoratori, listaErroriProgetto, myProperties);
+							// aggiorno la i lavoratori con lo stato della validazione
+							for(LavoratoriBean lavoratore : listaLavoratori){
+								lavoratoriDao.updateLavoratore(lavoratore);
+						    }
 							
 						//valida rendicontazione
 							RendicontazioneDao rendicontazioneDao = (RendicontazioneDao) context.getBean("RendicontazioneDaoImpl");
 							listaRendicontazione = rendicontazioneDao.getAllrendicontazione(pianoDIformazioneBean);
 							listaErroriProgetto = ValidaProgetto.validaRendicontazione(listaRendicontazione, pianoDIformazioneBean, listaErroriProgetto, myProperties);
+							// aggiorno la rendicontazione con lo stato della validazione
+							for(RendicontazioneBean rendicontazione : listaRendicontazione){
+								rendicontazioneDao.updateRendicontazione(rendicontazione);
+						    }
 							
 							// chiamo il metodo di validazione dei file
 							listaFileRendicontazione = rendicontazioneDao.leggiNomiAllegati(username);
-							
 							listaErroriProgetto = ValidaProgetto.validaFileRendicontazione(pianoDIformazioneBean.getId(), listaRendicontazione, listaFileRendicontazione, listaErroriProgetto, myProperties);
-						
+							
 						//	aggiorno lo stato del progetto
 							if (listaErroriProgetto!=null&&!listaErroriProgetto.isEmpty()){
 								pianoDIformazioneBean.setEnabled(myProperties.getProperty("enabled.no"));

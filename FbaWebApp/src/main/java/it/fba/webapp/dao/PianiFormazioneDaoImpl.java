@@ -21,7 +21,7 @@ public class PianiFormazioneDaoImpl implements PianiFormazioneDao{
 	@PersistenceContext
 	EntityManager entityManager;
 	
-	private final String queryAll = "Select p from PianoDIformazioneBean p where username= :usernameStr";
+	private final String queryAll = "Select p from PianoDIformazioneBean p where username= :usernameStr order by p.enabled";
 	private final String queryFindPiano = "Select p from PianoDIformazioneBean p where id= :idStr and username= :usernameStr";
 	private final String queryDeleteByUser = "Delete from PianoDIformazioneBean p  where username= :usernameStr";
 	private final String queryUpdatePiano = "Update PianoDIformazioneBean p "

@@ -71,21 +71,32 @@ public class FormSecurityValidator implements Validator{
 		// TODO Auto-generated method stub
 		PianoDIformazioneBean form = (PianoDIformazioneBean)pianoFormazione;
 		
-//		 if (form.getModulo1().equalsIgnoreCase(form.getModulo2())){
-//			 errors.rejectValue("modulo1", "errors",myProperties.getProperty("Valori.diversi"));
-//			 errors.rejectValue("modulo2", "errors", myProperties.getProperty("Valori.diversi"));
-//		 }
-		 
-		 if (!isNumber(form.getNumeroPartecipanti())){
+		if (form.getNuemroProtocollo().equalsIgnoreCase(myProperties.getProperty("assente"))){
+			errors.rejectValue("nuemroProtocollo", "errors", myProperties.getProperty("assente")); 
+		}
+		
+		if (form.getNomeProgetto().equalsIgnoreCase(myProperties.getProperty("assente"))){
+			errors.rejectValue("nomeProgetto", "errors", myProperties.getProperty("assente")); 
+		}
+		
+		if (form.getTipoCorsoPiano().equalsIgnoreCase(myProperties.getProperty("assente"))){
+			errors.rejectValue("tipoCorsoPiano", "errors", myProperties.getProperty("assente")); 
+		}
+		
+		if (form.getTematicaFormativa().equalsIgnoreCase(myProperties.getProperty("assente"))){
+			errors.rejectValue("tematicaFormativa", "errors", myProperties.getProperty("assente")); 
+		}
+		
+		if (!isNumber(form.getNumeroPartecipanti())){
 			 errors.rejectValue("numeroPartecipanti", "errors",myProperties.getProperty("NumberFormat.pianoFormazioneForm.numPartecipanti"));
-		 }
+		}
 		 
-		if (!form.getDurataModulo1().equalsIgnoreCase(myProperties.getProperty("assente"))
+		if (!form.getDurataModulo1().equalsIgnoreCase(myProperties.getProperty("assente"))&&!(form.getDurataModulo1().length()==5)
 			&&!isOreMin(form.getDurataModulo1())){
 			errors.rejectValue("durataModulo1", "errors",myProperties.getProperty("Not.time"));
 		}
 		
-		if (!form.getDurataModulo2().equalsIgnoreCase(myProperties.getProperty("assente"))
+		if (!form.getDurataModulo2().equalsIgnoreCase(myProperties.getProperty("assente"))&&!(form.getDurataModulo2().length()==5)
 			&&!isOreMin(form.getDurataModulo2())){
 			errors.rejectValue("durataModulo2", "errors",myProperties.getProperty("Not.time"));
 		}
@@ -93,10 +104,21 @@ public class FormSecurityValidator implements Validator{
 		if (form.getModulo1().equalsIgnoreCase(form.getModulo2())){
 			   errors.rejectValue("modulo1", "errors",myProperties.getProperty("Valori.diversi"));
 			   errors.rejectValue("modulo2", "errors",myProperties.getProperty("Valori.diversi"));
-			}
+		}
+		
+		if (form.getFormeAiuti().equalsIgnoreCase(myProperties.getProperty("assente"))){
+			errors.rejectValue("formeAiuti", "errors", myProperties.getProperty("assente")); 
+		}
+		
+		if (form.getCategSvantagg().equalsIgnoreCase(myProperties.getProperty("assente"))){
+			errors.rejectValue("categSvantagg", "errors", myProperties.getProperty("assente")); 
+		}
+		
+		if (form.getAttuatorePIVA().equalsIgnoreCase(myProperties.getProperty("assente"))){
+			errors.rejectValue("attuatorePIVA", "errors", myProperties.getProperty("assente")); 
+		}
 		
 		
-       
 	}
 	
 	public static boolean isTime (String ora)throws Exception{
@@ -160,6 +182,24 @@ public class FormSecurityValidator implements Validator{
 						 
 					 }
 			}
+			
+			if (calendario.getInizioMattina().equalsIgnoreCase("assente")
+				&&calendario.getFineMattina().equalsIgnoreCase("assente")
+				&&calendario.getInizioPomeriggio().equalsIgnoreCase("assente")
+				&&calendario.getFinePomeriggio().equalsIgnoreCase("assente")){
+				
+				errors.rejectValue("inizioMattina", "errors", myProperties.getProperty("lezione.assente")); 
+				errors.rejectValue("fineMattina", "errors",  myProperties.getProperty("lezione.assente")); 
+				errors.rejectValue("inizioPomeriggio", "errors",  myProperties.getProperty("lezione.assente")); 
+				errors.rejectValue("finePomeriggio", "errors",  myProperties.getProperty("lezione.assente")); 
+				 
+			}
+			
+			if (calendario.getInizioMattina().equalsIgnoreCase(calendario.getInizioPomeriggio())&&!calendario.getInizioMattina().equals(myProperties.get("assente"))){
+				errors.rejectValue("inizioMattina", "errors", myProperties.getProperty("lezione.duplicata")); 
+				errors.rejectValue("inizioPomeriggio", "errors",  myProperties.getProperty("lezione.duplicata")); 
+			}
+					
 		}catch(Exception e){
 			e.printStackTrace();
 			throw e;
@@ -171,9 +211,14 @@ public class FormSecurityValidator implements Validator{
 		
 		LavoratoriBean lavoratore = (LavoratoriBean ) lavoratoriBean;
 		try {
+			
+			if(lavoratore.getMatricola().equalsIgnoreCase(myProperties.getProperty("assente"))){
+				errors.rejectValue("matricola", "errors", myProperties.getProperty("assente")); 
+				
+			}
             
 			if(lavoratore.getOrePresenza()!=null){
-				if (!isOreMin(lavoratore.getOrePresenza())){
+				if (!lavoratore.getOrePresenza().isEmpty()&&!isOreMin(lavoratore.getOrePresenza())){
 					errors.rejectValue("orePresenza", "errors", myProperties.getProperty("Not.time")); 
 				}
 			}
@@ -306,6 +351,18 @@ public static  void rendicontazioneValidator(Object rendicontazioneBean, Errors 
 		RendicontazioneBean rendicontazione = (RendicontazioneBean ) rendicontazioneBean;
 		try {
 			
+			if (rendicontazione.getTipologiaGiustificativo().equalsIgnoreCase(myProperties.getProperty("assente"))){
+				errors.rejectValue("tipologiaGiustificativo", "errors", myProperties.getProperty("assente")); 
+			}
+			
+			if (rendicontazione.getCodice().equalsIgnoreCase(myProperties.getProperty("assente"))){
+				errors.rejectValue("codice", "errors", myProperties.getProperty("assente")); 
+			}
+			
+			if (rendicontazione.getFornitoreNominativo().equalsIgnoreCase(myProperties.getProperty("assente"))){
+				errors.rejectValue("fornitoreNominativo", "errors", myProperties.getProperty("assente")); 
+			}
+			
 			if(rendicontazione.getValoreComplessivo()!=null&&!rendicontazione.getValoreComplessivo().isEmpty()&&(rendicontazione.getValoreComplessivo().length()>3)){
 				if (!isCifra(rendicontazione.getValoreComplessivo())){
 					errors.rejectValue("valoreComplessivo", "errors", myProperties.getProperty("Not.budget")); 
@@ -320,6 +377,10 @@ public static  void rendicontazioneValidator(Object rendicontazioneBean, Errors 
 				if (!isCifra(rendicontazione.getContributoPrivato())){
 					errors.rejectValue("contributoPrivato", "errors", myProperties.getProperty("Not.budget")); 
 				}
+			}
+			
+			if (!rendicontazione.getNomeAllegato().isEmpty()&&rendicontazione.getNomeAllegato().equalsIgnoreCase(myProperties.getProperty("assente"))){
+				errors.rejectValue("nomeAllegato", "errors", myProperties.getProperty("assente")); 
 			}
 			
 			

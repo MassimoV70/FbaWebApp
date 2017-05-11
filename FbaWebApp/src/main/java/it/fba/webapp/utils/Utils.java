@@ -262,37 +262,37 @@ public class Utils {
    }
    
    public static int calcolaIntervalloTempo (String oraInizio,String oraFine)throws Exception{
-	   int differenza = 0; 
-	   if (FormSecurityValidator.isTime(oraInizio)&&FormSecurityValidator.isTime(oraFine)){
-		    int indiceOraInizio = oraInizio.indexOf(":");
-		    int indiceOraFine = oraFine.indexOf(":");
-			int ora1 = Integer.parseInt(oraInizio.substring(0, indiceOraInizio));
-			int minuti1 = Integer.parseInt(oraInizio.substring(indiceOraInizio+1));
-			int ora2 = Integer.parseInt(oraFine.substring(0, indiceOraFine));
-			int minuti2 = Integer.parseInt(oraFine.substring(indiceOraFine+1));
-			differenza = 0;
-			if (ora1>ora2){
-				differenza=-1;
-			}else{
-				differenza = (ora2*60 + minuti2)-(ora1*60 + minuti1);
-			}
+	   int differenza = -1; 
+	   if (oraInizio!=null&&oraFine!=null){
+		   if (FormSecurityValidator.isTime(oraInizio)&&FormSecurityValidator.isTime(oraFine)){
+			    int indiceOraInizio = oraInizio.indexOf(":");
+			    int indiceOraFine = oraFine.indexOf(":");
+				int ora1 = Integer.parseInt(oraInizio.substring(0, indiceOraInizio));
+				int minuti1 = Integer.parseInt(oraInizio.substring(indiceOraInizio+1));
+				int ora2 = Integer.parseInt(oraFine.substring(0, indiceOraFine));
+				int minuti2 = Integer.parseInt(oraFine.substring(indiceOraFine+1));
+				if (ora2>=ora1){
+					differenza = (ora2*60 + minuti2)-(ora1*60 + minuti1);
+				}
+				if (differenza<=0){
+					 differenza = -1;
+				}
+		   }
+				
 	   }
-			else{
-				differenza=-1;
-			}
 		
 		return differenza;
 	}
    
    public static int stringToMinutes (String oreMin)throws Exception{
-	   int minutiTotali=0;
-	   if ( FormSecurityValidator.isTime(oreMin)){
-		   int indiceOraInizio = oreMin.indexOf(":");
-		   int ora = Integer.parseInt(oreMin.substring(0, indiceOraInizio));
-		   int minuti = Integer.parseInt(oreMin.substring(indiceOraInizio+1));
-		   minutiTotali =  ora*60+minuti;
-	   }else{
-		   minutiTotali=-1; 
+	   int minutiTotali=-1;
+	   if (oreMin!=null){
+		   if ( FormSecurityValidator.isTime(oreMin)){
+			   int indiceOraInizio = oreMin.indexOf(":");
+			   int ora = Integer.parseInt(oreMin.substring(0, indiceOraInizio));
+			   int minuti = Integer.parseInt(oreMin.substring(indiceOraInizio+1));
+			   minutiTotali =  ora*60+minuti;
+		   }
 	   }
 	   return minutiTotali;
    }

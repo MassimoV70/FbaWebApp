@@ -328,7 +328,7 @@ public class ValidaProgetto {
 					
 					String nomeModulo="";
 					for(CalendarioBean calendario : listacalendari){
-						
+						calendario.setStato(myProperties.getProperty("enabled.si"));
 						//test per vedere se la giornata corrisponde ad un modulo
 						if(calendario.getNomeModulo()==null||(Utils.eliminaSpazi(calendario.getNomeModulo()).equals(""))){
 							ErroreProgettoBean erroreProgetto = creaErrore(calendario.getIdPiano(),"Calendario nome modulo ", myProperties.getProperty("assente"));
@@ -407,6 +407,25 @@ public class ValidaProgetto {
 									 }
 							}
 							
+							// controllo esitenza orario lezione
+							if(calendario.getInizioMattina().equals(myProperties.get("assente"))
+							   &&calendario.getFineMattina().equals(myProperties.get("assente"))
+							   &&calendario.getInizioPomeriggio().equals(myProperties.get("assente"))
+							   &&calendario.getFinePomeriggio().equals(myProperties.get("assente"))){
+								 ErroreProgettoBean erroreProgetto = creaErrore(calendario.getIdPiano(),"Calendario "+nomeModulo+ " giornata ", myProperties.getProperty("lezione.assente"));
+								 calendario.setStato(myProperties.getProperty("enabled.no"));
+								 listaErroriProgetto.add(erroreProgetto);
+								   
+							 }
+							
+							// controllo orario di inizio lezione duplicato
+							if(calendario.getInizioMattina().equals(calendario.getInizioPomeriggio())&&!calendario.getInizioMattina().equals(myProperties.get("assente"))){
+										 ErroreProgettoBean erroreProgetto = creaErrore(calendario.getIdPiano(),"Calendario "+nomeModulo+ " giornata ", myProperties.getProperty("lezione.duplicata"));
+										 calendario.setStato(myProperties.getProperty("enabled.no"));
+										 listaErroriProgetto.add(erroreProgetto);
+										   
+							}
+							
 							// aggiornamento del totale ore calendario con l'aggiunta della giornata esaminata (se la giornata ha errori non si effettua alcun aggiornamento)
 							if(calendario.getStato()!=null&&calendario.getStato().equalsIgnoreCase(myProperties.getProperty("enabled.si"))){
 								
@@ -418,7 +437,7 @@ public class ValidaProgetto {
 									
 									// verifica che l'orario della lezione di mattina sia valorizzato ed aggiorno il totale ore
 									if(!(calendario.getInizioMattina().trim().equalsIgnoreCase(myProperties.getProperty("assente"))
-											&&(calendario.getFineMattina().trim().equalsIgnoreCase(myProperties.getProperty("assente"))))){
+											||(calendario.getFineMattina().trim().equalsIgnoreCase(myProperties.getProperty("assente"))))){
 										    oreCorso = Utils.calcolaIntervalloTempo(calendario.getInizioMattina(),calendario.getFineMattina());
 										    if (oreCorso>=0){
 										    	totaleMinuti= totaleMinuti+oreCorso;
@@ -431,7 +450,7 @@ public class ValidaProgetto {
 									
 									// verifica che l'orario della lezione di pomeriggio sia valorizzato ed aggiorno il totale ore
 									if(!(calendario.getInizioPomeriggio().trim().equalsIgnoreCase(myProperties.getProperty("assente"))
-											&&(calendario.getFinePomeriggio().trim().equalsIgnoreCase(myProperties.getProperty("assente"))))){
+											||(calendario.getFinePomeriggio().trim().equalsIgnoreCase(myProperties.getProperty("assente"))))){
 											oreCorso = Utils.calcolaIntervalloTempo(calendario.getInizioPomeriggio(),calendario.getFinePomeriggio());
 											if (oreCorso>=0){
 											    totaleMinuti= totaleMinuti+oreCorso;
@@ -532,10 +551,11 @@ public class ValidaProgetto {
 		
 		if(nomiModuliMap.size()!=0){
 			if (listaLavoratori!=null&&!listaLavoratori.isEmpty()){
-				int i=1;
+			
 				for(LavoratoriBean lavoratore : listaLavoratori){
+					lavoratore.setStato(myProperties.getProperty("enabled.si"));
 					
-					
+					//controlla che il lavoratore abbia un modulo associato
 					if(!(lavoratore.getNomeModulo()!=null&&!lavoratore.getNomeModulo().isEmpty()&&!lavoratore.getNomeModulo().equals("assente"))){
 						lavoratore.setNomeModulo(myProperties.getProperty("assente"));
 						
@@ -547,16 +567,19 @@ public class ValidaProgetto {
 						}
 						
 					}
+					
+					//controllo matricola
 					if(!(lavoratore.getMatricola()!=null&&!lavoratore.getMatricola().isEmpty()&&!lavoratore.getMatricola().equals("assente"))){
 						lavoratore.setMatricola(myProperties.getProperty("assente"));
-						
+						lavoratore.setStato(myProperties.getProperty("enabled.no"));
 						ErroreProgettoBean erroreProgetto = creaErrore(pianoFormazione.getId(),"Lavoratori modulo "+lavoratore.getNomeModulo()+" matricola ", myProperties.getProperty("assente"));
 						listaErroriProgetto.add(erroreProgetto);
 					}
 					
+					//controllo ore presenza
 					if(!(lavoratore.getOrePresenza()!=null&&!lavoratore.getOrePresenza().isEmpty()&&!lavoratore.getOrePresenza().equals("assente"))){
 						lavoratore.setOrePresenza(myProperties.getProperty("assente"));
-						
+						lavoratore.setStato(myProperties.getProperty("enabled.no"));
 						ErroreProgettoBean erroreProgetto = creaErrore(pianoFormazione.getId(),"Lavoratori modulo "+lavoratore.getNomeModulo()+" ore presenza ", myProperties.getProperty("assente"));
 						listaErroriProgetto.add(erroreProgetto);
 					}else{
@@ -566,16 +589,18 @@ public class ValidaProgetto {
 						}
 					}
 					
+					//controllo esito test
 					if(!(lavoratore.getEsitoTest()!=null&&!lavoratore.getEsitoTest().isEmpty())){
 						lavoratore.setEsitoTest(myProperties.getProperty("assente"));
-						
+						lavoratore.setStato(myProperties.getProperty("enabled.no"));
 						ErroreProgettoBean erroreProgetto = creaErrore(pianoFormazione.getId(),"Lavoratori modulo "+lavoratore.getNomeModulo()+" esito test", myProperties.getProperty("assente"));
 						listaErroriProgetto.add(erroreProgetto);
 					}
 					
+					// controllo esistenza allegato
 					if(!(lavoratore.getNomeAllegato()!=null&&!lavoratore.getNomeAllegato().isEmpty()&&!lavoratore.getNomeAllegato().equals("assente"))){
 						lavoratore.setNomeAllegato(myProperties.getProperty("assente"));
-						
+						lavoratore.setStato(myProperties.getProperty("enabled.no"));
 						ErroreProgettoBean erroreProgetto = creaErrore(pianoFormazione.getId(),"Lavoratori modulo "+lavoratore.getNomeModulo()+" nome allegato ", myProperties.getProperty("assente"));
 						listaErroriProgetto.add(erroreProgetto);
 					}
@@ -585,7 +610,7 @@ public class ValidaProgetto {
 						listaErroriProgetto.add(erroreProgetto);
 					}
 					
-					i++;
+					
 				}
 				
 				
@@ -649,65 +674,70 @@ public class ValidaProgetto {
 		if(listaRendicontazione!=null&&!listaRendicontazione.isEmpty()){
 			for(RendicontazioneBean rendicontazione :listaRendicontazione){
 				
+				rendicontazione.setStato(myProperties.getProperty("enabled.si"));
 				
 				//codice
 				if(!(rendicontazione.getCodice()!=null&&!rendicontazione.getCodice().isEmpty()&&!rendicontazione.getCodice().equalsIgnoreCase(myProperties.getProperty("assente"))	)){
 					ErroreProgettoBean erroreProgetto = creaErrore(pianoFormazione.getId(),"Rendicontazione  codice ", myProperties.getProperty("assente"));
 					listaErroriProgetto.add(erroreProgetto);
-					
+					rendicontazione.setStato(myProperties.getProperty("enabled.no"));
 				}
 				
 				//nominativo fornitore
 				if(!(rendicontazione.getFornitoreNominativo()!=null&&!rendicontazione.getFornitoreNominativo().isEmpty()&&!rendicontazione.getFornitoreNominativo().equalsIgnoreCase(myProperties.getProperty("assente"))	)){
 					ErroreProgettoBean erroreProgetto = creaErrore(pianoFormazione.getId(),"Rendicontazione  nominativo fornitore  ", myProperties.getProperty("assente"));
 					listaErroriProgetto.add(erroreProgetto);
-					
+					rendicontazione.setStato(myProperties.getProperty("enabled.no"));
 				}
 				
 				//data giustificativo
 				if(!(rendicontazione.getDataGiustificativo()!=null&&!Utils.formattaData(rendicontazione.getDataGiustificativo()).equals(myProperties.getProperty("data.errore")))){
 					ErroreProgettoBean erroreProgetto = creaErrore(pianoFormazione.getId(),"Rendicontazione data giustificativo ", myProperties.getProperty("assente"));
 					listaErroriProgetto.add(erroreProgetto);
-					
+					rendicontazione.setStato(myProperties.getProperty("enabled.no"));
 				}
 				
 				//valore complessivo
 				if(!(rendicontazione.getValoreComplessivo()!=null&&!rendicontazione.getValoreComplessivo().isEmpty()&&!rendicontazione.getValoreComplessivo().equalsIgnoreCase(myProperties.getProperty("assente"))	)){
 					ErroreProgettoBean erroreProgetto = creaErrore(pianoFormazione.getId(),"Rendicontazione  codice ", myProperties.getProperty("assente"));
 					listaErroriProgetto.add(erroreProgetto);
-					
+					rendicontazione.setStato(myProperties.getProperty("enabled.no"));
 				}else if(!FormSecurityValidator.isCifra(rendicontazione.getValoreComplessivo())){
 					
 					ErroreProgettoBean erroreProgetto = creaErrore(pianoFormazione.getId(),"Rendicontazione valore complessivo ", myProperties.getProperty("Not.budget"));
 					listaErroriProgetto.add(erroreProgetto);
+					rendicontazione.setStato(myProperties.getProperty("enabled.no"));
 				}
 				
 				//contributo FBA
 				if(!(rendicontazione.getContributoFBA()!=null&&!rendicontazione.getContributoFBA().isEmpty()&&!rendicontazione.getContributoFBA().equalsIgnoreCase( myProperties.getProperty("assente")))){
 					ErroreProgettoBean erroreProgetto = creaErrore(pianoFormazione.getId(),"Rendicontazione  contributo FBA ", myProperties.getProperty("assente"));
 					listaErroriProgetto.add(erroreProgetto);
-					
+					rendicontazione.setStato(myProperties.getProperty("enabled.no"));
 				}else if(!FormSecurityValidator.isCifra(rendicontazione.getContributoFBA())&&!rendicontazione.getContributoFBA().equalsIgnoreCase(myProperties.getProperty("assente"))){
 					
 					ErroreProgettoBean erroreProgetto = creaErrore(pianoFormazione.getId(),"Rendicontazione contributo FBA ", myProperties.getProperty("Not.budget"));
 					listaErroriProgetto.add(erroreProgetto);
+					rendicontazione.setStato(myProperties.getProperty("enabled.no"));
 				}
 				
 				//contributo privato
 				if(!(rendicontazione.getContributoPrivato()!=null&&!rendicontazione.getContributoPrivato().isEmpty()&&!rendicontazione.getContributoPrivato().equalsIgnoreCase( myProperties.getProperty("assente")))){
 					ErroreProgettoBean erroreProgetto = creaErrore(pianoFormazione.getId(),"Rendicontazione  contributo privato ", myProperties.getProperty("assente"));
 					listaErroriProgetto.add(erroreProgetto);
-					
+					rendicontazione.setStato(myProperties.getProperty("enabled.no"));
 				}else if(!FormSecurityValidator.isCifra(rendicontazione.getContributoPrivato())&&!rendicontazione.getContributoPrivato().equalsIgnoreCase(myProperties.getProperty("assente"))){
 					
 					ErroreProgettoBean erroreProgetto = creaErrore(pianoFormazione.getId(),"Rendicontazione contributo privato ",myProperties.getProperty("Not.budget"));
 					listaErroriProgetto.add(erroreProgetto);
+					rendicontazione.setStato(myProperties.getProperty("enabled.no"));
 				}
 				
 				//tipologia giustificativo
 				if(!(rendicontazione.getTipologiaGiustificativo()!=null&&!rendicontazione.getTipologiaGiustificativo().isEmpty()&&!rendicontazione.getTipologiaGiustificativo().equalsIgnoreCase(myProperties.getProperty("assente")))){
 					ErroreProgettoBean erroreProgetto = creaErrore(pianoFormazione.getId(),"Rendicontazione  tipologia giustificativo ", myProperties.getProperty("assente"));
 					listaErroriProgetto.add(erroreProgetto);
+					rendicontazione.setStato(myProperties.getProperty("enabled.no"));
 					
 				}
 				
@@ -715,6 +745,7 @@ public class ValidaProgetto {
 				if(!(rendicontazione.getNomeAllegato()!=null&&!rendicontazione.getNomeAllegato().isEmpty()&&!rendicontazione.getNomeAllegato().equalsIgnoreCase(myProperties.getProperty("assente")))){
 					ErroreProgettoBean erroreProgetto = creaErrore(pianoFormazione.getId(),"Rendicontazione  nome allegato ", myProperties.getProperty("assente"));
 					listaErroriProgetto.add(erroreProgetto);
+					rendicontazione.setStato(myProperties.getProperty("enabled.no"));
 					
 				}
 				
@@ -722,6 +753,7 @@ public class ValidaProgetto {
 				if(rendicontazione.getStato()!=null&&rendicontazione.getStato().equals(myProperties.getProperty("enabled.no"))){
 					ErroreProgettoBean erroreProgetto = creaErrore(pianoFormazione.getId(),"Rendicontazione ", myProperties.getProperty("errore.lettura.excel"));
 					listaErroriProgetto.add(erroreProgetto);
+					rendicontazione.setStato(myProperties.getProperty("enabled.no"));
 					
 				}
 				
@@ -785,17 +817,7 @@ public class ValidaProgetto {
 		return erroreBean;
 	}
 	
-	private static boolean isInTheList (String stringa, ArrayList<String> listaNomiFile)throws Exception{
-		boolean trovato = false;
-		int i = 0;
-		while (trovato || i==4){
-			if (stringa.equals(listaNomiFile.get(i))){
-				trovato=true;
-			}
-			i++;
-		}
-		return trovato;
-	}
+	
 	
 	
 	
