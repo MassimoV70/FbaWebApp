@@ -281,8 +281,8 @@ public class ValidaProgetto {
 	
 	public static ArrayList<ErroreProgettoBean> validaCalendari (ArrayList<CalendarioBean> listacalendari,PianoDIformazioneBean pianoFormazione, ArrayList<ErroreProgettoBean> listaErroriProgetto,
 			Properties myProperties)throws Exception{
-		if(pianoFormazione.getModulo1()!=null&&!pianoFormazione.getModulo1().isEmpty()&&!pianoFormazione.getModulo1().equalsIgnoreCase(myProperties.getProperty("assente"))
-		   &&pianoFormazione.getModulo2()!=null&&!pianoFormazione.getModulo2().isEmpty()&&!pianoFormazione.getModulo2().equalsIgnoreCase(myProperties.getProperty("assente"))){
+		if((pianoFormazione.getModulo1()!=null&&!pianoFormazione.getModulo1().isEmpty()&&!pianoFormazione.getModulo1().equalsIgnoreCase(myProperties.getProperty("assente")))
+		   ||(pianoFormazione.getModulo2()!=null&&!pianoFormazione.getModulo2().isEmpty()&&!pianoFormazione.getModulo2().equalsIgnoreCase(myProperties.getProperty("assente")))){
 			HashMap<String,Boolean> nomiModuliMap = new HashMap<>();
 			HashMap<String,Boolean> nomiModuliGiornateMap = new HashMap<>();
 			HashMap<String,Integer> nomiModuliOreCalendarioMap = new HashMap<>();
@@ -441,7 +441,7 @@ public class ValidaProgetto {
 											||(calendario.getInizioPomeriggio().trim().equalsIgnoreCase(myProperties.getProperty("assente"))))){
 											testSovrapposizione = Utils.calcolaIntervalloTempo(calendario.getFineMattina(),calendario.getInizioPomeriggio());
 										    if (testSovrapposizione<0){
-										    	ErroreProgettoBean erroreProgetto = creaErrore(calendario.getIdPiano(),"Calendario "+nomeModulo, myProperties.getProperty("lezioni.sovrapposte"));
+										    	ErroreProgettoBean erroreProgetto = creaErrore(calendario.getIdPiano(),"Calendario "+" giornata "+nomeModulo, myProperties.getProperty("lezioni.sovrapposte"));
 												calendario.setStato(myProperties.getProperty("enabled.no"));
 												listaErroriProgetto.add(erroreProgetto);
 										    	
@@ -483,7 +483,7 @@ public class ValidaProgetto {
 					}
 					
 					// se il primo modulo è aula allora viene effettuato il confronto delle ore tra durata modulo e calendario associato.
-					if (nomiModuliMap.get(pianoFormazione.getModulo1())){
+					if (nomiModuliMap.containsKey(pianoFormazione.getModulo1())&&nomiModuliMap.get(pianoFormazione.getModulo1())){
 							int minutiTotModulo = Utils.stringToMinutes(pianoFormazione.getDurataModulo1());
 							if (minutiTotModulo>0){
 								if(nomiModuliOreCalendarioMap.containsKey(pianoFormazione.getModulo1())){
@@ -502,7 +502,7 @@ public class ValidaProgetto {
 					}
 					
 					// se il secondo modulo è aula allora viene effettuato il confronto delle ore tra durata modulo e calendario associato.
-					if (nomiModuliMap.get(pianoFormazione.getModulo2())){
+					if (nomiModuliMap.containsKey(pianoFormazione.getModulo2())&&nomiModuliMap.get(pianoFormazione.getModulo2())){
 							int minutiTotModulo = Utils.stringToMinutes(pianoFormazione.getDurataModulo2());
 							if (minutiTotModulo>0){
 								if(nomiModuliOreCalendarioMap.containsKey(pianoFormazione.getModulo2())){

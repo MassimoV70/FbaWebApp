@@ -9,24 +9,24 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Statement;
-import java.sql.Timestamp;
+import java.text.DecimalFormat;
 
 public class FbaExtractor {
 	 /**
      * @param args the command line arguments
      */
     
-    static String url = "jdbc:mysql://10.0.0.73:3306/fba_docdb";
-    static String username = "fbaroot";
-    static String password = "Passw0rd";
-    static String basePath = "/opt/FbaUploads/";
-    static String myPath = "";
-      
-//      static String url = "jdbc:mysql://localhost:3306/FBA_DOCDB";
-//      static String username = "root";
-//      static String password = "mysql";
-//      static String basePath = "C:/FbaUploads/";
-//      static String myPath = "";
+//    static String url = "jdbc:mysql://10.0.0.73:3306/fba_docdb";
+//    static String username = "fbaroot";
+//    static String password = "Passw0rd";
+//    static String basePath = "/opt/FbaUploads/";
+//    static String myPath = "";
+//      
+      static String url = "jdbc:mysql://localhost:3306/FBA_DOCDB";
+      static String username = "root";
+      static String password = "mysql";
+      static String basePath = "C:/FbaUploads/";
+      static String myPath = "";
     
 //    public static void main(String[] args) {        
 //        Connection conn = openConnection();
@@ -76,7 +76,7 @@ public class FbaExtractor {
               statement = connection.createStatement();
               resultSet = statement.executeQuery(firstQuery);
               
-              Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+//              Timestamp timestamp = new Timestamp(System.currentTimeMillis());
               File newResetFile = new File(basePath+"/resetTrasmissione.sql");
               fosReset = new FileOutputStream(newResetFile);
               fwReset = new BufferedWriter(new OutputStreamWriter(fosReset));
@@ -153,6 +153,10 @@ public class FbaExtractor {
                   sb.append("END;\r\n");
                   fw.write(sb.toString());
                   
+                  fw.newLine();
+                  fw.write("call p_elimina_piano_individuale('"+protocollo+"');");
+                  fw.newLine();
+                  
                   fw.write("START TRANSACTION;");
                   fw.newLine();
                   
@@ -164,6 +168,14 @@ public class FbaExtractor {
                   attuatoreFiles(connection, fw, idpiano_client);
                   
                   sb = new StringBuilder();
+                  sb.append("-- Check protocollo\r\n");
+                  sb.append("select count(*) into @itest from mon_piano where id_soggetto_presentatore = 83830 AND nr_protocollo = '"+protocollo+"';\r\n");
+                  sb.append("IF @itest < 1 then\r\n");
+                  sb.append("\tcall ett_write_log("+idpiano_client+",-1, -1, 'Protocollo non Banca Intesa');\r\n");
+                  sb.append("\tROLLBACK;\r\n");
+                  sb.append("\tLEAVE ETT;\r\n");                
+                  sb.append("END IF;\r\n");
+                  
                   sb.append("-- Chekc su piano\r\n");
                   sb.append("select count(*) into @itest from mon_piano where nr_protocollo = '"+protocollo+"';\r\n");
                   sb.append("IF @itest < 1 then\r\n");
@@ -322,11 +334,11 @@ public class FbaExtractor {
       private static void allegatiPianoFiles(BufferedWriter fw, String nomeAllegato)throws Exception{
           try{
               if (nomeAllegato != null){
-                  fw.write("set @idUpload = 0;");
+            	  fw.write("set @idUpload = 0;");
                   fw.newLine();
-                  fw.write("select count(id) into @idUpload from upload where username = 'ETT' and REAL_FILE_NAME = '"+nomeAllegato+"';" );
+                  fw.write("select id into @idUpload from upload where username = 'ETT' and REAL_FILE_NAME = '"+nomeAllegato+"';" );
                   fw.newLine();
-                  fw.write("IF @idUpload <= 0 then");
+                  fw.write("IF @idUpload > 0 then");
                   fw.newLine();
                   fw.write("\tinsert into mon_allegati_piano (id_mon_piano, id_upload, tipo_allegato, modificabile) values (@idPiano, @idUpload, 'ALL_PN_IND', 1);");
                   fw.newLine();
@@ -663,39 +675,39 @@ public class FbaExtractor {
           
       }
       
-      private static void checkContributi(Connection connection, BufferedWriter fw, String idpiano_client)throws Exception{
-          Statement statement = null;        
-          ResultSet resultSet = null;
-          try{
-              String mainLavoratore = "select sum(contributoprivato) - sum(contributofba) as contributo from rendicontazione where idpiano = "+idpiano_client+"";
-              statement = connection.createStatement();
-              resultSet = statement.executeQuery(mainLavoratore);
-              while(resultSet.next()){
-                  Double contributo = resultSet.getDouble("contributo");
-                  if (contributo<0){
-                	  fw.write("\tcall ett_write_log("+idpiano_client+",-1, -3, 'Contributo FBA maggiori dei Contributi privati');");
-                      fw.newLine();
-                      fw.write("\tROLLBACK;");         
-                      fw.newLine();
-                      fw.write("\tLEAVE ETT;");                    
-                      fw.newLine();
-                  }
-              }
-            
-          }catch(Exception e){
-        	  try{
-                  fw.write("Errore Funzione checkContributi: " + e.getMessage());
-              }catch(Exception e1){
-            	  throw e;
-              }
-               throw e;
-          }finally{
-        	  resultSet.close();
-          	  statement = null; 
-            }
-          
-      }
-      
+//      private static void checkContributi(Connection connection, BufferedWriter fw, String idpiano_client)throws Exception{
+//          Statement statement = null;        
+//          ResultSet resultSet = null;
+//          try{
+//              String mainLavoratore = "select sum(contributoprivato) - sum(contributofba) as contributo from rendicontazione where idpiano = "+idpiano_client+"";
+//              statement = connection.createStatement();
+//              resultSet = statement.executeQuery(mainLavoratore);
+//              while(resultSet.next()){
+//                  Double contributo = resultSet.getDouble("contributo");
+//                  if (contributo<0){
+//                	  fw.write("\tcall ett_write_log("+idpiano_client+",-1, -3, 'Contributo FBA maggiori dei Contributi privati');");
+//                      fw.newLine();
+//                      fw.write("\tROLLBACK;");         
+//                      fw.newLine();
+//                      fw.write("\tLEAVE ETT;");                    
+//                      fw.newLine();
+//                  }
+//              }
+//            
+//          }catch(Exception e){
+//        	  try{
+//                  fw.write("Errore Funzione checkContributi: " + e.getMessage());
+//              }catch(Exception e1){
+//            	  throw e;
+//              }
+//               throw e;
+//          }finally{
+//        	  resultSet.close();
+//          	  statement = null; 
+//            }
+//          
+//      }
+//      
       private static void lavoratori(Connection connection, BufferedWriter fw, String idpiano_client, String new_id_mod, String nomeModulo)throws Exception{
           //lavoratori file
           Statement statement = null;        
@@ -727,8 +739,9 @@ public class FbaExtractor {
               resultSet = statement.executeQuery(fileLavoratori);
               while(resultSet.next()){
                   //String RealFileName = resultSet.getString("nomeallegato");
-                  Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-                  String RealFileName = "ETT" + timestamp.getTime() + "-" + resultSet.getString("nomeallegato");
+                  //Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+                //String RealFileName = "ETT" + timestamp.getTime() + "-" + resultSet.getString("nomeallegato");
+                  String RealFileName = "ETT-" + idpiano_client + "-" + resultSet.getString("nomeallegato");
                   String query = "select allegatofile from lavoratorifile where nomeallegato = '"+resultSet.getString("nomeallegato")+ "'";
                   getPDFData(connection, query, RealFileName, false);
                   fw.write("-- salvataggio allegato : " + resultSet.getString("nomeallegato"));
@@ -814,7 +827,7 @@ public class FbaExtractor {
           Statement statement = null;        
           ResultSet resultSet = null;
           
-          Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+          //Timestamp timestamp = new Timestamp(System.currentTimeMillis());
 
           try{
               String lavoratore = "select * from rendicontazione where idpiano = " + idpiano_client +";";
@@ -823,7 +836,8 @@ public class FbaExtractor {
               Double cfbatot = 0.0;
               while(resultSet.next()){
                   // Scarico File su filesystem e proparo la insert
-                  String RealFileName = "ETT" + timestamp.getTime() + "-" + resultSet.getString("nomeallegato");
+            	//String RealFileName = "ETT" + timestamp.getTime() + "-" + resultSet.getString("nomeallegato");
+                  String RealFileName = "ETT-" + idpiano_client + "-" + resultSet.getString("nomeallegato");
                   String query = "select allegatofile from RendicontazioneFile where nomeallegato = '"+resultSet.getString("nomeallegato")+"'";
                   getPDFData(connection, query, RealFileName, false);
                   fw.write("-- salvataggio allegato : " + resultSet.getString("nomeallegato"));
@@ -856,10 +870,12 @@ public class FbaExtractor {
                   if (resultSet.getString("tipologiagiustificativo").toUpperCase().equals("C")){
                       fw.write( resultSet.getString("valorecomplessivo") + ", 0 );");
                   }else{
-                      Double valorec = resultSet.getDouble("valorecomplessivo");
+                	  Double valorec = resultSet.getDouble("valorecomplessivo");
                       Double iva = 22.0;
                       Double valorenoIva = (100*valorec)/100 + iva ;
-                      fw.write( ""+ valorenoIva + ", "+iva+" );");
+                      DecimalFormat newFormat = new DecimalFormat("#.##");
+                      //valorenoIva = Double.valueOf(newFormat.format(valorenoIva));
+                      fw.write( ""+ newFormat.format(valorenoIva).replace(",", ".") + ", "+iva+" );");
                   }
                   fw.write("\r\n");
               }
@@ -895,9 +911,20 @@ public class FbaExtractor {
               Statement state = conn.createStatement();
                rs = state.executeQuery(query);
               if (rs.next()) {
-                  fileBytes = rs.getBytes(1);
-                  targetFile = new FileOutputStream(currPath + "/"+realName+".pdf");
+            	  fileBytes = rs.getBytes(1);
+                  String ext = "";
+                  try{
+                      ext =(realName.substring(realName.length()-4));
+                  }catch(Exception e1){
+                	  throw e1;
+                  }
+                  if (ext.equals(".pdf")){
+                      targetFile = new FileOutputStream(currPath + "/"+realName);
+                  }else{
+                      targetFile = new FileOutputStream(currPath + "/"+realName+".pdf");
+                  }
                   targetFile.write(fileBytes);
+                  targetFile.close();
                  
               }
           } catch (Exception e) {

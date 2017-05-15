@@ -124,8 +124,11 @@ public class FormSecurityValidator implements Validator{
 	
 	public static boolean isTime (String ora)throws Exception{
 		boolean bau = false;
+		
 		try{
-			bau = Pattern.matches(TIME24HOURS_PATTERN, ora);
+			if (ora!=null&&ora.length()==5){
+				bau = Pattern.matches(TIME24HOURS_PATTERN, ora);
+			}
 		}catch(Exception e){
 			e.printStackTrace();
 			throw e;
