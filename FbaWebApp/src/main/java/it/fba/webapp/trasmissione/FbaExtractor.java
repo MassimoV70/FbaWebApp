@@ -16,17 +16,17 @@ public class FbaExtractor {
      * @param args the command line arguments
      */
     
-//    static String url = "jdbc:mysql://10.0.0.73:3306/fba_docdb";
-//    static String username = "fbaroot";
-//    static String password = "Passw0rd";
-//    static String basePath = "/opt/FbaUploads/";
-//    static String myPath = "";
+    static String url = "jdbc:mysql://10.0.0.73:3306/fba_docdb";
+    static String username = "fbaroot";
+    static String password = "Passw0rd";
+    static String basePath = "/opt/FbaUploads/";
+    static String myPath = "";
 //      
-      static String url = "jdbc:mysql://localhost:3306/FBA_DOCDB";
-      static String username = "root";
-      static String password = "mysql";
-      static String basePath = "C:/FbaUploads/";
-      static String myPath = "";
+//      static String url = "jdbc:mysql://localhost:3306/FBA_DOCDB";
+//      static String username = "root";
+//      static String password = "mysql";
+//      static String basePath = "C:/FbaUploads/";
+//      static String myPath = "";
     
 //    public static void main(String[] args) {        
 //        Connection conn = openConnection();
@@ -247,7 +247,7 @@ public class FbaExtractor {
                       calendario(connection, fw, idpiano_client, "@new_id_mod1", resultSet.getString("modulo1"), modFormativa1);
                       fw.newLine();                    
                       // Lavoratore 
-                      lavoratori(connection, fw, idpiano_client, "@new_id_mod1", resultSet.getString("modulo1"));
+                      lavoratori(connection, fw, idpiano_client, "@new_id_mod1", resultSet.getString("modulo1"), modFormativa1);
                   }
                   if (resultSet.getString("modulo2")!=null){
                       String modFormativa2 = "";
@@ -270,8 +270,9 @@ public class FbaExtractor {
                           modFormativa2 = "E";
                           fw.write("'E',");
                       }    
-                      fw.write("@new_progetto_id ,");                    
-                      fw.write(resultSet.getString("tematicaformativa")+ ");");
+                      fw.write("@new_progetto_id ,");  
+                      fw.write("'"+resultSet.getString("tematicaformativa")+ "');");
+                    
                       fw.write("\r\n");
                       fw.write("SET @new_id_mod2 = LAST_INSERT_ID();");
                       fw.write("\r\n");
@@ -279,7 +280,7 @@ public class FbaExtractor {
                       
                       calendario(connection, fw, idpiano_client,  "@new_id_mod2", resultSet.getString("modulo2"), modFormativa2);
                       fw.write("\r\n");
-                      lavoratori(connection, fw, idpiano_client, "@new_id_mod2", resultSet.getString("modulo2"));
+                      lavoratori(connection, fw, idpiano_client, "@new_id_mod2", resultSet.getString("modulo2"), modFormativa2);
                       
                       fw.newLine();
                       fw.write("\tcall ett_write_log("+idpiano_client+",@idPiano, 1, 'piano didattico inserito');");
@@ -708,7 +709,7 @@ public class FbaExtractor {
 //          
 //      }
 //      
-      private static void lavoratori(Connection connection, BufferedWriter fw, String idpiano_client, String new_id_mod, String nomeModulo)throws Exception{
+      private static void lavoratori(Connection connection, BufferedWriter fw, String idpiano_client, String new_id_mod, String nomeModulo, String modalitaFormativa) throws Exception{
           //lavoratori file
           Statement statement = null;        
           ResultSet resultSet = null;
@@ -734,34 +735,36 @@ public class FbaExtractor {
               
               
               // Lavoratori file
-              String fileLavoratori = "select distinct a.* from lavoratorifile a, lavoratori_modulo b where a.nomeallegato = b.nomeallegato and idpiano = " + idpiano_client ;
-              statement = connection.createStatement();
-              resultSet = statement.executeQuery(fileLavoratori);
-              while(resultSet.next()){
-                  //String RealFileName = resultSet.getString("nomeallegato");
-                  //Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-                //String RealFileName = "ETT" + timestamp.getTime() + "-" + resultSet.getString("nomeallegato");
-                  String RealFileName = "ETT-" + idpiano_client + "-" + resultSet.getString("nomeallegato");
-                  String query = "select allegatofile from lavoratorifile where nomeallegato = '"+resultSet.getString("nomeallegato")+ "'";
-                  getPDFData(connection, query, RealFileName, false);
-                  fw.write("-- salvataggio allegato : " + resultSet.getString("nomeallegato"));
-                  fw.newLine();
-                  fw.write("insert into upload (USERNAME, NOTE, FILE_NAME, REAL_FILE_NAME) values (");
-                  fw.write("'ETT', 'note', ");
-                  fw.write("'"+ RealFileName + "', '"+resultSet.getString("nomeallegato")+"');");
-                  fw.newLine();
-                  fw.write("SET  @idFile = LAST_INSERT_ID();");
-                  fw.newLine();
-                  fw.write("INSERT INTO mon_attestato (NOME, TIPOLOGIA, ID_ATTUATORE, ID_DOCUMENTO, ID_PIANO) values (");
-                  fw.write("'" +RealFileName+ "',");
-                  fw.write("'ATTESTATO',");
-                  fw.write("@idAttuatore,");
-                  fw.write("@idFile,");
-                  fw.write("@idPiano);");
-                  fw.newLine();
-              }
-              statement = null; 
-              resultSet.close();
+              if (modalitaFormativa.toUpperCase().equals("E")){
+  				String fileLavoratori = "select distinct a.* from lavoratorifile a, lavoratori_modulo b where a.nomeallegato = b.nomeallegato and idpiano = " + idpiano_client ;
+  				statement = connection.createStatement();
+  				resultSet = statement.executeQuery(fileLavoratori);
+  				while(resultSet.next()){
+  					//String RealFileName = resultSet.getString("nomeallegato");
+  					//Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+  					//String RealFileName = "ETT" + timestamp.getTime() + "-" + resultSet.getString("nomeallegato");
+  					String RealFileName = "ETT-" + idpiano_client + "-" + resultSet.getString("nomeallegato");
+  					String query = "select nomeallegato from lavoratorifile where nomeallegato = '"+resultSet.getString("nomeallegato")+ "'";
+  					getPDFData(connection, query, RealFileName, false);
+  					fw.write("-- salvataggio allegato : " + resultSet.getString("nomeallegato"));
+  					fw.newLine();
+  					fw.write("insert into upload (USERNAME, NOTE, FILE_NAME, REAL_FILE_NAME) values (");
+  					fw.write("'ETT', 'note', ");
+  					fw.write("'"+ RealFileName + "', '"+resultSet.getString("nomeallegato")+"');");
+  					fw.newLine();
+  					fw.write("SET  @idFile = LAST_INSERT_ID();");
+  					fw.newLine();
+  					fw.write("INSERT INTO mon_attestato (NOME, TIPOLOGIA, ID_ATTUATORE, ID_DOCUMENTO, ID_PIANO) values (");
+  					fw.write("'" +RealFileName+ "',");
+  					fw.write("'ATTESTATO',");
+  					fw.write("@idAttuatore,");
+  					fw.write("@idFile,");
+  					fw.write("@idPiano);");
+  					fw.newLine();
+  				}
+  				statement = null; 
+  				resultSet.close();
+  			}
               
               String lavoratore = "select * from lavoratori_modulo where idpiano = " + idpiano_client + " and nomemodulo = '"+nomeModulo+"'";
               statement = connection.createStatement();
